@@ -1,0 +1,7 @@
+Koolshare arm 384 router software center easyexplorer Changelog
+===========================================
+2.3
+  - fix         修复主程序不能运行的问题！
+
+2.2
+   - add	添加koolshare armV7架构384梅林改版固件支持；

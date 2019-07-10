@@ -1,0 +1,4 @@
+Koolshare arm 384 router software center mdial Changelog
+----------------------
+1.3
+   - add	添加koolshare armV7架构384梅林改版固件支持；

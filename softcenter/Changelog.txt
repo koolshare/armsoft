@@ -1,0 +1,4 @@
+Koolshare arm 384 router software center Changelog
+===========================================
+1.0.0
+   - add	add software center support for merlin 384 armV7 series

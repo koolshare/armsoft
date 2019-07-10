@@ -1,0 +1,4 @@
+Koolshare arm 384 router software center Let's Encrypt Changelog
+===========================================
+3.0 - 3.2
+   - add	添加koolshare armV7架构384梅林改版固件支持；
