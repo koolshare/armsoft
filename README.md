@@ -33,7 +33,7 @@
 3. 为了避免用户从梅林380升级到梅林384后，使用错误的平台的软件中心，因此，此版本软件中心对离线安装包需要做验证。安装时需要验证安装包内是否含有`.valid`文件，且文件内含有`arm384`字符串。相关链接：[验证代码](https://github.com/koolshare/armsoft/blob/master/softcenter/softcenter/scripts/ks_tar_install.sh#L51-L62)，[验证示例](https://github.com/koolshare/armsoft/blob/master/koolproxy/koolproxy/.valid)
 4. 为了避免用户讲本项目内的离线安装包用于其它不兼容的软件中心平台，因此本项目中所有的安装包内的`install.sh`都需要进对安装的固件/平台进行检测，示例：来自本项目koolproxy的[install.sh](https://github.com/koolshare/armsoft/blob/master/koolproxy/koolproxy/install.sh#L9-L27)。
 
-**koolshare几个版本的软件中心区别：**
+## koolshare几个版本的软件中心区别
 
 |  软件中心   |                        arm380软件中心                        |                 arm384软件中心                  |                      hnd/axhnd软件中心                       |                    软路由-酷软                    |
 | :---------: | :----------------------------------------------------------: | :---------------------------------------------: | :----------------------------------------------------------: | :-----------------------------------------------: |
