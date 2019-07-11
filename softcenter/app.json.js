@@ -111,15 +111,15 @@
             "version": "1.3"
         }, 
         {
-            "build_date": "2019-07-10_20:27:25", 
+            "build_date": "2019-07-11_20:28:49", 
             "changelog": "", 
             "description": "一些小功能的插件", 
             "home_url": "Module_rog.asp", 
-            "md5": "2449974596d90d2a21f5d2a4963b8239", 
+            "md5": "be8313dc2bf28e32271ecd470a389570", 
             "name": "rog", 
             "tar_url": "rog/rog.tar.gz", 
-            "title": "ROG工具箱", 
-            "version": "2.0"
+            "title": "ASUS工具箱", 
+            "version": "2.1"
         }, 
         {
             "build_date": "2019-07-09_11:49:54", 

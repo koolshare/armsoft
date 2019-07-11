@@ -37,9 +37,9 @@ dbus set softcenter_module_rog_version="$(cat $DIR/version)"
 dbus set softcenter_module_rog_description="一些小功能的插件"
 dbus set softcenter_module_rog_install="1"
 dbus set softcenter_module_rog_name="rog"
-dbus set softcenter_module_rog_title="ROG工具箱"
+dbus set softcenter_module_rog_title="ASUS工具箱"
 
 # 完成
-echo_date "rog工具箱插件安装完毕！"
+echo_date "ASUS工具箱插件安装完毕！"
 rm -rf /tmp/rog* >/dev/null 2>&1
 exit 0
