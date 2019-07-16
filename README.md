@@ -13,11 +13,22 @@
    3. linksys EA系列：`EA6200` `EA6400` `EA6500v2` `EA6700` `EA6900`
    4. 华为：`ws880`
    5. 斐讯`K3`
+   
 2. 这些机器必须使用koolshare 梅林**384**固件！即使第1项条件满足，但是如果koolshare开发组没有推出该机型的梅林**384**改版固件，那么本软件中心也无法支持，比如斐讯`K3`等。
-3. 目前支持**armsoft**的机型/固件：
 
-    * RT-AC88U merlin 384改版固件 （内测中，未发布）
-    * RT-AC5300 merlin 384改版固件（内测中，未发布）
+3. 目前支持**armsoft**的机型：
+
+    * 华硕 RT-AC68U
+    - 华硕 RT-AC66U-B1
+    - 华硕 RT-AC1900
+    - 华硕 RT-AC1900P
+    - 华硕 RT-AC87U 
+    - 华硕 RT-AC88U
+    - 华硕 RT-AC3100
+    - 华硕 RT-AC3200
+    - 华硕 RT-AC5300、
+    
+    详情请前往koolshare论坛固件下载地址：[https://koolshare.cn/thread-164857-1-1.html](https://koolshare.cn/thread-164857-1-1.html)
 
 ## 用户须知
 
