@@ -26,7 +26,7 @@
     - 华硕 RT-AC88U
     - 华硕 RT-AC3100
     - 华硕 RT-AC3200
-    - 华硕 RT-AC5300、
+    - 华硕 RT-AC5300
     
     详情请前往koolshare论坛固件下载地址：[https://koolshare.cn/thread-164857-1-1.html](https://koolshare.cn/thread-164857-1-1.html)
 
