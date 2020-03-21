@@ -200,17 +200,24 @@ input[type=button]:focus {
 }
 .cloud_main_radius h2 {
 	border-bottom:1px #AAA dashed;
+	height:32px;
+	margin-top:15px;
+	margin-bottom:15px;
 }
 .cloud_main_radius h3, .cloud_main_radius h4 {
 	font-size:12px;
 	color:#FC0;
 	font-weight:normal;
 	font-style: normal;
+	margin-top:12px;
+	margin-bottom:12px;
 }
 .cloud_main_radius h5 {
 	color:#FFF;
 	font-weight:normal;
 	font-style: normal;
+	margin-top:9px;
+	margin-bottom:9x;
 }
 </style>
 <script>
@@ -344,7 +351,7 @@ function showInstallInfo(module, scode) {
 		var infos = [
 			"操作失败",
 			"已安装",
-			"将被安装到jffs分区...",
+			"插件将被安装到jffs分区...",
 			"正在下载中...请耐心等待...",
 			"正在安装中...",
 			"安装成功！请5秒后刷新本页面！...",
@@ -357,7 +364,9 @@ function showInstallInfo(module, scode) {
 			"下载文件校验不一致！",
 			"然而并没有更新！",
 			"正在检查是否有更新~",
-			"检测更新错误！"
+			"检测更新错误！",
+			" wget下载错误，详情见系统日志！",
+			"卸载失败！请关闭插件后重试！"
 		];
 		document.getElementById("install_status").style.display = "";
 		$("#appInstallInfo").html(s + infos[code]);
@@ -433,12 +442,12 @@ function getRemoteData() {
 		url: remoteURL,
 		method: 'GET',
 		dataType: 'jsonp',
-		timeout: 5000
+		timeout: 3500
 	});
 }
 function softceterInitData(data) {
 	var remoteData = data;
-	$("#spnOnlineVersion").html(remoteData.version);
+	$("#spnOnlineVersion").html("<em>" + remoteData.version + "</em>");
 	if (remoteData.version != db_softcenter_["softcenter_version"]) {
 		$("#updateBtn").show();
 		$("#updateBtn").click(function() {
@@ -524,6 +533,8 @@ function init(cb) {
 			cb();
 			return;
 		} else {
+			renderView(_mergeData({}));
+			cb();
 			getRemoteData()
 				.done(function(remoteData) {
 					//远端更新成功
@@ -535,8 +546,9 @@ function init(cb) {
 				})
 				.fail(function() {
 					//如果没有更新成功，比如没网络，就用空数据merge本地
-					renderView(_mergeData({}));
-					cb();
+				//renderView(_mergeData({}));
+				//cb();
+				$("#spnOnlineVersion").html("<i>获取在线版本失败！请尝试重新刷新本页面，或者检查你的网络设置！</i>")
 				});
 		}
 		notice_show();
@@ -560,7 +572,7 @@ $(function() {
 			if (!db_softcenter_["softcenter_version"]) {
 				db_softcenter_["softcenter_version"] = "0.0";
 			}
-			$("#spnCurrVersion").html(db_softcenter_["softcenter_version"]);
+			$("#spnCurrVersion").html("<em>" + db_softcenter_["softcenter_version"] + "</em>");
 			var jff2_scripts="<% nvram_get("jffs2_scripts"); %>";
 			if(jff2_scripts != 1){
 				$('#software_center_message').html('<h2><font color="#FF9900">错误！</font></h2><h2>软件中心不可用！因为你没有开启Enable JFFS custom scripts and configs选项！</h2><h2>请前往【系统管理】-<a href="Advanced_System_Content.asp"><u><em>【系统设置】</em></u></a>开启此选项再使用软件中心！！</h2>')
@@ -650,36 +662,37 @@ function notice_show() {
 										<tr>
 											<td bgcolor="#4D595D" colspan="3" valign="top">
 												<div>&nbsp;</div>
-												<div class="formfonttitle">Software Center <% nvram_get("model"); %></div>
+												<div id="title_name" class="formfonttitle"></div>
+												<script type="text/javascript">
+													var MODEL = '<% nvram_get("odmpid"); %>' || '<% nvram_get("model"); %>';
+													$("#title_name").html("Software Center " + MODEL)
+												</script>
 												<div style="margin:10px 0 10px 5px;" class="splitLine"></div>
 													<table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable">
 													</table>
 													<table width="100%" height="150px" style="border-collapse:collapse;">
 														<tr bgcolor="#444f53">
 															<td colspan="5" bgcolor="#444f53" class="cloud_main_radius">
-																<div style="padding:10px;width:95%;font-style:italic;font-size:14px;">
-																	<br/><br/>
+																<div style="width:95%;font-style:italic;font-size:14px;">
 																	<table width="100%">
 																		<tr>
 																			<td>
-																				<ul style="margin-top:-50px;padding-left:15px;">
-																					<li style="margin-top:-5px;">
-																						<h2 id="push_titile"><em>软件中心&nbsp;-&nbsp;by&nbsp;koolshare</em></h2>
+																				<ul style="padding-left:25px;">
+																					<h2 id="push_titile"><em>软件中心&nbsp;-&nbsp;by&nbsp;koolshare</em></h2>
+																					<li>
+																						<h4 id="push_content1" ><font color='#1E90FF'>交流反馈:&nbsp;&nbsp;</font><a href='https://github.com/koolshare/rogsoft' target='_blank'><em>1.软件中心GitHub项目</em></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='https://t.me/xbchat' target='_blank'><em>2.加入telegram群</em></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='http://shang.qq.com/wpa/qunwpa?idkey=f475468129ba8019245425559b5df5bdad7d7201ac7780417dd0218bbb4e1322' target='_blank'><em>3.加入QQ群</em></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='http://koolshare.cn/forum-98-1.html' target='_blank'><em>4.Koolshare论坛插件版块</em></a></h4>
 																					</li>
-																					<li style="margin-top:-5px;">
-																						<h4 id="push_content1" ><font color='#1E90FF'>交流反馈:&nbsp;&nbsp;</font><a href='https://github.com/koolshare/armsoft' target='_blank'><em>1.软件中心GitHub项目</em></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='https://t.me/xbchat' target='_blank'><em>2.加入telegram群</em></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='http://shang.qq.com/wpa/qunwpa?idkey=f475468129ba8019245425559b5df5bdad7d7201ac7780417dd0218bbb4e1322' target='_blank'><em>3.加入QQ群</em></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='http://koolshare.cn/forum-98-1.html' target='_blank'><em>4.Koolshare论坛插件版块</em></a></h4>
-																					</li>
-																					<li id="push_content2_li" style="margin-top:-5px;display: none;">
+																					<li id="push_content2_li" style="display: none;">
 																						<h4 id="push_content2"></h4>
 																					</li>
-																					<li id="push_content3_li" style="margin-top:-5px;display: none;">
+																					<li id="push_content3_li" style="display: none;">
 																						<h4 id="push_content3"></h4>
 																					</li>
-																					<li id="push_content4_li" style="margin-top:-5px;display: none;">
+																					<li id="push_content4_li" style="display: none;">
 																						<h4 id="push_content4"></h4>
 																					</li>
-																					<li style="margin-top:-5px;">
-																						<h5>当前版本：<span id="spnCurrVersion"></span> 在线版本：<span id="spnOnlineVersion"></span>
+																					<li>
+																						<h5>当前版本：<span id="spnCurrVersion"></span>&nbsp;&nbsp;&nbsp;&nbsp;在线版本：<span id="spnOnlineVersion"></span>
 																						<input type="button" id="updateBtn" value="更新" style="display:none" /></h5>
 																					</li>
 																				</ul>
@@ -718,9 +731,10 @@ function notice_show() {
 															<td colspan="3"></td>
 														</tr>
 													</table>
-												<div class="KoolshareBottom">论坛技术支持： <a href="http://www.koolshare.cn" target="_blank"> <i><u>koolshare.cn</u></i> </a>
-													<br/>Github项目： <a href="https://github.com/koolshare/armsoft" target="_blank"> <i><u>github.com/koolshare</u></i> </a>
-													<br/>Shell & Web by： <a href="mailto:sadoneli@gmail.com"> <i>sadoneli</i> </a>, <i>Xiaobao</i>
+												<div class="KoolshareBottom">
+													论坛技术支持: <a href="https://koolshare.cn" target="_blank"> <i><u>https://koolshare.cn</u></i></a><br />
+													GitHub: <a href="https://github.com/koolshare/rogsoft" target="_blank"><i><u>https://github.com/koolshare</u></i></a><br />
+													Shell & Web by: <a href="mailto:sadoneli@gmail.com"><i>sadoneli</i></a>, <i>Xiaobao</i>
 												</div>
 											</td>
 										</tr>
