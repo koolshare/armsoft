@@ -34,14 +34,16 @@ creat_cron_job(){
 }
 
 creat_trigger_dhcp(){
-    rm -f /jffs/configs/dnsmasq.d/dhcp_trigger.conf
+    # rm -f /jffs/configs/dnsmasq.d/dhcp_trigger.conf
+    sed -i '/serverchan_dhcp_trigger/d' /jffs/configs/dnsmasq.d/dhcp_trigger.conf
     echo "dhcp-script=/koolshare/scripts/serverchan_dhcp_trigger.sh" >> /jffs/configs/dnsmasq.d/dhcp_trigger.conf
     [ "${serverchan_info_logger}" == "1" ] && logger "[软件中心] - [ServerChan]: 重启DNSMASQ！"
     service restart_dnsmasq
 }
 
 remove_trigger_dhcp(){
-    rm -f /jffs/configs/dnsmasq.d/dhcp_trigger.conf
+    # rm -f /jffs/configs/dnsmasq.d/dhcp_trigger.conf
+    sed -i '/serverchan_dhcp_trigger/d' /jffs/configs/dnsmasq.d/dhcp_trigger.conf
     [ "${serverchan_info_logger}" == "1" ] && logger "[软件中心] - [ServerChan]: 重启DNSMASQ！"
     service restart_dnsmasq
 }

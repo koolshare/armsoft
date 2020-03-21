@@ -1,6 +1,6 @@
 {
-"version":"0.7",
-"md5":"afa0cc909746c46d0c3ba79d9efbeee2",
+"version":"0.8",
+"md5":"",
 "home_url":"Module_serverchan.asp",
 "title":"ServerChan微信推送",
 "description":"从路由器推送状态及通知的工具",
