@@ -6,7 +6,7 @@ DIR=$(cd $(dirname $0); pwd)
 # 判断路由架构和平台
 case $(uname -m) in
 	armv7l)
-		if [ "`uname -o|grep Merlin`" ] && [ -d "/koolshare" ] && [ -n "`nvram get buildno|grep 384`" ];then
+		if [ "$(uname -o|grep Merlin)" ] && [ -d "/koolshare" ] && [ -n "$(nvram get buildno|grep 384)" ];then
 			echo_date 固件平台【koolshare merlin armv7l 384】符合安装要求，开始安装插件！
 		else
 			echo_date 本插件适用于【koolshare merlin armv7l 384】固件平台，你的固件平台不能安装！！！
@@ -24,8 +24,8 @@ case $(uname -m) in
 esac
 
 # stop aliddns first
-enable=`dbus get aliddns_enable`
-if [ "$enable" == "1" ];then
+enable=$(dbus get aliddns_enable)
+if [ "$enable" == "1" ]; then
 	sh /koolshare/scripts/aliddns_config.sh stop
 fi
 
@@ -36,9 +36,14 @@ rm -rf /koolshare/init.d/*aliddns.sh
 cp -rf /tmp/aliddns/scripts/* /koolshare/scripts/
 cp -rf /tmp/aliddns/webs/* /koolshare/webs/
 cp -rf /tmp/aliddns/res/* /koolshare/res/
-cp -rf /tmp/aliddns/install.sh /koolshare/scripts/uninstall_aliddns.sh
+cp -rf /tmp/aliddns/uninstall.sh /koolshare/scripts/uninstall_aliddns.sh
 chmod +x /koolshare/scripts/aliddns*
 chmod +x /koolshare/init.d/*
+if [ "$(nvram get model)" == "GT-AC5300" ] || [ "$(nvram get model)" == "GT-AX11000" ] || [ -n "$(nvram get extendno | grep koolshare)" -a "$(nvram get productid)" == "RT-AC86U" ];then
+	continue
+else
+	sed -i '/rogcss/d' /koolshare/webs/Module_aliddns.asp >/dev/null 2>&1
+fi
 [ ! -L "/koolshare/init.d/S98Aliddns.sh" ] && ln -sf /koolshare/scripts/aliddns_config.sh /koolshare/init.d/S98Aliddns.sh
 
 # 离线安装需要向skipd写入安装信息
@@ -51,7 +56,7 @@ dbus set softcenter_module_aliddns_description="aliddns"
 
 # re-enable aliddns
 if [ "$enable" == "1" ];then
-	sh /koolshare/scripts/aliddns_config.sh
+	sh /koolshare/scripts/aliddns_config.sh ks 1
 fi
 
 # 完成
