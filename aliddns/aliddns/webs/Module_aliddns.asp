@@ -432,7 +432,7 @@ function reload_Soft_Center(){
 															</label>
 														</div>
 														<div style="display:table-cell;float: left;margin-left:270px;margin-top:-32px;position: absolute;padding: 5.5px 0px;">
-															<a type="button" class="ks_btn" target="_blank" href="https://github.com/koolshare/rogsoft/blob/master/aliddns/Changelog.txt">更新日志</a>
+															<a type="button" class="ks_btn" target="_blank" href="https://github.com/koolshare/armsoft/blob/master/aliddns/Changelog.txt">更新日志</a>
 														</div>
 														<div id="aliddns_version" style="padding-top:5px;margin-right:50px;margin-top:-30px;float: right;"></div>	
 													</td>
@@ -551,7 +551,7 @@ function reload_Soft_Center(){
 										</div>
 										<div class="KoolshareBottom" style="margin-top:50px;">
 											论坛技术支持: <a href="https://koolshare.cn" target="_blank"> <i><u>https://koolshare.cn</u></i></a><br />
-											GitHub: <a href="https://github.com/koolshare/rogsoft" target="_blank"><i><u>https://github.com/koolshare</u></i></a><br />
+											GitHub: <a href="https://github.com/koolshare/armsoft" target="_blank"><i><u>https://github.com/koolshare</u></i></a><br />
 											Shell & Web by: <a href="mailto:sadoneli@gmail.com"><i>kyrios</i></a>, <i>sadog</i>
 										</div>
 									</td>
