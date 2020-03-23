@@ -1,7 +1,11 @@
 #!/bin/sh
 source /koolshare/scripts/base.sh
 eval `dbus export serverchan_`
-ntp_server=${serverchan_config_ntp} || "ntp1.aliyun.com"
+if [ "${serverchan_config_ntp}" == "" ]; then 
+    ntp_server="ntp1.aliyun.com" 
+else 
+    ntp_server=${serverchan_config_ntp} 
+fi 
 ntpclient -h ${ntp_server} -i3 -l -s > /dev/null 2>&1
 serverchan_info_text=/tmp/.serverchan_info.md
 softcenter_app_url="https://armsoft.ddnsto.com/softcenter/app.json.js"
@@ -37,9 +41,7 @@ esac
 dnsmasq_pid=`ps | grep "dnsmasq" | grep "nobody" | grep -v grep | awk '{print $1}'`
 kill -12 ${dnsmasq_pid}
 sleep 1
-if [[ ! -L /koolshare/bin/base64_decode ]];then
-    ln -s /koolshare/bin/base64_encode /koolshare/bin/base64_decode
-fi
+[ ! -L "/koolshare/bin/base64_decode" ] && ln -s /koolshare/bin/base64_encode /koolshare/bin/base64_decode
 send_title=`echo "$serverchan_config_name"| base64_decode`
 # 系统运行状态
 if [ "${serverchan_info_system}" == "1" ]; then
