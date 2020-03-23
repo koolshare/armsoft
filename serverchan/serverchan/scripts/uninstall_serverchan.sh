@@ -4,7 +4,7 @@ source /koolshare/scripts/base.sh
 logger "[软件中心]: 正在卸载serverChan..."
 MODULE=serverchan
 cd /
-/koolshare/serverchan/serverchan_config stop
+sh /koolshare/scripts/serverchan_config.sh stop
 rm -f /koolshare/scripts/serverchan_check.sh
 rm -f /koolshare/scripts/serverchan_check_task.sh
 rm -f /koolshare/scripts/serverchan_dhcp_trigger.sh
