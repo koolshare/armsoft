@@ -1,4 +1,9 @@
 Koolshare arm 384 router software center serverchan Changelog
 ===========================================
+0.8
+   - fix 修复dhcp触发器创建、删除逻辑，实现与其他脚本共存
+   - fix 修复Web页面触发器配置部分配置无法保存的BUG
+   - fix 尽量和hnd插件代码同步，方便后期维护
+
 0.7
    - add	添加koolshare armV7架构384梅林改版固件支持；

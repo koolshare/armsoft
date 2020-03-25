@@ -26,7 +26,7 @@ esac
 # stop serverchan first
 enable=`dbus get serverchan_enable`
 if [ "$enable" == "1" ] && [ -f "/koolshare/scripts/serverchan_config.sh" ];then
-	/koolshare/serverchan/serverchan_config stop >/dev/null 2>&1
+	/koolshare/scripts/serverchan_config.sh stop >/dev/null 2>&1
 fi
 
 # 安装
@@ -63,6 +63,9 @@ if [ -n "${_sckey}" ]; then
     dbus set serverchan_config_sckey_1=`dbus get serverchan_config_sckey`
     dbus remove serverchan_config_sckey
 fi
+[ -z "`dbus get serverchan_info_lan_macoff`" ] && dbus set serverchan_info_lan_macoff="1"
+[ -z "`dbus get serverchan_info_dhcp_macoff`" ] && dbus set serverchan_info_dhcp_macoff="1"
+[ -z "`dbus get serverchan_trigger_dhcp_macoff`" ] && dbus set serverchan_trigger_dhcp_macoff="1"
 
 # 离线安装用
 dbus set serverchan_version="$(cat $DIR/version)"
@@ -74,7 +77,7 @@ dbus set softcenter_module_serverchan_description="从路由器推送状态及�
 
 # re-enable serverchan
 if [ "$enable" == "1" ] && [ -f "/koolshare/scripts/serverchan_config.sh" ];then
-	/koolshare/serverchan/serverchan_config start >/dev/null 2>&1
+	/koolshare/scripts/serverchan_config.sh start >/dev/null 2>&1
 fi
 
 # 完成

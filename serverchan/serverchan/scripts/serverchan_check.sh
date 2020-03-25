@@ -11,10 +11,12 @@ serverchan_info_text=/tmp/.serverchan_info.md
 softcenter_app_url="https://armsoft.ddnsto.com/softcenter/app.json.js"
 app_file=/tmp/.app.json.js
 dnsmasq_leases_file="/var/lib/misc/dnsmasq.leases"
+rm -rf ${serverchan_info_text} ${app_file}
+
 if [[ "${serverchan_enable}" != "1" ]]; then
     exit
 fi
-clang_action=$1
+clang_action="$1"
 if [[ "${clang_action}" == "task" ]]; then
     if [[ "${serverchan_info_silent_send}" == "0" ]]; then
         if [[ "${serverchan_silent_time}" == "1" ]]; then
@@ -39,10 +41,8 @@ esac
 dnsmasq_pid=`ps | grep "dnsmasq" | grep "nobody" | grep -v grep | awk '{print $1}'`
 kill -12 ${dnsmasq_pid}
 sleep 1
-if [[ ! -L /koolshare/bin/base64_decode ]];then
-    ln -s /koolshare/bin/base64_encode /koolshare/bin/base64_decode
-fi
-send_title=`dbus get serverchan_config_name| base64_decode`
+[ ! -L "/koolshare/bin/base64_decode" ] &&  ln -s /koolshare/bin/base64_encode /koolshare/bin/base64_decode
+send_title=`echo "$serverchan_config_name"| base64_decode`
 # 系统运行状态
 if [ "${serverchan_info_system}" == "1" ]; then
     echo "---" >> ${serverchan_info_text}
@@ -60,7 +60,7 @@ if [ "${serverchan_info_system}" == "1" ]; then
     else
         router_mode="本次未获取到"
     fi
-    router_time=`echo $(date "+%Y年%m月%d日 %H点%M分%S秒")`
+	router_time=`echo $(TZ=UTC-8 date "+%Y年%m月%d日 %H点%M分%S秒")`
     router_uptime=`cat /proc/uptime | awk '{print $1}' | awk '{print int($1/86400)"天 "int($1%86400/3600)"小时 "int(($1%3600)/60)"分钟 "int($1%60)"秒"}'`
     router_cpu_loadavg_1min=`cat /proc/loadavg |  awk '{print $1}'`
     router_cpu_loadavg_5min=`cat /proc/loadavg |  awk '{print $2}'`
@@ -107,7 +107,8 @@ if [[ "${serverchan_info_wan}" == "1" ]]; then
     router_wan0_proto=`nvram get wan0_proto`
     router_wan0_ifname=`nvram get wan0_ifname`
     router_wan0_gw=`nvram get wan0_gw_ifname`
-    router_wan0_public_ip=`curl --interface ${router_wan0_gw} -s https://ip.ngrok.wang 2>&1`
+    router_wan0_ip4=`curl -4 --interface ${router_wan0_gw} -s https://api.ip.sb/ip 2>&1`
+	router_wan0_ip6=`curl -6 --interface ${router_wan0_gw} -s https://api.ip.sb/ip 2>&1`
     router_wan0_dns1=`nvram get wan0_dns | awk '{print $1}'`
     router_wan0_dns2=`nvram get wan0_dns | awk '{print $2}'`
     router_wan0_ip=`nvram get wan0_ipaddr`
@@ -117,7 +118,8 @@ if [[ "${serverchan_info_wan}" == "1" ]]; then
     echo "#### **网络状态信息:**" >> ${serverchan_info_text}
     echo "##### **WAN0状态信息:**" >> ${serverchan_info_text}
     echo "##### 联机类型: ${router_wan0_proto}" >> ${serverchan_info_text}
-    echo "##### 公网 IPv4地址: ${router_wan0_public_ip}" >> ${serverchan_info_text}
+	echo "##### 公网IPv4地址: ${router_wan0_ip4}" >> ${serverchan_info_text}
+	echo "##### 公网IPv6地址: ${router_wan0_ip6}" >> ${serverchan_info_text}
     echo "##### WAN口IPv4地址: ${router_wan0_ip}" >> ${serverchan_info_text}
     echo "##### WAN口DNS地址: ${router_wan0_dns1} ${router_wan0_dns2}" >> ${serverchan_info_text}
     echo "##### WAN口接收流量: ${router_wan0_rx}" >> ${serverchan_info_text}
@@ -127,7 +129,8 @@ if [[ "${serverchan_info_wan}" == "1" ]]; then
     router_wan1_gw=`nvram get wan1_gw_ifname`
     if [ -n "${router_wan1_ifname}" ] && [ -n "${router_wan1_gw}" ]; then
         router_wan1_proto=`nvram get wan1_proto`
-        router_wan1_public_ip=`curl --interface ${router_wan1_gw} -s https://ip.ngrok.wang 2>&1`
+        router_wan1_ip4=`curl -4 --interface ${router_wan1_gw} -s https://api.ip.sb/ip 2>&1`
+    	router_wan1_ip6=`curl -6 --interface ${router_wan1_gw} -s https://api.ip.sb/ip 2>&1`
         router_wan1_dns1=`nvram get wan1_dns | awk '{print $1}'`
         router_wan1_dns2=`nvram get wan1_dns | awk '{print $2}'`
         router_wan1_ip=`nvram get wan1_ipaddr`
@@ -135,7 +138,8 @@ if [[ "${serverchan_info_wan}" == "1" ]]; then
         router_wan1_tx=`ifconfig ${router_wan1_ifname} | grep 'TX bytes' | cut -d\( -f3 | cut -d\) -f1`
         echo "##### **WAN1状态信息:**" >> ${serverchan_info_text}
         echo "##### 联机类型: ${router_wan1_proto}" >> ${serverchan_info_text}
-        echo "##### 公网 IPv4地址: ${router_wan1_public_ip}" >> ${serverchan_info_text}
+		echo "##### 公网IPv4地址: ${router_wan1_ip4}" >> ${serverchan_info_text}
+		echo "##### 公网IPv6地址: ${router_wan1_ip6}" >> ${serverchan_info_text}
         echo "##### WAN口IPv4地址: ${router_wan1_ip}" >> ${serverchan_info_text}
         echo "##### WAN口DNS地址: ${router_wan1_dns1} ${router_wan1_dns2}" >> ${serverchan_info_text}
         echo "##### WAN口接收流量: ${router_wan1_rx}" >> ${serverchan_info_text}
@@ -154,20 +158,22 @@ if [[ "${serverchan_info_wan}" == "1" ]]; then
     get_china_status(){
         wget -4 --spider --quiet --tries=2 --timeout=2 www.baidu.com
         if [ "$?" == "0" ]; then
-            echo '##### 国内链接 【'${net_check_time}'】 √'
+			echo '##### 国内链接 【'${net_check_time}'】 √' >> ${serverchan_info_text}
         else
-            echo '##### 国内链接 【'${net_check_time}'】 ×'
+			echo '##### 国内链接 【'${net_check_time}'】 ×' >> ${serverchan_info_text}
         fi
     }
 
     get_foreign_status(){
         wget -4 --spider --quiet --tries=2 --timeout=2 www.google.com.tw
         if [ "$?" == "0" ]; then
-            echo '##### 国外链接 【'${net_check_time}'】 √'
+			echo '##### 国外链接 【'${net_check_time}'】 √' >> ${serverchan_info_text}
         else
-            echo '##### 国外链接 【'${net_check_time}'】 ×'
+			echo '##### 国外链接 【'${net_check_time}'】 ×' >> ${serverchan_info_text}
         fi
     }
+    
+
     ss_status=`dbus get ss_basic_enable`
     if [[ "${ss_status}" == "1" ]]; then
         echo "##### **网络连接信息:**" >> ${serverchan_info_text}
@@ -239,10 +245,12 @@ if [[ "${serverchan_info_usb}" == "1" ]]; then
         usb1_total=`df -h | grep "${usb1_fs_path}" | head -n1 | awk '{print $2}'`
         usb1_used=`df -h | grep "${usb1_fs_path}" | head -n1 | awk '{print $3}'`
         usb1_available=`df -h | grep "${usb1_fs_path}" | head -n1 | awk '{print $4}'`
+        usb1_use=`df -h | grep "${usb1_fs_path}" | head -n1 | awk '{print $5}'`
         [ "${usb1_removed}" == "1" ] && usb1_status="已移除" || usb1_status="已挂载"
         echo "##### USB1名称: ${usb1_product}(${usb1_status})" >> ${serverchan_info_text}
         echo "##### USB1容量: ${usb1_used} / ${usb1_total}" >> ${serverchan_info_text}
         echo "##### USB1可用容量：${usb1_available}" >> ${serverchan_info_text}
+        echo "##### USB1已用：${usb1_use}" >> ${serverchan_info_text}
     else
         echo "##### USB1接口下无设备" >> ${serverchan_info_text}
     fi
@@ -254,10 +262,12 @@ if [[ "${serverchan_info_usb}" == "1" ]]; then
         usb2_total=`df -h | grep "${usb2_fs_path}" | head -n1 | awk '{print $2}'`
         usb2_used=`df -h | grep "${usb2_fs_path}" | head -n1 | awk '{print $3}'`
         usb2_available=`df -h | grep "${usb2_fs_path}" | head -n1 | awk '{print $4}'`
+        usb2_use=`df -h | grep "${usb2_fs_path}" | head -n1 | awk '{print $5}'`
         [ "${usb2_removed}" == "1" ] && usb2_status="已移除" || usb2_status="已挂载"
         echo "##### USB2名称: ${usb2_product}(${usb2_status})" >> ${serverchan_info_text}
         echo "##### USB2容量: ${usb2_used} / ${usb2_total}" >> ${serverchan_info_text}
         echo "##### USB2可用容量：${usb2_available}" >> ${serverchan_info_text}
+        echo "##### USB2已用：${usb2_use}" >> ${serverchan_info_text}
     else
         echo "##### USB2接口下无设备" >> ${serverchan_info_text}
     fi
@@ -367,7 +377,7 @@ if [[ "${serverchan_info_softcenter}" == "1" ]]; then
     soft_lists_nu=`dbus list softcenter | grep "version" | grep "softcenter_module_" | cut -d "_" -f3 | wc -l`
     echo "##### 检测到您共安装了 ${soft_lists_nu} 个插件" >> ${serverchan_info_text}
     rm -rf ${app_file}
-    wget --quiet ${softcenter_app_url} -O ${app_file}
+    wget --no-check-certificate --quiet ${softcenter_app_url} -O ${app_file}
     if [ "$?" != "0" ];then
         echo "本次检测软件中心更新状态失败。" >> ${serverchan_info_text}
     else
@@ -416,8 +426,8 @@ for nu in ${sckey_nu}
 do
     serverchan_config_sckey=`dbus get serverchan_config_sckey_${nu}`
     url="https://sc.ftqq.com/${serverchan_config_sckey}.send"
-    result=`wget --post-data "text=${serverchan_send_title}&desp=${serverchan_send_content}" -qO- ${url}`
-    if [ $(echo $result | grep "success") != "" ];then
+	result=`wget --no-check-certificate --post-data "text=${serverchan_send_title}&desp=${serverchan_send_content}" -qO- ${url}`
+	if [ -n $(echo $result | grep "success") ];then
         [ "${serverchan_info_logger}" == "1" ] && logger "[ServerChan]: 路由器状态信息推送到 SCKEY No.${nu} 成功！"
     else
         [ "${serverchan_info_logger}" == "1" ] && logger "[ServerChan]: 路由器状态信息推送到 SCKEY No.${nu} 失败，请检查网络及配置！"

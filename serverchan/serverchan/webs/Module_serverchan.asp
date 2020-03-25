@@ -99,7 +99,7 @@
     margin-left: -100px;
     top: 10px;
     width:720px;
-    return height:auto;
+    height:auto;
     box-shadow: 3px 3px 10px #000;
     background: rgba(0,0,0,0.85);
     display:none;
@@ -266,7 +266,7 @@ function onSubmitCtrl(){
 	showLoading(5);
 	refreshpage(5);
 	var params_input = ["serverchan_silent_time_start_hour", "serverchan_silent_time_end_hour", "serverchan_config_ntp", "serverchan_config_name", "serverchan_status_check", "serverchan_check_week", "serverchan_check_day", "serverchan_check_inter_min", "serverchan_check_inter_hour", "serverchan_check_inter_day", "serverchan_check_inter_pre", "serverchan_check_custom", "serverchan_check_time_hour", "serverchan_check_time_min", "serverchan_trigger_dhcp_white"];
-	var params_check = ["serverchan_enable", "serverchan_silent_time", "serverchan_info_logger", "serverchan_info_silent_send", "serverchan_info_system", "serverchan_info_temp", "serverchan_info_wan", "serverchan_info_usb", "serverchan_info_lan", "serverchan_info_dhcp", "serverchan_info_softcenter", "serverchan_trigger_ifup", "serverchan_trigger_dhcp", "serverchan_dhcp_bwlist_en", "serverchan_dhcp_white_en", "serverchan_dhcp_black_en", "serverchan_info_lan_macoff", "serverchan_info_dhcp_macoff", "serverchan_trigger_dhcp_macoff" ];
+	var params_check = ["serverchan_enable", "serverchan_silent_time", "serverchan_info_logger", "serverchan_info_silent_send", "serverchan_info_system", "serverchan_info_temp", "serverchan_info_wan", "serverchan_info_usb", "serverchan_info_lan", "serverchan_info_dhcp", "serverchan_info_softcenter", "serverchan_trigger_ifup", "serverchan_trigger_ifup_sendinfo", "serverchan_trigger_dhcp", "serverchan_trigger_dhcp_leases", "serverchan_dhcp_bwlist_en", "serverchan_dhcp_white_en", "serverchan_dhcp_black_en", "serverchan_info_lan_macoff", "serverchan_info_dhcp_macoff", "serverchan_trigger_dhcp_macoff" ];
 	var params_base64 = ["serverchan_config_name", "serverchan_check_custom", "serverchan_trigger_dhcp_white"];
 	// collect data from input
 	for (var i = 0; i < params_input.length; i++) {
@@ -502,7 +502,7 @@ function oncheckclick(obj) {
 
 function version_show() {
 	$.ajax({
-		url: 'https://koolshare.ngrok.wang/serverchan/config.json.js',
+		url: 'https://armsoft.ddnsto.com/serverchan/config.json.js',
 		type: 'GET',
 		dataType: 'jsonp',
 		success: function(res) {
