@@ -63,6 +63,9 @@ if [ -n "${_sckey}" ]; then
     dbus set serverchan_config_sckey_1=`dbus get serverchan_config_sckey`
     dbus remove serverchan_config_sckey
 fi
+[ -z "`dbus get serverchan_info_lan_macoff`" ] && dbus set serverchan_info_lan_macoff="1"
+[ -z "`dbus get serverchan_info_dhcp_macoff`" ] && dbus set serverchan_info_dhcp_macoff="1"
+[ -z "`dbus get serverchan_trigger_dhcp_macoff`" ] && dbus set serverchan_trigger_dhcp_macoff="1"
 
 # 离线安装用
 dbus set serverchan_version="$(cat $DIR/version)"

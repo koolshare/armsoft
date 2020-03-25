@@ -502,7 +502,7 @@ function oncheckclick(obj) {
 
 function version_show() {
 	$.ajax({
-		url: 'https://koolshare.ngrok.wang/serverchan/config.json.js',
+		url: 'https://armsoft.ddnsto.com/serverchan/config.json.js',
 		type: 'GET',
 		dataType: 'jsonp',
 		success: function(res) {
