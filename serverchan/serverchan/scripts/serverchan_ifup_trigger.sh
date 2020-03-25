@@ -1,11 +1,11 @@
 #!/bin/sh
 source /koolshare/scripts/base.sh
 eval `dbus export serverchan_`
-if [ "${serverchan_config_ntp}" == "" ]; then 
-    ntp_server="ntp1.aliyun.com" 
-else 
-    ntp_server=${serverchan_config_ntp} 
-fi 
+if [ "${serverchan_config_ntp}" == "" ]; then
+    ntp_server="ntp1.aliyun.com"
+else
+    ntp_server=${serverchan_config_ntp}
+fi
 ntpclient -h ${ntp_server} -i3 -l -s > /dev/null 2>&1
 [ "${serverchan_info_logger}" == "1" ] && logger "[ServerChan]: 网络重启触发消息推送！"
 
@@ -52,7 +52,7 @@ router_wan1_gw=`nvram get wan1_gw_ifname`
 if [ -n "${router_wan1_ifname}" ] && [ -n "${router_wan1_gw}" ]; then
     router_wan1_proto=`nvram get wan1_proto`
     router_wan1_ip4=`curl -4 --interface ${router_wan1_gw} -s https://api.ip.sb/ip 2>&1`
-    router_wan1_ip6=`curl -6 --interface ${router_wan1_gw} -s https://api.ip.sb/ip 2>&1`    
+    router_wan1_ip6=`curl -6 --interface ${router_wan1_gw} -s https://api.ip.sb/ip 2>&1`
     router_wan1_dns1=`nvram get wan1_dns | awk '{print $1}'`
     router_wan1_dns2=`nvram get wan1_dns | awk '{print $2}'`
     router_wan1_ip=`nvram get wan1_ipaddr`

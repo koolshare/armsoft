@@ -1,11 +1,11 @@
 #!/bin/sh
 source /koolshare/scripts/base.sh
 eval `dbus export serverchan_`
-if [ "${serverchan_config_ntp}" == "" ]; then 
-    ntp_server="ntp1.aliyun.com" 
-else 
-    ntp_server=${serverchan_config_ntp} 
-fi 
+if [ "${serverchan_config_ntp}" == "" ]; then
+    ntp_server="ntp1.aliyun.com"
+else
+    ntp_server=${serverchan_config_ntp}
+fi
 ntpclient -h ${ntp_server} -i3 -l -s > /dev/null 2>&1
 serverchan_info_text=/tmp/.serverchan_info.md
 softcenter_app_url="https://armsoft.ddnsto.com/softcenter/app.json.js"
@@ -41,7 +41,7 @@ esac
 dnsmasq_pid=`ps | grep "dnsmasq" | grep "nobody" | grep -v grep | awk '{print $1}'`
 kill -12 ${dnsmasq_pid}
 sleep 1
-[ ! -L "/koolshare/bin/base64_decode" ] && ln -s /koolshare/bin/base64_encode /koolshare/bin/base64_decode
+[ ! -L "/koolshare/bin/base64_decode" ] &&  ln -s /koolshare/bin/base64_encode /koolshare/bin/base64_decode
 send_title=`echo "$serverchan_config_name"| base64_decode`
 # 系统运行状态
 if [ "${serverchan_info_system}" == "1" ]; then
@@ -245,10 +245,12 @@ if [[ "${serverchan_info_usb}" == "1" ]]; then
         usb1_total=`df -h | grep "${usb1_fs_path}" | head -n1 | awk '{print $2}'`
         usb1_used=`df -h | grep "${usb1_fs_path}" | head -n1 | awk '{print $3}'`
         usb1_available=`df -h | grep "${usb1_fs_path}" | head -n1 | awk '{print $4}'`
+        usb1_use=`df -h | grep "${usb1_fs_path}" | head -n1 | awk '{print $5}'`
         [ "${usb1_removed}" == "1" ] && usb1_status="已移除" || usb1_status="已挂载"
         echo "##### USB1名称: ${usb1_product}(${usb1_status})" >> ${serverchan_info_text}
         echo "##### USB1容量: ${usb1_used} / ${usb1_total}" >> ${serverchan_info_text}
         echo "##### USB1可用容量：${usb1_available}" >> ${serverchan_info_text}
+        echo "##### USB1已用：${usb1_use}" >> ${serverchan_info_text}
     else
         echo "##### USB1接口下无设备" >> ${serverchan_info_text}
     fi
@@ -260,10 +262,12 @@ if [[ "${serverchan_info_usb}" == "1" ]]; then
         usb2_total=`df -h | grep "${usb2_fs_path}" | head -n1 | awk '{print $2}'`
         usb2_used=`df -h | grep "${usb2_fs_path}" | head -n1 | awk '{print $3}'`
         usb2_available=`df -h | grep "${usb2_fs_path}" | head -n1 | awk '{print $4}'`
+        usb2_use=`df -h | grep "${usb2_fs_path}" | head -n1 | awk '{print $5}'`
         [ "${usb2_removed}" == "1" ] && usb2_status="已移除" || usb2_status="已挂载"
         echo "##### USB2名称: ${usb2_product}(${usb2_status})" >> ${serverchan_info_text}
         echo "##### USB2容量: ${usb2_used} / ${usb2_total}" >> ${serverchan_info_text}
         echo "##### USB2可用容量：${usb2_available}" >> ${serverchan_info_text}
+        echo "##### USB2已用：${usb2_use}" >> ${serverchan_info_text}
     else
         echo "##### USB2接口下无设备" >> ${serverchan_info_text}
     fi
