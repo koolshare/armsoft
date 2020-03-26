@@ -1,15 +1,15 @@
 {
     "apps": [
         {
-            "build_date": "2019-07-10_21:56:09", 
+            "build_date": "2020-03-26_16:54:08", 
             "changelog": "", 
             "description": "从路由器推送状态及通知的工具", 
             "home_url": "Module_serverchan.asp", 
-            "md5": "afa0cc909746c46d0c3ba79d9efbeee2", 
+            "md5": "4ec09e663e406de1cccfefdf29e5b7bd", 
             "name": "serverchan", 
             "tar_url": "serverchan/serverchan.tar.gz", 
             "title": "ServerChan微信推送", 
-            "version": "0.7"
+            "version": "0.8"
         }, 
         {
             "build_date": "2019-11-01_15:24:52", 
@@ -76,6 +76,17 @@
             "tar_url": "frpc/frpc.tar.gz", 
             "title": "frpc内网穿透", 
             "version": "1.6"
+        }, 
+        {
+            "build_date": "2020-03-21_00:05:25", 
+            "changelog": "", 
+            "description": "从路由器推送状态及通知的工具", 
+            "home_url": "Module_routerhook.asp", 
+            "md5": "", 
+            "name": "routerhook", 
+            "tar_url": "routerhook/routerhook.tar.gz", 
+            "title": "RouterHook事件回调", 
+            "version": "0.1"
         }, 
         {
             "build_date": "2019-07-10_20:30:07", 
