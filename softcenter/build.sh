@@ -7,7 +7,7 @@ cat version
 rm -f softcenter.tar.gz
 mkdir -p ./softcenter/res
 
-python ./gen_install.py stage1
+python ./gen_install.py stage1 
 
 chmod 755 ./softcenter/scripts/app_install.sh
 

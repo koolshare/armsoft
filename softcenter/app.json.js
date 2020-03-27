@@ -144,15 +144,15 @@
             "version": "2.2"
         }, 
         {
-            "build_date": "2020-03-22_19:31:27", 
+            "build_date": "2020-03-27_21:44:28", 
             "changelog": "", 
             "description": "aliddns", 
             "home_url": "Module_aliddns.asp", 
-            "md5": "1bb2d533204f2b0617dc5563af2f2d7c", 
+            "md5": "126d71409ee1e8ef3c9f19ce329f9f6b", 
             "name": "aliddns", 
             "tar_url": "aliddns/aliddns.tar.gz", 
             "title": "阿里DDNS", 
-            "version": "1.8"
+            "version": "1.9"
         }, 
         {
             "build_date": "2019-07-09_11:26:09", 
@@ -222,7 +222,7 @@
         }
     ], 
     "home_url": "https://raw.githubusercontent.com/koolshare/koolshare.github.io/master", 
-    "md5": "3901a692e5248a9e9de8ebeab2786b59", 
+    "md5": "00a1c5d9366e8a2244e60c75cf55cf4a", 
     "tar_url": "softcenter/softcenter.tar.gz", 
     "version": "1.0.3"
 }
