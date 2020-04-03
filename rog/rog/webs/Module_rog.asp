@@ -8,7 +8,7 @@
 <meta HTTP-EQUIV="Expires" CONTENT="-1"/>
 <link rel="shortcut icon" href="images/favicon.png"/>
 <link rel="icon" href="images/favicon.png"/>
-<title>软件中心 - ROG工具箱</title>
+<title>软件中心 - ASUS工具箱</title>
 <link rel="stylesheet" type="text/css" href="index_style.css"/> 
 <link rel="stylesheet" type="text/css" href="form_style.css"/>
 <link rel="stylesheet" type="text/css" href="css/element.css">
@@ -78,16 +78,13 @@ var ram_usage_array = new Array(array_size);
 for (i = 0; i < array_size; i++) {
 	ram_usage_array[i] = 101;
 }
-
 function init() {
 	show_menu(menu_hook);
 	detect_CPU_RAM();
 	get_temperature();
-	update_temperatures();
 	showbootTime();
 	showclock();
 }
-
 function get_temperature(){
 	var id = parseInt(Math.random() * 100000000);
 	var postData = {"id": id, "method": "rog_status.sh", "params":[2], "fields": ""};
@@ -98,33 +95,23 @@ function get_temperature(){
 		data: JSON.stringify(postData),
 		dataType: "json",
 		success: function(response){
-			E("rog_wl_temperature").innerHTML = response.result;
+			E("rog_cpu_temperature").innerHTML = response.result.split("@@")[0];
+			E("rog_wl_temperature").innerHTML = response.result.split("@@")[1];
+			var pwr = response.result.split("@@")[2];
+			if (pwr){
+				E("rog_wl_power_tr").style.display = "";
+				E("rog_wl_power").innerHTML = pwr;
+			}else{
+				E("rog_wl_power_tr").style.display = "none";
+			}
 			setTimeout("get_temperature();", 2000);
 		},
 		error: function(){
+			E("rog_cpu_temperature").innerHTML = "获取运行状态失败！";
 			setTimeout("get_temperature();", 5000);
 		}
 	});
 }
-
-function update_temperatures(){
-	$.ajax({
-		url: '/ajax_coretmp.asp',
-		dataType: 'script',
-		error: function(xhr){
-			setTimeout("update_temperatures();", 5000);
-		},
-		success: function(response){
-
-			if (curr_coreTmp_cpu != "")
-				code_cpu = "<span>CPU：" + parseInt(curr_coreTmp_cpu) +"&deg;C</span>";
-
-			E("rog_cpu_temperature").innerHTML = code_cpu;
-			setTimeout("update_temperatures();", 2000);
-		}
-	});
-}
-
 function render_RAM(total, free, used) {
 	var used_percentage = total_MB = free_MB = used_MB = 0;
 	total_MB = Math.round(total / 1024);
@@ -135,7 +122,6 @@ function render_RAM(total, free, used) {
 	$("#rog_ram_free").html(free_MB + "MB");
 	$("#ram_bar").css("width", used_percentage + "%");
 }
-
 function detect_CPU_RAM() {
 	if (parent.isIE8) {
 		require(['/require/modules/makeRequest.js'], function(makeRequest) {
@@ -156,7 +142,6 @@ function detect_CPU_RAM() {
 		});
 	}
 }
-
 function flush_ram(){
 	E("ram_flush").disabled=true;
 	var id = parseInt(Math.random() * 100000000);
@@ -171,7 +156,6 @@ function flush_ram(){
 		}
 	});
 }
-
 function showbootTime() {
 	Days = Math.floor(boottime / (60 * 60 * 24));
 	Hours = Math.floor((boottime / 3600) % 24);
@@ -184,7 +168,6 @@ function showbootTime() {
 	boottime += 1;
 	setTimeout("showbootTime()", 1000);
 }
-
 function fix_nu(num, length) {
   return ('' + num).length < length ? ((new Array(length + 1)).join('0') + num).slice(-length) : '' + num;
 }
@@ -192,7 +175,6 @@ function fix_nu(num, length) {
 Date.prototype.toLocaleString = function() {
 	return this.getFullYear() + "年 " + fix_nu((this.getMonth() + 1), 2) + "月" + fix_nu(this.getDate(), 2) + "日 " + fix_nu(this.getHours(), 2) + ":" + fix_nu(this.getMinutes(), 2) + ":" + fix_nu(this.getSeconds(), 2);
 };
-
 function showclock() {
     var time = new Date(systime_millsec);//获取当前时间
     E("rog_time").innerHTML = time.toLocaleString();
@@ -201,12 +183,10 @@ function showclock() {
         E("rog_time").innerHTML = time.toLocaleString();
     }, 1000);
 }
-
 function menu_hook(title, tab) {
 	tabtitle[tabtitle.length - 1] = new Array("", "ROG tools");
 	tablink[tablink.length - 1] = new Array("", "Module_rog.asp");
 }
-
 </script>
 </head>
 <body onload="init();">
@@ -251,12 +231,12 @@ function menu_hook(title, tab) {
 											</div>
 											<div style="margin:10px 0 10px 5px;" class="splitLine"></div>
 											<div class="SimpleNote">
-												<li>ROG 工具箱是软件中心的一个辅助工具，用以实现一些简单的功能的工具箱。</li>
+												<li>ASUS 工具箱是软件中心的一个辅助工具，用以实现一些简单的功能的工具箱。</li>
 											</div>
 											<table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable">
 												<thead>
 													<tr>
-														<td colspan="2">ROG 工具箱设置</td>
+														<td colspan="2">ASUS 工具箱设置</td>
 													</tr>
 												</thead>
 												<tr>
@@ -278,6 +258,10 @@ function menu_hook(title, tab) {
 												<tr>
 													<th>网卡温度</th>
 													<td><span id="rog_wl_temperature"></span></td>
+												</tr>
+												<tr id="rog_wl_power_tr" style="display: none;">
+													<th>发射功率</th>
+													<td><span id="rog_wl_power"></span></td>
 												</tr>
 												<tr>
 													<th>内存使用</th>
@@ -313,9 +297,6 @@ function menu_hook(title, tab) {
 												<input class="button_gen" id="cmdBtn" onClick="save();" type="button" value="提交" />
 											</div>-->
 											<div style="margin:10px 0 10px 5px;" class="splitLine"></div>
-											<div class="SimpleNote">
-												<li>目前仅支持温度显示等一些简单功能，用以弥补官改固件没有温度显示的遗憾，后续功能有待开发。</li>
-											</div>
 										</td>
 									</tr>
 								</table>
