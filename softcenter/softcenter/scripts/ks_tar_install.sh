@@ -7,6 +7,9 @@ source $KSROOT/scripts/base.sh
 alias echo_date='echo 【$(date +%Y年%m月%d日\ %X)】:'
 eval `dbus export soft`
 TARGET_DIR=/tmp/upload
+if [ "`nvram get model`" == "GT-AC5300" ] || [ "`nvram get model`" == "GT-AX11000" ] || [ -n "`nvram get extendno | grep koolshare`" -a "`nvram get productid`" == "RT-AC86U" ];then
+	ROG=1
+fi
 
 clean(){
 	[ -n "$name" ] && rm -rf /tmp/$name >/dev/null 2>&1
@@ -73,6 +76,15 @@ install_tar(){
 			chmod +x $INSTALL_SCRIPT >/dev/null 2>&1
 			echo_date 运行安装脚本...
 			echo_date ====================== step 2 ===========================
+
+			if [ -d /tmp/$MODULE_NAME/GT-AC5300 -a "$ROG" == "1" ]; then
+				cp -rf /tmp/$MODULE_NAME/GT-AC5300/* /tmp/$MODULE_NAME/
+			fi
+
+			if [ -d /tmp/$MODULE_NAME/ROG -a "$ROG" == "1" ]; then
+				cp -rf /tmp/$MODULE_NAME/ROG/* /tmp/$MODULE_NAME/
+			fi
+			
 			sleep 1
 			start-stop-daemon -S -q -x $INSTALL_SCRIPT 2>&1
 			if [ "$?" != "0" ];then

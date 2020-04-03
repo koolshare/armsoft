@@ -172,7 +172,7 @@ function get_log(s) {
 										</div>
 										<div class="KoolshareBottom">
 											论坛技术支持: <a href="https://koolshare.cn" target="_blank"> <i><u>https://koolshare.cn</u></i></a><br />
-											GitHub: <a href="https://github.com/koolshare/rogsoft" target="_blank"><i><u>https://github.com/koolshare</u></i></a><br />
+											GitHub: <a href="https://github.com/koolshare/armsoft" target="_blank"><i><u>https://github.com/koolshare</u></i></a><br />
 											Shell & Web by: <a href="mailto:sadoneli@gmail.com"><i>sadoneli</i></a>, <i>Xiaobao</i>
 										</div>
 									</td>

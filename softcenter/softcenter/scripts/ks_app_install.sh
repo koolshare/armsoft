@@ -44,7 +44,9 @@ if [ "$ACTION" != "" ]; then
 	BIN_NAME=$ACTION
 fi
 
-
+if [ "$(nvram get model)" == "GT-AC5300" ] || [ "$(nvram get model)" == "GT-AX11000" ] || [ -n "$(nvram get extendno | grep koolshare)" -a "$(nvram get productid)" == "RT-AC86U" ];then
+	ROG=1
+fi
 
 LOGGER() {
 #	echo $1
@@ -147,6 +149,14 @@ install_module() {
 		if [ -f /tmp/${softcenter_installing_module}/uninstall.sh ]; then
 			chmod 755 /tmp/${softcenter_installing_module}/uninstall.sh
 			mv /tmp/${softcenter_installing_module}/uninstall.sh /koolshare/scripts/uninstall_${softcenter_installing_todo}.sh
+		fi
+
+		if [ -d /tmp/${softcenter_installing_module}/GT-AC5300 -a "$ROG" == "1" ]; then
+			cp -rf /tmp/${softcenter_installing_module}/GT-AC5300/* /tmp/${softcenter_installing_module}/
+		fi
+
+		if [ -d /tmp/${softcenter_installing_module}/ROG -a "$ROG" == "1" ]; then
+			cp -rf /tmp/${softcenter_installing_module}/ROG/* /tmp/${softcenter_installing_module}/
 		fi
 
 		chmod a+x /tmp/${softcenter_installing_module}/install.sh
