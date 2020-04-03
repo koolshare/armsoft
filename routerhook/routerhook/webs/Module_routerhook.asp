@@ -592,12 +592,14 @@ function version_show() {
                                     <div style="float:right; width:15px; height:25px;margin-top:10px"><img id="return_btn" onclick="reload_Soft_Center();" align="right" style="cursor:pointer;position:absolute;margin-left:-30px;margin-top:-25px;" title="返回软件中心" src="/images/backprev.png" onMouseOver="this.src='/images/backprevclick.png'" onMouseOut="this.src='/images/backprev.png'"></img></div>
                                     <div style="margin:30px 0 10px 5px;" class="splitLine"></div>
                                     <div class="formfontdesc" id="cmdDesc">
-                                        * 「<a href="https://github.com/koolshare/rogsoft/tree/master/routerhook" target=_blank><i>RouterHook</i></a>」，是一款为程序员量身定做的「路由器」和「服务器」之间的通信软件。说人话？就是按照你配置的触发规则从路由器发送JSON消息到你配置的回调指定地址的工具。<br><br>
+                                        * 「<a href="https://github.com/koolshare/armsoft/tree/master/routerhook" target=_blank><i>RouterHook</i></a>」，是一款为程序员量身定做的「路由器」和「服务器」之间的通信软件。说人话？就是按照你配置的触发规则从路由器发送JSON消息到你配置的回调指定地址的工具。<br><br>
                                         开通并使用上它，需要不止一分钟：<br>
                                         <i>1. 你知道WebHook是个啥</i><br>
                                         <i>2. 你搭建了自己的Web服务并有自己的回调地址（可以公网也可以本局域网）</i><br>
                                         <i>3. 配置好就可以用了</i><br>
-                                        <i>4. 具体说明详见：「<a href="https://github.com/koolshare/rogsoft/tree/master/routerhook" target=_blank><i>传送门</i></a>」</i>
+                                        <i>4. 具体说明详见：「<a href="https://github.com/koolshare/armsoft/tree/master/routerhook" target=_blank><i>传送门</i></a>」</i><br>
+                                        <i>5. 支持URL中的环境变量替换（即将URL中的_PRM_EVENT字符串替换为当前消息的msgType内容）</i><br>
+                                        <i>6. 回调消息已适配「<a href="https://ifttt.com/maker_webhooks" target=_blank><i>IFTTT</i></a>」官方的WebHook</i>
                                     </div>
                                     <table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable">
                                         <tr id="switch_tr">
@@ -629,7 +631,7 @@ function version_show() {
                                         <th style="width:20%;">版本信息</th>
                                         <td>
                                             <div id="routerhook_version_show" style="padding-top:5px;margin-left:0px;margin-top:0px;float: left;"></div>
-                                            <span style="padding-top:5px;margin-right: 15px;margin-left:0px;margin-top:0px;float: right;"><a href="https://koolshare.cn/thread-178114-1-1.html" target="_blank">[ 反馈地址 ]</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://raw.githubusercontent.com/koolshare/rogsoft/master/routerhook/Changelog.txt" target="_blank"><em><u>[ 更新日志 ]</u></em></a></span>
+                                            <span style="padding-top:5px;margin-right: 15px;margin-left:0px;margin-top:0px;float: right;"><a href="https://koolshare.cn/thread-178114-1-1.html" target="_blank">[ 反馈地址 ]</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://raw.githubusercontent.com/koolshare/armsoft/master/routerhook/Changelog.txt" target="_blank"><em><u>[ 更新日志 ]</u></em></a></span>
                                         </td>
                                         <tr>
                                             <th width="20%">消息免打扰时间</th>
@@ -672,7 +674,7 @@ function version_show() {
                                     </table>
                                     <table id="conf_table" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" class="FormTable_table" style="margin-top:8px;">
                                         <tr>
-                                            <th>Hook URL(最少需要一个回调地址)</th>
+                                            <th>Hook URL(最少需要一个回调地址，会将URL中所有_PRM_EVENT字符串替换为当前消息的msgType)</th>
                                             <th>修改</th>
                                             <th>添加/删除</th>
                                         </tr>
@@ -694,7 +696,7 @@ function version_show() {
                                     <table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable" style="margin-top:8px;">
                                         <thead>
                                               <tr>
-                                                <td colspan="2">定时发送状态消息 (JSON格式长消息)</td>
+                                                <td colspan="2">定时发送状态消息 (JSON格式长消息，不适配IFTTT)</td>
                                               </tr>
                                           </thead>
                                         <tr>
@@ -966,7 +968,7 @@ function version_show() {
                                     <table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable" style="margin-top:8px;">
                                         <thead>
                                               <tr>
-                                                <td colspan="2">触发类通知消息 (JSON格式短消息)</td>
+                                                <td colspan="2">触发类通知消息 (JSON格式短消息，已适配IFTTT回调)</td>
                                               </tr>
                                           </thead>
                                         <tr>
