@@ -72,9 +72,11 @@ onstart(){
     fi
 }
 # used by httpdb
+
+# $1 for startup
 case $1 in
 start)
-    if [[ "${routerhook_enable}" == "1" ]]; then
+    if [ "${routerhook_enable}" == "1" ]; then
         logger "[软件中心]: 启动routerhook！"
         onstart
     else
@@ -87,11 +89,22 @@ stop)
     remove_cron_job
     logger "[软件中心]: 关闭routerhook！"
     ;;
-*)
-    if [[ "${routerhook_enable}" == "1" ]]; then
-        logger "[软件中心]: 启动routerhook！"
+esac
+
+# $2 for web apply
+case $2 in
+1)
+    if [ "${routerhook_enable}" == "1" ]; then
+        #logger "[软件中心]: 启动routerhook！"
+        # web enable，disable first，incase of reapply
+        remove_trigger_dhcp
+        remove_trigger_ifup
+        remove_cron_job
+        sleep 1
         onstart
     else
+        # web disable
+        onstart
         logger "[软件中心]: routerhook未设置启动，跳过！"
     fi
     ;;
