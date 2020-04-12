@@ -20,7 +20,7 @@ RT-AC5300)
 	interface_5g2_temperature=$(wl -i ${interface_5g2} phy_tempsense | awk '{print $1}') 2>/dev/null
 	interface_2g_power=$(wl -i ${interface_2g} txpwr_target_max | awk '{print $NF}') 2>/dev/null
 	interface_5g1_power=$(wl -i ${interface_5g1} txpwr_target_max | awk '{print $NF}') 2>/dev/null
-	interface_5g1_power=$(wl -i ${interface_5g2} txpwr_target_max | awk '{print $NF}') 2>/dev/null
+	interface_5g2_power=$(wl -i ${interface_5g2} txpwr_target_max | awk '{print $NF}') 2>/dev/null
 	[ -n "${interface_2g_temperature}" ] && interface_2g_temperature_c="$(expr ${interface_2g_temperature} / 2 + 20)°C" || interface_2g_temperature_c="offline"
 	[ -n "${interface_5g1_temperature}" ] && interface_5g1_temperature_c="$(expr ${interface_5g1_temperature} / 2 + 20)°C" || interface_5g1_temperature_c="offline"
 	[ -n "${interface_5g2_temperature}" ] && interface_5g2_temperature_c="$(expr ${interface_5g2_temperature} / 2 + 20)°C" || interface_5g2_temperature_c="offline"
