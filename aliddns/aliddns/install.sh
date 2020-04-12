@@ -1,7 +1,13 @@
 #!/bin/sh
 source /koolshare/scripts/base.sh
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
+MODEL=$(nvram get productid)
+module=aliddns
 DIR=$(cd $(dirname $0); pwd)
+
+remove_install_file(){
+	rm -rf /tmp/${module}* >/dev/null 2>&1
+}
 
 # 判断路由架构和平台
 case $(uname -m) in
@@ -11,14 +17,14 @@ case $(uname -m) in
 		else
 			echo_date 本插件适用于【koolshare merlin armv7l 384】固件平台，你的固件平台不能安装！！！
 			echo_date 退出安装！
-			rm -rf /tmp/aliddns* >/dev/null 2>&1
+			remove_install_file
 			exit 1
 		fi
 		;;
 	*)
 		echo_date 本插件适用于【koolshare merlin armv7l 384】固件平台，你的平台：$(uname -m)不能安装！！！
 		echo_date 退出安装！
-		rm -rf /tmp/aliddns* >/dev/null 2>&1
+		remove_install_file
 		exit 1
 	;;
 esac
