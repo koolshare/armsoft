@@ -50,7 +50,7 @@ cp -rf /tmp/routerhook/scripts/* /koolshare/scripts/
 cp -rf /tmp/routerhook/webs/Module_routerhook.asp /koolshare/webs/
 chmod +x /koolshare/scripts/*
 # 安装重启自动启动功能
-[ ! -L "/koolshare/init.d/S99routerhook.sh" ] && ln -sf /koolshare/scripts/routerhook_config.sh /koolshare/init.d/S99routerhook.sh
+[ ! -L "/koolshare/init.d/S99CRUrouterhook.sh" ] && ln -sf /koolshare/scripts/routerhook_config.sh /koolshare/init.d/S99CRUrouterhook.sh
 
 # 设置默认值
 router_name=$(echo $(nvram get model) | base64_encode)
