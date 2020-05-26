@@ -1,0 +1,1 @@
+tar -czf serverchan_arm384.tar.gz serverchan
