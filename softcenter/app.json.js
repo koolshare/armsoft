@@ -155,15 +155,15 @@
             "version": "2.2"
         }, 
         {
-            "build_date": "2020-04-12_11:05:10", 
+            "build_date": "2020-05-28_15:17:41", 
             "changelog": "", 
             "description": "aliddns", 
             "home_url": "Module_aliddns.asp", 
-            "md5": "03d8778119ada262c226e1f983d92fbc", 
+            "md5": "69fda728bfad4400446cd1828e9c22f0", 
             "name": "aliddns", 
             "tar_url": "aliddns/aliddns.tar.gz", 
             "title": "阿里DDNS", 
-            "version": "2.0"
+            "version": "2.1"
         }, 
         {
             "build_date": "2019-07-09_11:26:09", 
@@ -175,17 +175,6 @@
             "tar_url": "acme/acme.tar.gz", 
             "title": "Let's Encrypt", 
             "version": "3.2"
-        }, 
-        {
-            "build_date": "2019-07-10_23:25:50", 
-            "changelog": "", 
-            "description": "ss-server", 
-            "home_url": "Module_ssserver.asp", 
-            "md5": "eaac41d8c2b379a93c40621405cb9c01", 
-            "name": "ssserver", 
-            "tar_url": "ssserver/ssserver.tar.gz", 
-            "title": "ss-server", 
-            "version": "1.2"
         }, 
         {
             "build_date": "2019-07-09_13:31:41", 
