@@ -47,6 +47,7 @@ dashboard_port = ${frps_common_dashboard_port}
 dashboard_user = ${frps_common_dashboard_user}
 dashboard_pwd = ${frps_common_dashboard_pwd}
 
+subdomain_host = ${frps_subdomain_host}
 vhost_http_port = ${frps_common_vhost_http_port}
 vhost_https_port = ${frps_common_vhost_https_port}
 # console or real logFile path like ./frps.log

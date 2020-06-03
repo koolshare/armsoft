@@ -152,7 +152,7 @@ var $G = function(id) {
 
 // 数据和字段定义
 var db_frps = {};
-var params_input = ["frps_enable", "frps_common_dashboard_port", "frps_common_dashboard_user", "frps_common_dashboard_pwd", "frps_common_bind_port", "frps_common_privilege_token", "frps_common_vhost_http_port", "frps_common_vhost_https_port", "frps_common_cron_time", "frps_common_max_pool_count", "frps_common_log_file", "frps_common_log_level", "frps_common_log_max_days", "frps_common_tcp_mux", "frps_common_cron_hour_min"]
+var params_input = ["frps_enable", "frps_common_dashboard_port", "frps_common_dashboard_user", "frps_common_dashboard_pwd", "frps_common_bind_port", "frps_common_privilege_token", "frps_common_vhost_http_port", "frps_common_vhost_https_port", "frps_common_cron_time", "frps_common_max_pool_count", "frps_common_log_file", "frps_common_log_level", "frps_common_log_max_days", "frps_common_tcp_mux", "frps_common_cron_hour_min", "frps_subdomain_host"]
 var params_check = []
 var params_base64 = []
 
@@ -494,7 +494,12 @@ function version_show(){
                                                 <input type="password" name="frps_common_dashboard_pwd" id="frps_common_dashboard_pwd" class="input_ss_table" autocomplete="new-password" autocorrect="off" autocapitalize="off" maxlength="256" value="" onBlur="switchType(this, false);" onFocus="switchType(this, true);"/>
                                             </td>
                                         </tr>
-
+                                        <tr>
+                                            <th width="20%"><a class="hintstyle" href="javascript:void(0);" onclick="openssHint(3)">Subdomain Host</a></th>
+                                            <td>
+                                                <input type="text" name="frps_subdomain_host" id="frps_subdomain_host" class="input_ss_table" maxlength="50" value="" />
+                                            </td>
+                                        </tr>
                                         <tr>
                                             <th width="20%"><a class="hintstyle" href="javascript:void(0);" onclick="openssHint(2)">Bind port</a></th>
                                             <td>
