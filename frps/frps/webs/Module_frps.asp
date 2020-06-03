@@ -143,11 +143,19 @@ input[type=button]:focus {
 <script type="text/javascript" src="/switcherplugin/jquery.iphone-switch.js"></script>
 <script type="text/javascript" src="/dbconf?p=frps&v=<% uptime(); %>"></script>
 <script type="text/javascript" src="/res/frps-menu.js"></script>
+<script type="text/javascript" src="/res/softcenter.js"></script>
 <script>
 var $j = jQuery.noConflict();
 var $G = function(id) {
     return document.getElementById(id);
 };
+
+// 数据和字段定义
+var db_frps = {};
+var params_input = ["frps_enable", "frps_common_dashboard_port", "frps_common_dashboard_user", "frps_common_dashboard_pwd", "frps_common_bind_port", "frps_common_privilege_token", "frps_common_vhost_http_port", "frps_common_vhost_https_port", "frps_common_cron_time", "frps_common_max_pool_count", "frps_common_log_file", "frps_common_log_level", "frps_common_log_max_days", "frps_common_tcp_mux", "frps_common_cron_hour_min"]
+var params_check = []
+var params_base64 = []
+
 function initial(){
     show_menu(menu_hook);
     get_dbus_data();
@@ -158,20 +166,16 @@ function initial(){
     toggle_switch();
 }
 
-var db_frps = {};
-
 // 读取db_frps配置
 function get_dbus_data() {
-	$.ajax({
+	$j.ajax({
 		type: "GET",
 		url: "/_api/frps",
 		dataType: "json",
 		async: false,
 		success: function(data) {
-			db_frps = data.result[0];
-			console.log(db_frps)
-			conf_to_obj();
-			version_show();
+            db_frps = data.result[0];
+			console.log(db_frps);
 		}
 	});
 }
@@ -192,23 +196,22 @@ function get_status() {
 var noChange_status=0;
 var _responseLen;
 function check_FRPS_status(){
-    $j.ajax({
-        url: '/res/frps_check.html',
-        dataType: 'html',
-        
-        error: function(xhr){
-            setTimeout("check_FRPS_status();", 1000);
-        },
-        success: function(response){
+	var id = parseInt(Math.random() * 100000000);
+	var postData = {"id": id, "method": "frps_status.sh", "params":[1], "fields": ""};
+	$j.ajax({
+		type: "POST",
+		cache:false,
+		url: "/_api/",
+		data: JSON.stringify(postData),
+		dataType: "json",
+		success: function(response){
             var _cmdBtn = document.getElementById("cmdBtn");
-            if(response.search("XU6J03M6") != -1){
-                frps_status = response.replace("XU6J03M6", " ");
-                //alert(frpc_status);
-                document.getElementById("status").innerHTML = frps_status;
+            document.getElementById("status").innerHTML = response.result;
+            if(response.result.search("进程运行正常") != -1){
                 return true;
             }
 
-            if(_responseLen == response.length){
+            if(_responseLen == response.result.length){
                 noChange_status++;
             }else{
                 noChange_status = 0;
@@ -217,11 +220,45 @@ function check_FRPS_status(){
                 noChange_status = 0;
                 //refreshpage();
             }else{
-                setTimeout("check_FRPS_status();", 400);
+                setTimeout("check_FRPS_status();", 1000);
             }
-            _responseLen = response.length;
-        }
-    });
+            _responseLen = response.result.length;
+		},
+		error: function(xhr){
+            console.log(xhr)
+            setTimeout("check_FRPS_status();", 3000);
+		}
+	});
+    // $j.ajax({
+    //     url: '/res/frps_check.html',
+    //     dataType: 'html',
+        
+    //     error: function(xhr){
+    //         setTimeout("check_FRPS_status();", 1000);
+    //     },
+    //     success: function(response){
+    //         var _cmdBtn = document.getElementById("cmdBtn");
+    //         if(response.search("XU6J03M6") != -1){
+    //             frps_status = response.replace("XU6J03M6", " ");
+    //             //alert(frpc_status);
+    //             document.getElementById("status").innerHTML = frps_status;
+    //             return true;
+    //         }
+
+    //         if(_responseLen == response.length){
+    //             noChange_status++;
+    //         }else{
+    //             noChange_status = 0;
+    //         }
+    //         if(noChange_status > 100){
+    //             noChange_status = 0;
+    //             //refreshpage();
+    //         }else{
+    //             setTimeout("check_FRPS_status();", 400);
+    //         }
+    //         _responseLen = response.length;
+    //     }
+    // });
 }
 function toggle_switch(){ //根据frps_enable的值，打开或者关闭开关
     var rrt = document.getElementById("switch");
@@ -248,6 +285,24 @@ function conf2obj(){ //表单填写函数，将dbus数据填入到对应的表�
     for (var field in db_frps) {
         $j('#'+field).val(db_frps[field]);
     }
+    //input
+	for (var i = 0; i < params_input.length; i++) {
+		if(db_frps[params_input[i]]){
+			E(params_input[i]).value = db_frps[params_input[i]];
+		}
+	}
+	// checkbox
+	for (var i = 0; i < params_check.length; i++) {
+		if(db_frps[params_check[i]]){
+			E(params_check[i]).checked = db_frps[params_check[i]] == 1 ? true : false
+		}
+	}
+	//base64
+	for (var i = 0; i < params_base64.length; i++) {
+		if(db_frps[params_base64[i]]){
+			E(params_base64[i]).value = Base64.decode(db_frps[params_base64[i]]);
+		}
+	}
 }
 
 function validForm(){
@@ -264,6 +319,50 @@ function onSubmitCtrl(o, s) { //提交操作，提交时运行config-frps.sh，�
         alert("提交的表单不能为空!");
         return false;
     }
+
+    //新版保存
+    //input
+	for (var i = 0; i < params_input.length; i++) {
+		if (E(params_input[i]).value) {
+			db_frps[params_input[i]] = E(params_input[i]).value;
+		}else{
+			db_frps[params_input[i]] = "";
+		}
+	}
+	// checkbox
+	for (var i = 0; i < params_check.length; i++) {
+		db_frps[params_check[i]] = E(params_check[i]).checked ? '1' : '0';
+	}
+	//base64
+	for (var i = 0; i < params_base64.length; i++) {
+		if (!E(params_base64[i]).value) {
+			db_frps[params_base64[i]] = "";
+		} else {
+			if (E(params_base64[i]).value.indexOf("=") != -1) {
+				db_frps[params_base64[i]] = Base64.encode(E(params_base64[i]).value);
+			} else {
+				db_frps[params_base64[i]] = "";
+			}
+		}
+    }
+    
+    var uid = parseInt(Math.random() * 100000000);
+	var postData = {"id": uid, "method": "config-frps.sh", "params": [], "fields": db_frps };
+	$j.ajax({
+		url: "/_api/",
+		cache: false,
+		type: "POST",
+		dataType: "json",
+		data: JSON.stringify(postData),
+		success: function(response) {
+			if (response.result == uid){
+                console.log(response);
+				showLoading(5);
+			}
+		}
+	});
+
+
     document.form.action_mode.value = s;
     document.form.SystemCmd.value = "config-frps.sh";
     document.form.submit();
@@ -289,15 +388,14 @@ function menu_hook(title, tab) {
 }
 function version_show(){
     $j.ajax({
-        // url: 'https://koolshare.ngrok.wang/frps/config.json.js',
-        url: 'https://raw.githubusercontent.com/ppyTeam/armsoft/master/frps/config.json.js',
+        url: 'https://koolshare.ngrok.wang/frps/config.json.js',
         type: 'GET',
         dataType: 'jsonp',
         success: function(res) {
             if(typeof(res["version"]) != "undefined" && res["version"].length > 0) {
                 if(res["version"] == db_frps["frps_version"]){
                     $j("#frps_version_show").html("<i>插件版本：" + res["version"]);
-                   }else if(res["version"] > db_frpc["frps_version"]) {
+                   }else if(res["version"] > db_frps["frps_version"]) {
                     $j("#frps_version_show").html("<font color=\"#66FF66\">有新版本：</font>" + res.version);
                 }
             }
@@ -361,7 +459,7 @@ function version_show(){
                                                         </div>
                                                     </label>
                                                 </div>
-                                                <span style="margin-left: 300px;"><a href="https://raw.githubusercontent.com/koolshare/merlin_frps/master/Changelog.txt" target="_blank"><em><u>[ 更新日志 ]</u></em></a></span>
+                                                <span style="margin-left: 300px;"><a href="https://raw.githubusercontent.com/ppyTeam/armsoft/master/frps/Changelog.txt" target="_blank"><em><u>[ 更新日志 ]</u></em></a></span>
                                             </td>
                                         </tr>
                                     </table>

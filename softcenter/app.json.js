@@ -122,6 +122,17 @@
             "version": "1.3"
         }, 
         {
+            "build_date": "2020-06-03_21:27:02", 
+            "changelog": "", 
+            "description": "内网穿透利器，谁用谁知道。", 
+            "home_url": "Module_frps.asp", 
+            "md5": "6e37c90c700ed3b466397b5730c3c27b", 
+            "name": "frps", 
+            "tar_url": "frps/frps.tar.gz", 
+            "title": "frps穿透服务器", 
+            "version": "1.4.16"
+        }, 
+        {
             "build_date": "2020-04-03_15:55:50", 
             "changelog": "", 
             "description": "轻松用U盘挂载jffs", 
