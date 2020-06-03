@@ -122,11 +122,11 @@
             "version": "1.3"
         }, 
         {
-            "build_date": "2020-06-03_21:27:02", 
+            "build_date": "2020-06-03_22:00:26", 
             "changelog": "", 
             "description": "内网穿透利器，谁用谁知道。", 
             "home_url": "Module_frps.asp", 
-            "md5": "6e37c90c700ed3b466397b5730c3c27b", 
+            "md5": "8f6276c7904b52c69c4630aeaf8af4d9", 
             "name": "frps", 
             "tar_url": "frps/frps.tar.gz", 
             "title": "frps穿透服务器", 
