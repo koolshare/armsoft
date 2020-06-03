@@ -150,12 +150,32 @@ var $G = function(id) {
 };
 function initial(){
     show_menu(menu_hook);
+    get_dbus_data();
     get_status();
     conf2obj();
     version_show();
     buildswitch();
     toggle_switch();
 }
+
+var db_frps = {};
+
+// 读取db_frps配置
+function get_dbus_data() {
+	$.ajax({
+		type: "GET",
+		url: "/_api/frps",
+		dataType: "json",
+		async: false,
+		success: function(data) {
+			db_frps = data.result[0];
+			console.log(db_frps)
+			conf_to_obj();
+			version_show();
+		}
+	});
+}
+
 function get_status() {
     $j.ajax({
         url: 'apply.cgi?current_page=Module_frps.asp&next_page=Module_frps.asp&group_id=&modified=0&action_mode=+Refresh+&action_script=&action_wait=&first_time=&preferred_lang=CN&SystemCmd=frps_status.sh',
@@ -254,7 +274,7 @@ function done_validating(action) { //提交操作5秒后刷洗网页
     refreshpage(5);
 }
 function reload_Soft_Center(){ //返回软件中心按钮
-    location.href = "/Main_Soft_center.asp";
+    location.href = "/Module_Softcenter.asp";
 }
 function menu_hook(title, tab) {
     var enable_ss = "<% nvram_get("enable_ss"); %>";
@@ -269,7 +289,8 @@ function menu_hook(title, tab) {
 }
 function version_show(){
     $j.ajax({
-        url: 'https://koolshare.ngrok.wang/frps/config.json.js',
+        // url: 'https://koolshare.ngrok.wang/frps/config.json.js',
+        url: 'https://raw.githubusercontent.com/ppyTeam/armsoft/master/frps/config.json.js',
         type: 'GET',
         dataType: 'jsonp',
         success: function(res) {
@@ -321,7 +342,7 @@ function version_show(){
                                     <div>&nbsp;</div>
                                     <div style="float:left;" class="formfonttitle">软件中心 - Frps内网穿透</div>
                                     <div style="float:right; width:15px; height:25px;margin-top:10px"><img id="return_btn" onclick="reload_Soft_Center();" align="right" style="cursor:pointer;position:absolute;margin-left:-30px;margin-top:-25px;" title="返回软件中心" src="/images/backprev.png" onMouseOver="this.src='/images/backprevclick.png'" onMouseOut="this.src='/images/backprev.png'"></img></div>
-                                    <div style="margin-left:5px;margin-top:10px;margin-bottom:10px"><img src="/images/New_ui/export/line_export.png"/></div>
+                                    <div style="margin-left:5px;margin-top:10px;margin-bottom:10px"><img src="/res/icon-frps.png"/></div>
                                     <div class="formfontdesc" id="cmdDesc"><i>* 为了Frps稳定运行，请开启虚拟内存功能！！！</i>&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://koolshare.cn/thread-65379-1-1.html"  target="_blank"><i>服务器搭建教程</i></a></div>
                                     <table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable">
                                         <tr id="switch_tr">
