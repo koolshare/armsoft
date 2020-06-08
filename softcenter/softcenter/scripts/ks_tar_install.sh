@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# for hnd platform
+# for arm384 platform
 
 export KSROOT=/koolshare
 source $KSROOT/scripts/base.sh
@@ -74,19 +74,6 @@ install_tar(){
 			echo XU6J03M6
 			exit
 		fi
-
-		if [ -f "/tmp/$name/.valid" ] && [ "`cat /tmp/$name/.valid`" == "arm384" ];then
-			continue
-		else
-			echo_date 你上传的离线安装包不是arm384平台的离线包！！！
-			echo_date 请上传正确的离线安装包！！！
-			echo_date 删除相关文件并退出...
-			clean
-			dbus remove "softcenter_module_$MODULE_NAME$INSTALL_SUFFIX"
-			echo_date ======================== end ============================
-			echo XU6J03M6
-			exit		
-		fi
 		
 		if [ -f /tmp/$name/install.sh ];then
 			INSTALL_SCRIPT=/tmp/$name/install.sh
@@ -101,6 +88,19 @@ install_tar(){
 
 			# do the right thing
 			detect_package "$MODULE_NAME"
+
+			if [ -f "${SCRIPT_AB_DIR}/.valid" ] && [ "$(cat ${SCRIPT_AB_DIR}/.valid)" == "arm384" ];then
+				continue
+			else
+				echo_date 你上传的离线安装包不是arm384平台的离线包！！！
+				echo_date 请上传正确的离线安装包！！！
+				echo_date 删除相关文件并退出...
+				clean
+				dbus remove "softcenter_module_$MODULE_NAME$INSTALL_SUFFIX"
+				echo_date ======================== end ============================
+				echo XU6J03M6
+				exit		
+			fi			
 			
 			echo_date 准备安装$MODULE_NAME插件！
 			echo_date 找到安装脚本！
