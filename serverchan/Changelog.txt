@@ -1,5 +1,8 @@
 Koolshare arm 384 router software center serverchan Changelog
 ===========================================
+0.9
+   - fix 修复重启后定时任务失效问题
+
 0.8
    - fix 修复dhcp触发器创建、删除逻辑，实现与其他脚本共存
    - fix 修复Web页面触发器配置部分配置无法保存的BUG
