@@ -82,11 +82,22 @@
             "changelog": "", 
             "description": "从路由器推送状态及通知的工具", 
             "home_url": "Module_routerhook.asp", 
-            "md5": "d121e44572d3d9ef6732cb5b6f6548b5", 
+            "md5": "", 
             "name": "routerhook", 
             "tar_url": "routerhook/routerhook.tar.gz", 
             "title": "RouterHook事件回调", 
-            "version": "1.0"
+            "version": "1.1"
+        }, 
+        {
+            "build_date": "2020-06-10_09:47:54", 
+            "changelog": "", 
+            "description": "通过pushplus将路由器状态推送到微信上", 
+            "home_url": "Module_pushplus.asp", 
+            "md5": "38b204e1728edcda8e4d26e352388ec3", 
+            "name": "pushplus", 
+            "tar_url": "pushplus/pushplus.tar.gz", 
+            "title": "pushplus全能推送", 
+            "version": "0.1"
         }, 
         {
             "build_date": "2019-07-10_20:30:07", 
