@@ -21,6 +21,14 @@ get_bol() {
 	esac
 }
 
+get_json_value() {
+	local json=$1
+	local key=$2
+	if [ -z "$3" ]; then local num=1; else local num=$3; fi
+	local value=$(printf '%s' "$json" | awk -F"[,:}]" '{for(i=1;i<=NF;i++){if($i~/'${key}'\042/){print $(i+1)}}}' | tr -d '"' | sed -n ${num}p)
+	printf '%s' "$value"
+}
+
 get_record_response() {
 	curl -kLsX GET "https://api.cloudflare.com/client/v4/zones/$cfddns_zid/dns_records?type=$get_type&name=$cfddns_name.$cfddns_domain&order=type&direction=desc&match=all" \
 	-H "X-Auth-Email: $cfddns_email" \
@@ -33,17 +41,17 @@ update_record() {
 	-H "X-Auth-Email: $cfddns_email" \
 	-H "X-Auth-Key: $cfddns_akey" \
 	-H "Content-Type: application/json" \
-	--data '{"id":"'$cfddns_id'","type":"'$get_type'","name":"'$cfddns_name.$cfddns_domain'","content":"'$update_to_ip'","zone_id":"'$cfddns_zid'","zone_name":"'$cfddns_domain'","ttl":'$cfddns_ttl',"proxied":'$(get_bol)'}'
+	--data '{"type":"'$get_type'","name":"'$cfddns_name.$cfddns_domain'","content":"'$update_to_ip'","ttl":'$cfddns_ttl',"proxied":'$(get_bol)'}'
 }
 
 get_info(){
 	get_type="A"
 	cfddns_result=`get_record_response`
-	if [ $(echo $cfddns_result | grep -c "\"success\":true") -gt 0 ];then
+	if [ $(get_json_value "$cfddns_result" "success") = "true" ];then
 		# CFDDNS的A记录ID
-		cfddns_id=`echo $cfddns_result | awk -F"","" '{print $1}' | sed 's/{.*://g' | sed 's/\"//g'`
+		cfddns_id=`get_json_value "$cfddns_result" "id"`
 		# CFDDNS的A记录IP
-		current_ip=`echo $cfddns_result | awk -F"","" '{print $4}' | grep -oE '([0-9]{1,3}\.?){4}'`
+		current_ip=`get_json_value "$cfddns_result" "content"`
 		echo_date CloudFlare IP为 $current_ip
 	else
 		dbus set cfddns_status="【$LOGTIME】：获取IPV4解析记录错误！"
