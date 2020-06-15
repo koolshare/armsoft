@@ -13,6 +13,7 @@ rm -f /koolshare/scripts/${MODULE}_status.sh
 rm -f /koolshare/webs/Module_${MODULE}.asp
 rm -f /koolshare/configs/${MODULE}.ini
 rm -fr /tmp/frps*
+rm -rf /koolshare/init.d/N99${MODULE}.sh >/dev/null 2>&1
 values=`dbus list ${MODULE} | cut -d "=" -f 1`
 
 for value in $values

@@ -21,9 +21,11 @@ fun_nat_start(){
     if [ "${frps_enable}"x = "1"x ];then
         echo_date 添加nat-start触发事件...
         dbus set __event__onnatstart_frps="/koolshare/scripts/config-frps.sh"
+        [ ! -L "/koolshare/init.d/N99frps.sh" ] && ln -sf /koolshare/scripts/config-frps.sh /koolshare/init.d/N99frps.sh
     else
         echo_date 删除nat-start触发...
         dbus remove __event__onnatstart_frps
+        rm -rf /koolshare/init.d/N99frps.sh >/dev/null 2>&1
     fi
 }
 onstart() {
