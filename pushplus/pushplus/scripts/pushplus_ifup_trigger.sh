@@ -30,11 +30,16 @@ echo '"rebootTIME":"'${router_reboot_time}'",' >>${pushplus_ifup_text}
 router_wan0_proto=$(nvram get wan0_proto)
 router_wan0_ifname=$(nvram get wan0_ifname)
 router_wan0_gw=$(nvram get wan0_gw_ifname)
-router_wan0_ip4=$(curl -4 --interface ${router_wan0_gw} -s https://api.ip.sb/ip 2>&1)
-router_wan0_ip6=$(curl -6 --interface ${router_wan0_gw} -s https://api.ip.sb/ip 2>&1)
+router_wan0_ip=$(nvram get wan0_ipaddr)
+if [[ "${pushplus_info_pub}" == "1" ]]; then
+    router_wan0_ip4=$(curl -4 --interface ${router_wan0_gw} -s http://api.ip.sb/ip 2>&1)
+    router_wan0_ip6=$(curl -6 --interface ${router_wan0_gw} -s http://api.ip.sb/ip 2>&1)
+else
+    router_wan0_ip4=${router_wan0_ip}
+    router_wan0_ip6=""
+fi
 router_wan0_dns1=$(nvram get wan0_dns | awk '{print $1}')
 router_wan0_dns2=$(nvram get wan0_dns | awk '{print $2}')
-router_wan0_ip=$(nvram get wan0_ipaddr)
 router_wan0_rx=$(ifconfig ${router_wan0_ifname} | grep 'RX bytes' | cut -d\( -f2 | cut -d\) -f1)
 router_wan0_tx=$(ifconfig ${router_wan0_ifname} | grep 'TX bytes' | cut -d\( -f3 | cut -d\) -f1)
 
@@ -53,11 +58,16 @@ router_wan1_ifname=$(nvram get wan1_ifname)
 router_wan1_gw=$(nvram get wan1_gw_ifname)
 if [ -n "${router_wan1_ifname}" ] && [ -n "${router_wan1_gw}" ]; then
     router_wan1_proto=$(nvram get wan1_proto)
-    router_wan1_ip4=$(curl -4 --interface ${router_wan1_gw} -s https://api.ip.sb/ip 2>&1)
-    router_wan1_ip6=$(curl -6 --interface ${router_wan1_gw} -s https://api.ip.sb/ip 2>&1)
+    router_wan1_ip=$(nvram get wan1_ipaddr)
+    if [[ "${pushplus_info_pub}" == "1" ]]; then
+        router_wan1_ip4=$(curl -4 --interface ${router_wan1_gw} -s http://api.ip.sb/ip 2>&1)
+        router_wan1_ip6=$(curl -6 --interface ${router_wan1_gw} -s http://api.ip.sb/ip 2>&1)
+    else
+        router_wan1_ip4=${router_wan1_ip}
+        router_wan1_ip6=""
+    fi
     router_wan1_dns1=$(nvram get wan1_dns | awk '{print $1}')
     router_wan1_dns2=$(nvram get wan1_dns | awk '{print $2}')
-    router_wan1_ip=$(nvram get wan1_ipaddr)
     router_wan1_rx=$(ifconfig ${router_wan1_ifname} | grep 'RX bytes' | cut -d\( -f2 | cut -d\) -f1)
     router_wan1_tx=$(ifconfig ${router_wan1_ifname} | grep 'TX bytes' | cut -d\( -f3 | cut -d\) -f1)
 
@@ -83,13 +93,14 @@ for nu in ${token_nu}; do
     pushplus_config_topic=$(dbus get pushplus_config_topic_${nu})
     # pushplus_config_channel=`dbus get pushplus_config_channel_${nu}`
     pushplus_config_channel="wechat"
-    url="https://pushplus.hxtrip.com/send/${pushplus_config_token}"
+    url="http://pushplus.hxtrip.com/send/${pushplus_config_token}"
     reqstr="curl -H \"content-type:application/json\" -X POST -d '{\"template\":\"route\",\"topic\":\""${pushplus_config_topic}"\",\"channel\":\""${pushplus_config_channel}"\",\"title\":\""${pushplus_send_title}"\",\"content\":"${pushplus_send_content}"}' ${url}"
     result=$(eval ${reqstr})
     if [[ -n "$(echo $result | grep "success")" ]]; then
         [ "${pushplus_info_logger}" == "1" ] && logger "[pushplus]: 网络重启信息推送到 TOKEN No.${nu} 成功！！"
     else
         [ "${pushplus_info_logger}" == "1" ] && logger "[pushplus]: 网络重启信息推送到 TOKEN No.${nu} 失败，请检查网络及配置！"
+        logger "[pushplus] 返回结果为：${result}"
     fi
 done
 sleep 2

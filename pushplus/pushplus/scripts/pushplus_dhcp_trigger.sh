@@ -147,13 +147,14 @@ for nu in ${token_nu}; do
     pushplus_config_topic=$(dbus get pushplus_config_topic_${nu})
     # pushplus_config_channel=`dbus get pushplus_config_channel_${nu}`
     pushplus_config_channel="wechat"
-    url="https://pushplus.hxtrip.com/send/${pushplus_config_token}"
+    url="http://pushplus.hxtrip.com/send/${pushplus_config_token}"
     reqstr="curl -H \"content-type:application/json\" -X POST -d '{\"template\":\"route\",\"topic\":\""${pushplus_config_topic}"\",\"channel\":\""${pushplus_config_channel}"\",\"title\":\""${pushplus_send_title}"\",\"content\":"${pushplus_send_content}"}' ${url}"
     result=$(eval ${reqstr})
     if [[ -n "$(echo $result | grep "success")" ]]; then
         [ "${pushplus_info_logger}" == "1" ] && logger "[pushplus]: 网络重启信息推送到 TOKEN No.${nu} 成功！！"
     else
         [ "${pushplus_info_logger}" == "1" ] && logger "[pushplus]: 网络重启信息推送到 TOKEN No.${nu} 失败，请检查网络及配置！"
+        logger "[pushplus] 返回结果为：${result}"
     fi
 done
 

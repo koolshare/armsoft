@@ -7,5 +7,10 @@
     "[bat]": {
         "files.encoding": "gb2312",
         "files.eol": "\r\n",
+    },
+    "files.associations": {
+        "*.sh": "shellscript",
+        "version": "shellscript",
+        ".valid": "shellscript"
     }
 }
