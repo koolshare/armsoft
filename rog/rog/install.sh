@@ -24,6 +24,7 @@ case $(uname -m) in
 esac
 
 # 安装插件
+cp -rf /tmp/rog/bin/* /koolshare/bin/
 cp -rf /tmp/rog/scripts/* /koolshare/scripts/
 cp -rf /tmp/rog/webs/* /koolshare/webs/
 cp -rf /tmp/rog/res/* /koolshare/res/

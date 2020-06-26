@@ -15,9 +15,9 @@ RT-AC5300)
 	interface_2g=$(nvram get wl0_ifname)
 	interface_5g1=$(nvram get wl1_ifname)
 	interface_5g2=$(nvram get wl2_ifname)
-	interface_2g_temperature=$(wl -i ${interface_2g} phy_tempsense | awk '{print $1}') 2>/dev/null
-	interface_5g1_temperature=$(wl -i ${interface_5g1} phy_tempsense | awk '{print $1}') 2>/dev/null
-	interface_5g2_temperature=$(wl -i ${interface_5g2} phy_tempsense | awk '{print $1}') 2>/dev/null
+	interface_2g_temperature=$(wl1 -i ${interface_2g} phy_tempsense | awk '{print $1}') 2>/dev/null
+	interface_5g1_temperature=$(wl1 -i ${interface_5g1} phy_tempsense | awk '{print $1}') 2>/dev/null
+	interface_5g2_temperature=$(wl1 -i ${interface_5g2} phy_tempsense | awk '{print $1}') 2>/dev/null
 	interface_2g_power=$(wl -i ${interface_2g} txpwr_target_max | awk '{print $NF}') 2>/dev/null
 	interface_5g1_power=$(wl -i ${interface_5g1} txpwr_target_max | awk '{print $NF}') 2>/dev/null
 	interface_5g2_power=$(wl -i ${interface_5g2} txpwr_target_max | awk '{print $NF}') 2>/dev/null
