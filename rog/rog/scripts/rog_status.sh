@@ -15,12 +15,12 @@ RT-AC5300)
 	interface_2g=$(nvram get wl0_ifname)
 	interface_5g1=$(nvram get wl1_ifname)
 	interface_5g2=$(nvram get wl2_ifname)
-	interface_2g_temperature=$(wl1 -i ${interface_2g} phy_tempsense | awk '{print $1}') 2>/dev/null
-	interface_5g1_temperature=$(wl1 -i ${interface_5g1} phy_tempsense | awk '{print $1}') 2>/dev/null
-	interface_5g2_temperature=$(wl1 -i ${interface_5g2} phy_tempsense | awk '{print $1}') 2>/dev/null
-	interface_2g_power=$(wl -i ${interface_2g} txpwr_target_max | awk '{print $NF}') 2>/dev/null
-	interface_5g1_power=$(wl -i ${interface_5g1} txpwr_target_max | awk '{print $NF}') 2>/dev/null
-	interface_5g2_power=$(wl -i ${interface_5g2} txpwr_target_max | awk '{print $NF}') 2>/dev/null
+	interface_2g_temperature=$(wl -i ${interface_2g} phy_tempsense | awk '{print $1}') 2>/dev/null
+	interface_5g1_temperature=$(wl -i ${interface_5g1} phy_tempsense | awk '{print $1}') 2>/dev/null
+	interface_5g2_temperature=$(wl -i ${interface_5g2} phy_tempsense | awk '{print $1}') 2>/dev/null
+	interface_2g_power=$(wl1 -i ${interface_2g} txpwr_target_max | awk '{print $NF}') 2>/dev/null
+	interface_5g1_power=$(wl1 -i ${interface_5g1} txpwr_target_max | awk '{print $NF}') 2>/dev/null
+	interface_5g2_power=$(wl1 -i ${interface_5g2} txpwr_target_max | awk '{print $NF}') 2>/dev/null
 	[ -n "${interface_2g_temperature}" ] && interface_2g_temperature_c="$(expr ${interface_2g_temperature} / 2 + 20)°C" || interface_2g_temperature_c="offline"
 	[ -n "${interface_5g1_temperature}" ] && interface_5g1_temperature_c="$(expr ${interface_5g1_temperature} / 2 + 20)°C" || interface_5g1_temperature_c="offline"
 	[ -n "${interface_5g2_temperature}" ] && interface_5g2_temperature_c="$(expr ${interface_5g2_temperature} / 2 + 20)°C" || interface_5g2_temperature_c="offline"
@@ -34,7 +34,7 @@ RT-AC5300)
 		
 		[ -n "${interface_5g2_power}" ] && interface_5g2_power_d="${interface_5g2_power} dBm" || interface_5g2_power_d="offline"
 		[ -n "${interface_5g2_power}" ] && interface_5g2_power_p="$(awk -v x=${interface_5g2_power} 'BEGIN { printf "%.2f\n", 10^(x/10)}') mw" || interface_5g2_power_p="offline"
-		wl_txpwr="2.4G：${interface_2g_power_d} / ${interface_2g_power_p} &nbsp;&nbsp;|&nbsp;&nbsp; 5G：${interface_5g1_power_d} / ${interface_5g1_power_p} &nbsp;&nbsp;|&nbsp;&nbsp; 5G-2：${interface_5g2_power_d} / ${interface_5g2_power_p}"
+		wl_txpwr="2.4G：${interface_2g_power_d} / ${interface_2g_power_p} <br /> 5G：${interface_5g1_power_d} / ${interface_5g1_power_p} <br /> 5G-2：${interface_5g2_power_d} / ${interface_5g2_power_p}"
 	else
 		wl_txpwr=""
 	fi
