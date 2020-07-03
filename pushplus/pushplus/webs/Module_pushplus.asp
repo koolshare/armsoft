@@ -114,7 +114,7 @@
 .pushplus_btn {
     border: 1px solid #222;
     background: linear-gradient(to bottom, #003333  0%, #000000 100%); /* W3C */
-	background: linear-gradient(to bottom, #91071f  0%, #700618 100%); /* W3C rog */
+	background: linear-gradient(to bottom, #91071f  0%, #700618 100%); /* W3C rogcss */
     font-size:10pt;
     color: #fff;
     padding: 5px 5px;
@@ -124,7 +124,7 @@
 .pushplus_btn:hover {
     border: 1px solid #222;
     background: linear-gradient(to bottom, #27c9c9  0%, #279fd9 100%); /* W3C */
-	background: linear-gradient(to bottom, #cf0a2c  0%, #91071f 100%); /* W3C rog */
+	background: linear-gradient(to bottom, #cf0a2c  0%, #91071f 100%); /* W3C rogcss */
     font-size:10pt;
     color: #fff;
     padding: 5px 5px;
@@ -140,7 +140,7 @@
 	color:#FFFFFF;
 	background:#475A5F;
 	background:transparent; /* W3C rog */
-	border:1px solid #91071f; /* W3C rog */
+	border:1px solid #91071f; /* W3C rogcss */
 }
 input[type=button]:focus {
     outline: none;
@@ -279,7 +279,7 @@ function onSubmitCtrl(){
 	showLoading(5);
 	refreshpage(5);
 	var params_input = ["pushplus_silent_time_start_hour", "pushplus_silent_time_end_hour", "pushplus_config_ntp", "pushplus_config_name", "pushplus_status_check", "pushplus_check_week", "pushplus_check_day", "pushplus_check_inter_min", "pushplus_check_inter_hour", "pushplus_check_inter_day", "pushplus_check_inter_pre", "pushplus_check_custom", "pushplus_check_time_hour", "pushplus_check_time_min", "pushplus_trigger_dhcp_white"];
-	var params_check = ["pushplus_enable", "pushplus_silent_time", "pushplus_info_logger", "pushplus_info_silent_send", "pushplus_info_system", "pushplus_info_temp", "pushplus_info_wan", "pushplus_info_usb", "pushplus_info_lan", "pushplus_info_dhcp", "pushplus_trigger_ifup", "pushplus_trigger_ifup_sendinfo","pushplus_trigger_dhcp", "pushplus_trigger_dhcp_leases","pushplus_dhcp_bwlist_en", "pushplus_dhcp_white_en", "pushplus_dhcp_black_en", "pushplus_info_lan_macoff", "pushplus_info_dhcp_macoff", "pushplus_trigger_dhcp_macoff" ];
+	var params_check = ["pushplus_enable", "pushplus_silent_time", "pushplus_info_logger", "pushplus_info_silent_send", "pushplus_info_system", "pushplus_info_temp", "pushplus_info_wan", "pushplus_info_pub", "pushplus_info_usb", "pushplus_info_lan", "pushplus_info_dhcp", "pushplus_trigger_ifup", "pushplus_trigger_ifup_sendinfo","pushplus_trigger_dhcp", "pushplus_trigger_dhcp_leases","pushplus_dhcp_bwlist_en", "pushplus_dhcp_white_en", "pushplus_dhcp_black_en", "pushplus_info_lan_macoff", "pushplus_info_dhcp_macoff", "pushplus_trigger_dhcp_macoff" ];
 	var params_base64 = ["pushplus_config_name", "pushplus_check_custom", "pushplus_trigger_dhcp_white"];
 	// collect data from input
 	for (var i = 0; i < params_input.length; i++) {
@@ -938,6 +938,13 @@ function version_show() {
                                             <th width="20%">网络信息</th>
                                             <td>
                                                 <input type="checkbox" id="pushplus_info_wan" checked="checked" onclick="oncheckclick(this);">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th width="20%">公网信息</th>
+                                            <td>
+                                                <input type="checkbox" id="pushplus_info_pub" checked="checked" onclick="oncheckclick(this);">
+                                                <label>是否需要通过ip.sb获取公网IP,若你的wanIP就是公网IP则不建议开启</label>
                                             </td>
                                         </tr>
                                         <tr>

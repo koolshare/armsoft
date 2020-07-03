@@ -1,4 +1,12 @@
 Koolshare hnd/axhnd router software center pushplus Changelog
 ===========================================
+0.3
+   - add switch for public ip
+   - fix SSL invalided
+   - fix push failed
+
+0.2
+   - nothing new just for synchronize version numbers with hnd
+
 0.1
    - first version
