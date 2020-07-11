@@ -4,8 +4,8 @@ alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 DIR=$(cd $(dirname $0); pwd)
 MODEL=$(nvram get productid)
 module=wifiboost
-TITLE="Wi-Fi Boost"
-DESCRIPTION="路由器功率增强，强过澳大利亚！"
+TITLE="wifi Boost"
+DESCRIPTION="wifi Boost for arm384, 路由器功率增强，强过澳大利亚！"
 odmpid=$(nvram get odmpid)
 LINUX_VER=$(cat /proc/version|awk '{print $3}'|awk -F"." '{print $1$2}')
 
@@ -81,7 +81,6 @@ dbus set softcenter_module_${module}_title="${TITLE}"
 dbus remove wifiboost_warn
 sync
 echo_date "【${TITLE}】插件正在安装，请稍后！"
-#cd /koolshare/bin && ./wifiboost install
 start-stop-daemon -S -q -b -x /koolshare/bin/wifiboost -- install
 echo_date "【${TITLE}】插件安装完毕！"
 exit_install

@@ -227,25 +227,22 @@ function show_err_code() {
 	}
 	switch(err_code){
 		case "1":
-			err_mesg = '<span style="color: #CC3300">错误代码1：当前路由【RAX80】不支持wifiboost插件！</span>';
+			err_mesg = '<span style="color: #CC3300">错误代码1：当前路由不支持wifiboost插件！</span>';
 		break;
 		case "2":
-			err_mesg = '<span style="color: #CC3300">错误代码2：当前路由不支持wifiboost插件！请尝试重刷正确的固件后重试！！</span>';
+			err_mesg = '<span style="color: #CC3300">错误代码2：读取出厂wlan配置发生错误，请重启或者重置路由器后重试！！</span>';
 		break;
 		case "3":
-			err_mesg = '<span style="color: #CC3300">错误代码3：读取wlan硬件设备数量错误！请重启或重置路由器后重试！！<br/>可能是错误的nvram值导致的！请尝试重置路由器后重试！！</span>';
+			err_mesg = '<span style="color: #CC3300">错误代码3：出厂wlan配置为空，可能是非华硕机器！wifi boost无法支持你的路由器！！</span>';
 		break;
 		case "4":
-			err_mesg = '<span style="color: #CC3300">错误代码4：读取原厂wlan配置失败，重启或重置路由器后重试！！</span>';
+			err_mesg = '<span style="color: #CC3300">错误代码4：检测到你的路由器不是国行机器！！<br/><br/>非国行机器因无法选择澳大利亚区域从而使得插件无法发挥作用！！</span>';
 		break;
 		case "5":
-			err_mesg = '<span style="color: #CC3300">错误代码5：读取原厂wlan配置失败，重启或重置路由器后重试！！</span>';
+			err_mesg = '<span style="color: #CC3300">错误代码5：出厂wlan配置有误！！可能是CFE信息不完整导致的！！wifi boost无法支持你的路由器！！</span>';
 		break;
 		case "6":
-			err_mesg = '<span style="color: #CC3300">错误代码6：检测到你的路由器不是国行机器！！</span><br/><br/>非国行机器因无法选择澳大利亚区域从而使得插件无法发挥作用！！<br/>如果你需要将机器刷成国行，请联系QQ: 196040627<br/>如果你已经改cfe为国行了，请重装wifi boost插件重新获得机器码！';
-		break;
-		case "7":
-			err_mesg = '<span style="color: #CC3300">错误代码7：检测到你的路由器出厂配置有误！！</span>';
+			err_mesg = '<span style="color: #CC3300">错误代码6：CFE分区出现问题！！wifi boost无法支持你的路由器！！';
 		break;
 	}
 	require(['/res/layer/layer.js'], function(layer) {
@@ -499,8 +496,8 @@ function pop_help() {
 			btnAlign: 'c',
 			moveType: 1,
 			content: '<div style="padding: 50px; line-height: 22px; background-color: #393D49; color: #fff; font-weight: 300;">\
-				<b>wifi boost</b><br><br>\
-				wifi boost是一款付费插件，支持arm384平台的机器，详情：<a style="color:#e7bd16" target="_blank" href="https://github.com/koolshare/armsoft#%E6%9C%BA%E5%9E%8B%E6%94%AF%E6%8C%81"><u>机型支持</u></a><br>\
+				<b>wifi boost for arm384</b><br><br>\
+				wifi boost是一款付费插件，此版本支持arm384平台的机器，详情：<a style="color:#e7bd16" target="_blank" href="https://github.com/koolshare/armsoft#%E6%9C%BA%E5%9E%8B%E6%94%AF%E6%8C%81"><u>机型支持</u></a><br>\
 				使用本插件有任何问题，可以前往<a style="color:#e7bd16" target="_blank" href="https://koolshare.cn/forum-98-1.html"><u>koolshare论坛插件板块</u></a>反馈~<br><br>\
 				● 微信订单号获取：<span style="color:#e7bd16">我 → 支付 → 钱包 → 账单 → 点击付款订单 → 转账单号</span><br>\
 				● 支付宝订单号获取：<span style="color:#e7bd16">我的 → 账单 → 点击付款订单 → 订单号</span><br><br>\
@@ -591,7 +588,7 @@ function pop_help() {
 													<input class="button_gen" type="button" onclick="close_info();" value="关闭">
 												</div>
 											</div>
-											<div class="formfonttitle">wifi boost<lable id="wifiboost_version"><lable></div>
+											<div class="formfonttitle">wifi boost for arm384<lable id="wifiboost_version"><lable></div>
 											<div style="float:right; width:15px; height:25px;margin-top:-20px">
 												<img id="return_btn" onclick="reload_Soft_Center();" align="right" style="cursor:pointer;position:absolute;margin-left:-30px;margin-top:-25px;" title="返回软件中心" src="/images/backprev.png" onMouseOver="this.src='/images/backprevclick.png'" onMouseOut="this.src='/images/backprev.png'"></img>
 											</div>
