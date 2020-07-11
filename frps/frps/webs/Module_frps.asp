@@ -313,7 +313,7 @@ function pass_checked(obj){
 	switchType(obj, document.form.show_pass.checked, true);
 }
 
-function onSubmitCtrl(o, s) { //提交操作，提交时运行config-frps.sh，显示5秒的载入画面
+function onSubmitCtrl(o, s) { //提交操作，提交时运行frps_config.sh，显示5秒的载入画面
     var _form = document.form;
     if(trim(_form.frps_common_dashboard_port.value)=="" || trim(_form.frps_common_dashboard_user.value)=="" || trim(_form.frps_common_dashboard_pwd.value)=="" || trim(_form.frps_common_bind_port.value)=="" || trim(_form.frps_common_privilege_token.value)=="" || trim(_form.frps_common_vhost_http_port.value)=="" || trim(_form.frps_common_vhost_https_port.value)=="" || trim(_form.frps_common_max_pool_count.value)=="" || trim(_form.frps_common_cron_time.value)==""){
         alert("提交的表单不能为空!");
@@ -347,7 +347,7 @@ function onSubmitCtrl(o, s) { //提交操作，提交时运行config-frps.sh，�
     }
     
     var uid = parseInt(Math.random() * 100000000);
-	var postData = {"id": uid, "method": "config-frps.sh", "params": [], "fields": db_frps };
+	var postData = {"id": uid, "method": "frps_config.sh", "params": [], "fields": db_frps };
 	$j.ajax({
 		url: "/_api/",
 		cache: false,
