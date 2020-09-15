@@ -671,6 +671,12 @@ function pop_help() {
 															<option value="13">28.00 dBm / 630.96 mw</option>
 															<option value="14">28.25 dBm / 668.34 mw</option>
 															<option value="15">28.50 dBm / 707.95 mw</option>
+															<option value="16">28.75 dBm / 749.89 mw</option>
+															<option value="17">29.00 dBm / 794.33 mw</option>
+															<option value="18">29.25 dBm / 841.40 mw</option>
+															<option value="19">29.50 dBm / 891.25 mw</option>
+															<option value="20">29.75 dBm / 944.06 mw</option>
+															<option value="21">30.00 dBm / 1000 mw</option>
 														</select>
 													</td>
 												</tr>
