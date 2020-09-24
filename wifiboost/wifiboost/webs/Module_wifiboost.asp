@@ -11,22 +11,20 @@
 <link rel="stylesheet" type="text/css" href="index_style.css"/> 
 <link rel="stylesheet" type="text/css" href="form_style.css"/>
 <link rel="stylesheet" type="text/css" href="css/element.css">
-<link rel="stylesheet" type="text/css" href="res/softcenter.css">
+<link rel="stylesheet" type="text/css" href="/res/softcenter.css">
 <link rel="stylesheet" type="text/css" href="/res/layer/theme/default/layer.css">
-<script language="JavaScript" type="text/javascript" src="/state.js"></script>
-<script language="JavaScript" type="text/javascript" src="/help.js"></script>
-<script language="JavaScript" type="text/javascript" src="/general.js"></script>
-<script language="JavaScript" type="text/javascript" src="/popup.js"></script>
-<script language="JavaScript" type="text/javascript" src="/client_function.js"></script>
-<script language="JavaScript" type="text/javascript" src="/validator.js"></script>
-<script type="text/javascript" src="/js/jquery.js"></script>
-<script type="text/javascript" src="/switcherplugin/jquery.iphone-switch.js"></script>
+<script type="text/javascript" src="/res/Browser.js"></script>
 <script type="text/javascript" src="/res/softcenter.js"></script>
+<script type="text/javascript" src="/state.js"></script>
+<script language="JavaScript" type="text/javascript" src="/js/jquery.js"></script>
+<script language="JavaScript" type="text/javascript" src="/client_function.js"></script>
+<script type="text/javascript" src="/general.js"></script>
+<script type="text/javascript" src="/popup.js"></script>
+<script src="/calendar/jquery-ui.js"></script> 
 <style>
 .wifiboost_btn {
 	border: none;
 	background: linear-gradient(to bottom, #003333  0%, #000000 100%); /* W3C */
-	/*background: linear-gradient(to bottom, #91071f  0%, #700618 100%);*/ /* W3C rogcss */
 	font-size:10pt;
 	color: #fff;
 	padding: 5px 5px;
@@ -39,7 +37,6 @@
 .wifiboost_btn:hover {
 	border: none;
 	background: linear-gradient(to bottom, #27c9c9  0%, #279fd9 100%); /* W3C */
-	/*background: linear-gradient(to bottom, #cf0a2c  0%, #91071f 100%);*/ /* W3C rogcss */
 }
 .loading_bar {
 	width:250px;
@@ -100,36 +97,244 @@ input:focus {
 input[type=checkbox]{
 	vertical-align:middle;
 }
+a:focus {
+	outline: none;
+}
 .FormTitle i {
 	color: #ff002f;
 	font-style: normal;
 }
-/*#wifiboost_main { border:1px solid #91071f; }*/ /* W3C rogcss */
 .SimpleNote { padding:5px 10px;}
+.ui-slider {
+	position: relative;
+	text-align: left;
+}
+.ui-slider .ui-slider-handle {
+	position: absolute;
+	width: 12px;
+	height: 12px;
+}
+.ui-slider .ui-slider-range {
+	position: absolute;
+}
+.ui-slider-horizontal {
+	height: 6px;
+}
+
+.ui-widget-content {
+	/*border: 2px solid #000;*/
+	background-color:#000;
+}
+.ui-state-default,
+.ui-widget-content .ui-state-default,
+.ui-widget-header .ui-state-default {
+	border: 1px solid ;
+	background: #e6e6e6;
+	margin-top:-4px;
+	margin-left:-6px;
+}
+
+/* Corner radius */
+.ui-corner-all,
+.ui-corner-top,
+.ui-corner-left,
+.ui-corner-tl {
+	border-top-left-radius: 4px;
+}
+.ui-corner-all,
+.ui-corner-top,
+.ui-corner-right,
+.ui-corner-tr {
+	border-top-right-radius: 4px;
+}
+.ui-corner-all,
+.ui-corner-bottom,
+.ui-corner-left,
+.ui-corner-bl {
+	border-bottom-left-radius: 4px;
+}
+.ui-corner-all,
+.ui-corner-bottom,
+.ui-corner-right,
+.ui-corner-br {
+	border-bottom-right-radius: 4px;
+}
+
+.ui-slider-horizontal .ui-slider-range {
+	top: 0;
+	height: 100%;
+}
+
+#slider .ui-slider-range {
+	background: #93E7FF; 
+	border-top-left-radius: 3px;
+	border-top-right-radius: 1px;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 1px;
+}
+#slider .ui-slider-handle {
+	border-color: #93E7FF;
+}
+.parental_th{
+	color:white;
+	background:#2F3A3E;
+	cursor: pointer;
+	width:160px;
+	height:22px;
+	border-bottom:solid 1px black;
+	border-right:solid 1px black;
+}
+body .layui-layer-lan .layui-layer-btn0 {border-color:#22ab39; background-color:#22ab39;color:#fff; background:#22ab39}
+body .layui-layer-lan .layui-layer-btn .layui-layer-btn1 {border-color:#1678ff; background-color:#1678ff;color:#fff;}
+body .layui-layer-lan .layui-layer-btn2 {border-color:#FF6600; background-color:#FF6600;color:#fff;}
+body .layui-layer-lan .layui-layer-title {background: #1678ff;}
+body .layui-layer-lan .layui-layer-btn a{margin:8px 8px 0;padding:5px 18px;}
+body .layui-layer-lan .layui-layer-btn {text-align:center}
 </style>
 <script>
 var orig_region = '<% nvram_get("location_code"); %>';
 var odm = '<% nvram_get("productid"); %>'
 var refresh_flag=1;
 var params_chk = ['wifiboost_boost_24', 'wifiboost_boost_52', 'wifiboost_boost_58'];
-var params_inp = ['wifiboost_boost_val', 'wifiboost_key'];
+var params_inp = ['wifiboost_key'];
+var boost_dbm;
 var x = 6;
+var asus = 0;
 function init() {
 	show_menu(menu_hook);
+	detect_brower();
+}
+
+function detect_brower() {
+	var info = new Browser();
+	console.log("您使用的浏览器为：", info.browser);
+	if(info.device!='Mobile'){
+		if (info.browser == "360EE"){
+			$("#wifiboost_main").hide();
+			$("#wifiboost_apply_1").hide();
+			$("#wifiboost_apply_2").hide();
+			$("#wifiboost_apply_3").hide();
+			$(".SimpleNote").hide();
+			$('#warn_msg_1').html('<h1><font color="#FF6600">错误！</font></h1><h2><font color="#FF6666">360浏览器/IE</font>下使用【wifi boost】插件会出现兼容性问题！<h2>为了保证使用本插件的最佳使用体验:</h2><h2>建议使用<em>谷歌chrome浏览器</em>或者其它<em>Chromium内核</em>的浏览器！</h2>');
+			$("#warn_msg_1").show();
+			return false;
+		}
+	}
+	var current_url = window.location.href;
+	var net_address = current_url.split("/Module")[0];
+	var port = net_address.split(":")[2];
+	//console.log(port);
+	if(port && port != "80" && asus == "1"){
+		$("#wifiboost_main").hide();
+		$("#wifiboost_apply_1").hide();
+		$("#wifiboost_apply_2").hide();
+		$("#wifiboost_apply_3").hide();
+		$(".SimpleNote").hide();
+		$('#warn_msg_1').html('<h1><font color="#FF6600">哦豁！</font></h1><h2>目前<font color="#3399FF">华硕官方固件 / 梅林原版固件</font>安装的插件在https下暂时不可用~<h2>建议先使用http访问路由器后台，以便使用插件。</h2><h2>你也可以关注 <a href="https://koolshare.cn"><font color="#00CC66">https://koolshare.cn</font></a> 论坛，看下插件是否更新了https下能使用的版本！</h2>');
+		$("#warn_msg_1").show();
+		return false;
+	}
 	write_location();
 	show_hide_elem();
-	get_dbus_data();
 	get_wl_status();
-	toggle_func();
+	get_dbus_data();
+	try_activate();
 }
-function toggle_func() {
+
+function getQueryVariable(variable){
+	var query = window.location.search.substring(1);
+	var vars = query.split("&");
+	for (var i=0;i<vars.length;i++) {
+			if(vars[i].indexOf("key") != -1){
+				var key_value = vars[i].split("key=")[1];
+				return key_value;
+			}
+	}
+	return(false);
+}
+
+function try_activate(){
+	var key = getQueryVariable("key");
+	if(key){
+		if(!$("#wifiboost_key").val()){
+			console.log("有激活码: ", key)
+			$("#wifiboost_key").val(key);
+			boost_now(3);
+		}else{
+			//已经激活了，跳转
+			location.href = "/Module_wifiboost.asp"
+		}
+	}
+}
+
+function register_event(){
+
+	var current_maxp24_tmp = '<% nvram_get("0:maxp2ga0"); %>';
+	if(odm == "GT-AC5300" || odm == "GT-AX11000" || odm == "RT-AX92U" || odm == "RT-AX95Q" || odm == "RT-AC5300"){
+		// three wifi router
+		if(!current_maxp24_tmp){
+			var current_maxp24 = '<% nvram_get("1:maxp2ga0"); %>';
+			var current_maxp52 = '<% nvram_get("2:maxp5gb0a0"); %>';
+			var current_maxp58 = '<% nvram_get("3:maxp5gb0a0"); %>';
+		}else{
+			var current_maxp24 = '<% nvram_get("0:maxp2ga0"); %>';
+			var current_maxp52 = '<% nvram_get("1:maxp5gb0a0"); %>';
+			var current_maxp58 = '<% nvram_get("2:maxp5gb0a0"); %>';
+		}
+	}else{
+		// two wifi router
+		if(!current_maxp24_tmp){
+			var current_maxp24 = '<% nvram_get("1:maxp2ga0"); %>';
+			var current_maxp52 = '<% nvram_get("2:maxp5gb0a0"); %>';
+		}else{
+			var current_maxp24 = '<% nvram_get("0:maxp2ga0"); %>';
+			var current_maxp52 = '<% nvram_get("1:maxp5gb0a0"); %>';
+		}
+	}
+		
+	if(E("wifiboost_boost_24").checked == true){
+		var maxp = current_maxp24;
+	}else{
+		if (E("wifiboost_boost_52").checked == true){
+			var maxp = current_maxp52;
+		}else{
+			if (E("wifiboost_boost_58").checked == true){
+				var maxp = current_maxp58 || current_maxp24;
+			}else{
+				var maxp = current_maxp24;
+			}
+		}
+	}
+	var current_dec = parseInt(maxp);
+	var current_dbm = ((current_dec - 6)/4).toFixed(2);
+	var current_pwr = Math.pow(10,(current_dec - 6)/4/10).toFixed(2);
+	$(function() {
+		$( "#slider" ).slider({
+			orientation: "horizontal",
+			range: "min",
+			min: 24.00,
+			max: 28.50,
+			value: current_dbm,
+			step: 0.25,
+			slide:function(event, ui){
+				var dbm = ui.value.toFixed(2);
+				var power = Math.pow(10,ui.value/10).toFixed(2);
+				document.getElementById('tx_power_desc').innerHTML = ui.value + " dBm / " + power + " mw";
+			},
+			stop:function(event, ui){
+				boost_dbm = ui.value;
+			},
+		}); 
+	});
+	document.getElementById('tx_power_desc').innerHTML = current_dbm + " dBm / " + current_pwr + " mw";
 	$("#log_content2").click(
 		function() {
 			x = -1;
-		});
+		});	
 }
+
 function show_hide_elem(){
-	if(odm == "GT-AC5300" || odm == "GT-AX11000"){
+	if(odm == "GT-AC5300" || odm == "GT-AX11000" || odm == "RT-AX92U" || odm == "RT-AX95Q" || odm == "RT-AC5300"){
 		E("wifiboost_boost_58").style.display = "";
 		E("LABLE_58").style.display = "";
 		E("LABLE_52").innerHTML = "5G-1";
@@ -145,6 +350,7 @@ function get_dbus_data(){
 			dbus = data.result[0];
 			conf2obj();
 			show_err_code();
+			register_event();
 		}
 	});
 }
@@ -217,6 +423,9 @@ function conf2obj(){
 	if (dbus["wifiboost_warn"]){
 		E("wifiboost_info").rows = 5
 		E("qrcode_show").style.height = "505px"
+		E("wifiboost_buy_btn").style.display = "none";
+		E("wifiboost_active_btn").style.display = "none";
+		E("wifiboost_authorized_btn").style.display = "none";
 	}
 }
 function show_err_code() {
@@ -227,29 +436,35 @@ function show_err_code() {
 	}
 	switch(err_code){
 		case "1":
-			err_mesg = '<span style="color: #CC3300">错误代码1：当前路由不支持wifiboost插件！</span>';
+			err_mesg = '<br/><span style="color: #CC3300">错误代码1：当前路由并非koolshare改版固件，不支持wifi boost！！</span><br/><br>';
 		break;
 		case "2":
-			err_mesg = '<span style="color: #CC3300">错误代码2：读取出厂wlan配置发生错误，请重启或者重置路由器后重试！！</span>';
+			err_mesg = '<br/><span style="color: #CC3300">错误代码2：当前路由系统暂不支持wifi boost for arm384插件！目前仅支持SDK7/7114平台的机型！</span><br/><br>';
 		break;
 		case "3":
-			err_mesg = '<span style="color: #CC3300">错误代码3：出厂wlan配置为空，可能是非华硕机器！wifi boost无法支持你的路由器！！</span>';
+			err_mesg = '<br/><span style="color: #CC3300">错误代码3：读取wlan硬件设备数量错误！请重启或重置路由器后重试！！<br/>可能是错误的nvram值导致的！请尝试重置路由器后重试！！</span><br/><br>';
 		break;
 		case "4":
-			err_mesg = '<span style="color: #CC3300">错误代码4：检测到你的路由器不是国行机器！！<br/><br/>非国行机器因无法选择澳大利亚区域从而使得插件无法发挥作用！！</span>';
+			err_mesg = '<br/><span style="color: #CC3300">错误代码4：读取原厂wlan配置失败，重启或重置路由器后重试！！</span><br/><br>';
 		break;
 		case "5":
-			err_mesg = '<span style="color: #CC3300">错误代码5：出厂wlan配置有误！！可能是CFE信息不完整导致的！！wifi boost无法支持你的路由器！！</span>';
+			err_mesg = '<br/><span style="color: #CC3300">错误代码5：读取原厂wlan配置失败，重启或重置路由器后重试！！</span><br/><br>';
 		break;
 		case "6":
-			err_mesg = '<span style="color: #CC3300">错误代码6：CFE分区出现问题！！wifi boost无法支持你的路由器！！';
+			err_mesg = '<br/><span style="color: #CC3300">错误代码6：检测到你的路由器不是国行机器！！</span><hr>非国行机器因【无线网络】-【专业设置】中没有澳大利亚区域选项，从而使得插件无法发挥作用！！<br/><hr>';
+		break;
+		case "7":
+			err_mesg = '<br/><span style="color: #CC3300">错误代码7：检测到你的路由器出厂配置有误！！</span><br/><br>';
+		break;
+		case "8":
+			err_mesg = '<br/><span style="color: #CC3300">错误代码8：检测到错误！请重启或者重置路由器后重试！！</span><br/><br>';
 		break;
 	}
 	require(['/res/layer/layer.js'], function(layer) {
-		layer.alert('<span style="font-size: 18px;">wifi boost插件检测到错误！错误信息如下：</span><br/><br/>' + err_mesg + '<br/><br/>出现错误提示意味着你可能无法使用wifi boost修改最大功率。<br/><br/>点击确定将关闭此窗口，如果错误未解决，此窗口下次还会和你相见！', {
+		layer.alert('<span style="font-size: 18px;">wifi boost插件检测到错误！错误信息如下：</span><br/>' + err_mesg + '出现错误提示意味着你可能无法使用wifi boost修改最大功率。<br/>点击确定将关闭此窗口，如果错误未解决，此窗口下次还会和你相见！', {
 			time: 3e4,
 			shade: 0.8,
-			maxWidth: '600px'
+			maxWidth: '800px'
 		}, function(index) {
 			layer.close(index);
 			return false;
@@ -289,13 +504,13 @@ function get_wl_status(){
 			}else{
 				E("wifiboost_wl_ver_tr").style.display = "none";
 			}
-			setTimeout("get_wl_status();", 2000);
+			setTimeout("get_wl_status();", 8000);
 		}
 	});
 }
 function boost_now(action){
-	var dbus_new = {}
-	if(odm == "GT-AC5300" || odm == "GT-AX11000"){
+	var dbus_new = {};
+	if(odm == "GT-AC5300" || odm == "GT-AX11000" || odm == "RT-AX92U" || odm == "RT-AX95Q" || odm == "RT-AC5300"){
 		if (E("wifiboost_boost_24").checked == false && E("wifiboost_boost_52").checked == false && E("wifiboost_boost_58").checked == false){
 			alert("请至少选择一个你要修改功率的wifi信号！");
 			return false;
@@ -308,7 +523,7 @@ function boost_now(action){
 	}
 	var wb_key = E("wifiboost_key").value;
 	if(!wb_key){
-		alert("请先输入激活码后再点击激活按钮！");
+		alert("请先购买激活码并输入后再点击激活按钮！");
 		return false;
 	}
 	if (wb_key.indexOf('wb_') == -1){
@@ -339,8 +554,17 @@ function boost_now(action){
 	for (var i = 0; i < params_inp.length; i++) {
 		dbus_new[params_inp[i]] = E(params_inp[i]).value;
 	}
-	if(odm != "GT-AC5300" && odm != "GT-AX11000"){
+	if(odm != "GT-AC5300" && odm != "GT-AX11000" && odm != "RT-AX92U" && odm != "RT-AX95Q" || odm != "RT-AC5300"){
 		dbus_new["wifiboost_boost_58"] = "0";
+	}
+	// boost_dbm
+	if(boost_dbm){
+		dbus_new["wifiboost_boost_dbm"] = boost_dbm;
+	}else{
+		if(action == 1){
+			alert("功率值没有任何变化！插件将不会继续运行!\n\n请拉动功率调节条后再使用boost按钮！");
+			return false;
+		}
 	}
 	E("wifiboost_apply_1").disabled=true;
 	E("wifiboost_apply_2").disabled=true;
@@ -354,7 +578,7 @@ function boost_now(action){
 		success: function(response) {
 			E("wifiboost_apply_1").disabled=false;
 			E("wifiboost_apply_2").disabled=false;
-			get_log();
+			get_log(3);
 		}
 	});
 }
@@ -433,7 +657,7 @@ function count_down_close() {
 		--x;
 	setTimeout("count_down_close();", 1000);
 }
-function get_log(){
+function get_log(flag){
 	E("ok_button").style.display = "none";
 	showWBLoadingBar();
 	$.ajax({
@@ -447,12 +671,22 @@ function get_log(){
 				retArea.value = response.replace("XU6J03M6", " ");
 				E("ok_button").style.display = "";
 				retArea.scrollTop = retArea.scrollHeight;
-				count_down_close();
-				return true;
+				if(flag == 3){
+					location.href = "/Module_wifiboost.asp"
+				}else{
+					count_down_close();
+					return true;
+				}
 			}
-			setTimeout("get_log();", 200);
+			setTimeout("get_log(" + flag + ");", 200);
 			retArea.value = response.replace("XU6J03M6", " ");
 			retArea.scrollTop = retArea.scrollHeight;
+		},
+		error: function(xhr) {
+			E("loading_block3").innerHTML = "暂无wifi boost日志信息 ...";
+			E("log_content3").value = "日志文件为空，请关闭本窗口！";
+			E("ok_button").style.display = "";
+			return false;
 		}
 	});
 }
@@ -460,19 +694,55 @@ function show_log() {
 	x = -1;
 	refresh_flag = 0;
 	get_log();
-	//E("ok_button1").value = "关闭日志";
+	E("ok_button1").value = "关闭日志";
 }
 function menu_hook(title, tab) {
 	tabtitle[tabtitle.length - 1] = new Array("", "wifi boost");
 	tablink[tablink.length - 1] = new Array("", "Module_wifiboost.asp");
 }
-function close_buy(){
+function close_mail_buy(){
 	$("#qrcode_show").fadeOut(300);
+	open_buy();
 }
-function open_buy(){
-	$("#qrcode_show").css("margin-top", "-50px");
-	$("#qrcode_show").fadeIn(300);
+
+function open_buy() {
+	var current_url = window.location.href;
+	net_address = current_url.split("/Module")[0];
+	
+	note = "<h2><font color='#FF6600'>【wifi boost】是一款付费插件，Arm384版本价格为20元人民币。</font></h2>";
+	note += "<hr>";
+	note += "<h3>建议选择 <font color='#22ab39'>微信支付</font> / <font color='#1678ff'>支付宝</font> 购买，可以即时激活【wifi boost】！</h2>";
+	note += "<li>建议在PC上使用chrome浏览器进行购买、激活操作，以免出现未知问题；</li>";
+	note += "<li>扫码支付后，会立即跳转到激活码发放页面，根据页面提示即可激活插件；</li>";
+	note += "<li>如遇到无法支付、无法获得激活码等问题，可以联系下方客服邮箱解决。</li>";
+	note += "<h4 style='text-align:right'>客服邮箱：<a style='color:#22ab39;' href='mailto:mjy211@gmail.com?subject=wifi boost咨询&body=这是邮件的内容'>mjy211@gmail.com</a></h4>";
+	require(['/res/layer/layer.js'], function(layer) {
+		layer.open({
+			type: 0,
+			skin: 'layui-layer-lan',
+			shade: 0.8,
+			title: '请选择【wifi boost】购买方式！',
+			time: 0,
+			area: '560px',
+			offset: '240px',
+			btnAlign: 'c',
+			maxmin: true,
+			content: note,
+			btn: ['微信支付', '支付宝', '人工邮件购买'],
+			btn1: function() {
+				location.href = "http://47.108.206.248:8083/pay_arm384.php?paytype=1&mcode=" + dbus["wifiboost_mcode"].replace(/\+/g, "-") + "&router=" + net_address;
+			},
+			btn2: function() {
+				location.href = "http://47.108.206.248:8083/pay_arm384.php?paytype=2&mcode=" + dbus["wifiboost_mcode"].replace(/\+/g, "-") + "&router=" + net_address;
+			},
+			btn3: function() {
+				$("#qrcode_show").css("margin-top", "-50px");
+				$("#qrcode_show").fadeIn(300);
+			},
+		});
+	});
 }
+
 function close_info(){
 	$("#activated_info").fadeOut(300);
 }
@@ -481,18 +751,19 @@ function open_info(){
 	$("#activated_info").fadeIn(300);
 }
 function pop_help() {
-	close_buy();
+	$("#qrcode_show").fadeOut(300);
 	require(['/res/layer/layer.js'], function(layer) {
 		layer.open({
 			type: 1,
 			title: false,
 			closeBtn: false,
 			area: '600px;',
+			offset: '250px',
 			shade: 0.8,
 			shadeClose: 1,
 			scrollbar: false,
 			id: 'LAY_layuipro',
-			btn: ['关闭窗口'],
+			btn: ['返回'],
 			btnAlign: 'c',
 			moveType: 1,
 			content: '<div style="padding: 50px; line-height: 22px; background-color: #393D49; color: #fff; font-weight: 300;">\
@@ -505,13 +776,16 @@ function pop_help() {
 				wifi boost的激活码为一机一码，一次激活终身使用。<br>\
 				</div>',
 			yes: function(index, layero){
-				open_buy();
+				$("#qrcode_show").css("margin-top", "-50px");
+				$("#qrcode_show").fadeIn(300);
 				layer.close(index);
 			}
 		});
 	});
 }
-
+function verifyFields(r) {
+	register_event();
+}
 </script>
 </head>
 <body onload="init();">
@@ -559,9 +833,9 @@ function pop_help() {
 													<img style="height:250px" src="https://firmware.koolshare.cn/binary/image_bed/sadog/sadog.png"/>
 												</div>
 												<div style="margin-top:0px;margin-left:4%;width:96%;text-align:left;">
-													<div id="info0" style="font-size:16px;color:#000;"><i>激活码获取:</i></div>
+													<div id="info0" style="font-size:16px;color:#000;"><i>人工邮件购买激活码:</i></div>
 													<div id="info1" style="font-size:12px;color:#000;">1.扫描上方其中一个二维码，付款20元人民币给开发者，即可购买wifi boost激活码。</div>
-													<div id="info2" style="font-size:12px;color:#000;">2.复制下面文本框内容，替换xxx为<a type="button" href="javascript:void(0);" style="cursor: pointer;color:#FF3300;" onclick="pop_help();"><u>支付订单号</u></a>，发送邮件到：<a id="wifiboost_mail" style="font-size:12px;color:#CC0000;" href="mailto:mjy211@gmail.com?subject=CFE工具箱插件购买&body=这是邮件的内容">mjy211@gmail.com</a></div>
+													<div id="info2" style="font-size:12px;color:#000;">2.复制下面文本框内容，替换xxx为<a type="button" href="javascript:void(0);" style="cursor: pointer;color:#FF3300;" onclick="pop_help();"><u>支付订单号</u></a>，发送邮件到：<a id="wifiboost_mail" style="font-size:12px;color:#CC0000;" href="mailto:mjy211@gmail.com?subject=wifi_boost插件购买&body=这是邮件的内容">mjy211@gmail.com</a></div>
 													<div id="info3" style="font-size:12px;color:#000;">3.目前订单处理为人工，激活码会在一个工作日左右发送到你的邮箱，请耐心等待。</div>
 												</div>
 												<div style="margin-top:5px;padding-bottom:10px;margin-left:4%;width:92%;text-align:left;">
@@ -569,7 +843,7 @@ function pop_help() {
 												</div>
 												<div style="margin-top:5px;padding-bottom:10px;width:100%;text-align:center;">
 													<input class="button_gen" type="button" onclick="pop_help();" value="帮助">
-													<input class="button_gen" type="button" onclick="close_buy();" value="关闭">
+													<input class="button_gen" type="button" onclick="close_mail_buy();" value="返回">
 												</div>
 											</div>
 											<div id="activated_info" class="content_status" style="height:240px;top:150px">
@@ -588,14 +862,14 @@ function pop_help() {
 													<input class="button_gen" type="button" onclick="close_info();" value="关闭">
 												</div>
 											</div>
-											<div class="formfonttitle">wifi boost for arm384<lable id="wifiboost_version"><lable></div>
+											<div class="formfonttitle">wifi boost<lable id="wifiboost_version"><lable></div>
 											<div style="float:right; width:15px; height:25px;margin-top:-20px">
 												<img id="return_btn" onclick="reload_Soft_Center();" align="right" style="cursor:pointer;position:absolute;margin-left:-30px;margin-top:-25px;" title="返回软件中心" src="/images/backprev.png" onMouseOver="this.src='/images/backprevclick.png'" onMouseOut="this.src='/images/backprev.png'"></img>
 											</div>
-											<div style="margin:10px 0 10px 5px;" class="splitLine"></div>
+											<div id="spl1" style="margin:10px 0 10px 5px;" class="splitLine"></div>
 											<div class="SimpleNote">
 												<span>wifi boost可以极大的增强路由器wifi的发射功率，增强信号覆盖范围。
-													<a type="button" href="https://koolshare.cn/thread-184369-1-1.html" target="_blank" class="wifiboost_btn" style="cursor: pointer;margin-left:5px;border:none" >使用交流</a>
+													<a type="button" href="https://koolshare.cn/thread-184369-1-1.html" target="_blank" class="ks_btn" style="cursor: pointer;margin-left:5px;border:none" >使用交流</a>
 													<a type="button" href="https://github.com/koolshare/armsoft/blob/master/wifiboost/Changelog.txt" target="_blank" class="wifiboost_btn" style="cursor: pointer;margin-left:5px;border:none" >更新日志</a>
 												</span>
 											</div>
@@ -615,8 +889,10 @@ function pop_help() {
 														var FWVER = '<% nvram_get("extendno"); %>';
 														if (FWVER.indexOf('koolshare') != -1){
 															$("#wifiboost_ver").html(MODEL + "&nbsp;&nbsp;" + BUILD + "_" + FWVER + "&nbsp;&nbsp;官改固件");
-														}else{
+														}else if(FWVER == "0"){
 															$("#wifiboost_ver").html(MODEL + "&nbsp;&nbsp;" + BUILD + "&nbsp;&nbsp;梅林改版固件");
+														}else{
+															$("#wifiboost_ver").html(MODEL + "&nbsp;&nbsp;" + "<% nvram_get("firmver"); %>" + "." + BUILD + "_" + FWVER + "&nbsp;&nbsp;华硕官方固件");
 														}
 													</script>
 												</tr>
@@ -643,41 +919,32 @@ function pop_help() {
 												<tr>
 													<th>wifi boost激活码</th>
 													<td>
-														<input type="password" maxlength="100" id="wifiboost_key" class="input_ss_table" style="width:350px;font-size: 95%;" readonly onblur="switchType(this, false);" onfocus="switchType(this, true);this.removeAttribute('readonly');" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" >
+														<input type="password" maxlength="100" id="wifiboost_key" class="input_ss_table" style="width:340px;font-size: 95%;" readonly onblur="switchType(this, false);" onfocus="switchType(this, true);this.removeAttribute('readonly');" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" >
 														<button id="wifiboost_active_btn" onclick="boost_now(3);" class="wifiboost_btn" style="width:50px;cursor:pointer;vertical-align: middle;">激活</button>
 														<button id="wifiboost_buy_btn" onclick="open_buy();" class="wifiboost_btn" style="width:80px;cursor:pointer;vertical-align: middle;">购买激活码</button>
 														<button id="wifiboost_authorized_btn" onclick="open_info();" class="wifiboost_btn" style="width:80px;cursor:pointer;vertical-align: middle;">已激活</button>
 													</td>
 												</tr>
 												<tr>
-													<th>修改功率</th>
+													<th>功率调节</th>
 													<td>
-														<input type="checkbox" id="wifiboost_boost_24" style="vertical-align: middle;" checked=true /><lable id="LABLE_24">2.4G</lable>
-														<input type="checkbox" id="wifiboost_boost_52" style="vertical-align: middle;" checked=true /><lable id="LABLE_52">5G</lable>
-														<input type="checkbox" id="wifiboost_boost_58" style="vertical-align: middle;display: none" checked=true /><lable id="LABLE_58" style="display: none;">5G-2</lable>
-														<select id="wifiboost_boost_val" class="input_option" style="vertical-align: middle;">
-															<option value="1">25.00 dBm / 316.23 mw</option>
-															<option value="2">25.25 dBm / 334.97 mw</option>
-															<option value="3">25.50 dBm / 354.81 mw</option>
-															<option value="4">25.75 dBm / 375.84 mw</option>
-															<option value="5">26.00 dBm / 398.11 mw</option>
-															<option value="6">26.25 dBm / 421.70 mw</option>
-															<option value="7">26.50 dBm / 446.68 mw</option>
-															<option value="8">26.75 dBm / 473.15 mw</option>
-															<option value="9" selected="selected">27.00 dBm / 501.19 mw</option>
-															<option value="10">27.25 dBm / 530.88 mw</option>
-															<option value="11">27.50 dBm / 562.34 mw</option>
-															<option value="12">27.75 dBm / 595.66 mw</option>
-															<option value="13">28.00 dBm / 630.96 mw</option>
-															<option value="14">28.25 dBm / 668.34 mw</option>
-															<option value="15">28.50 dBm / 707.95 mw</option>
-															<option value="16">28.75 dBm / 749.89 mw</option>
-															<option value="17">29.00 dBm / 794.33 mw</option>
-															<option value="18">29.25 dBm / 841.40 mw</option>
-															<option value="19">29.50 dBm / 891.25 mw</option>
-															<option value="20">29.75 dBm / 944.06 mw</option>
-															<option value="21">30.00 dBm / 1000 mw</option>
-														</select>
+														<div>
+															<table>
+																<tr>
+																	<td style="border:0px;padding-left:0px;">
+																		<input type="checkbox" id="wifiboost_boost_24" onchange="verifyFields(this, 1);" style="vertical-align: middle;" checked=true /><lable id="LABLE_24">2.4G</lable>
+																		<input type="checkbox" id="wifiboost_boost_52" onchange="verifyFields(this, 1);" style="vertical-align: middle;" checked=true /><lable id="LABLE_52">5G</lable>
+																		<input type="checkbox" id="wifiboost_boost_58" onchange="verifyFields(this, 1);" style="vertical-align: middle;display: none" checked=true /><lable id="LABLE_58" style="display: none;">5G-2</lable>
+																	</td>									
+																	<td style="border:0px;padding-left:8px;">
+																		<div id="slider" style="width:220px;"></div>
+																	</td>									
+																	<td style="border:0px;width:60px;">
+																		<div id="tx_power_desc" style="width:150px;font-size:14px;"></div>
+																	</td>					
+																</tr>
+															</table>
+														</div>
 													</td>
 												</tr>
 											</table>
@@ -685,10 +952,10 @@ function pop_help() {
 											<div class="apply_gen">
 												<input class="button_gen" id="wifiboost_apply_1" onClick="boost_now(1)" type="button" value="boost" />
 												<input class="button_gen" id="wifiboost_apply_2" onClick="boost_now(2)" type="button" value="恢复原厂功率" />
-												<input class="button_gen" id="wifiboost_apply_3" onClick="show_log()" type="button" value="显示日志" /><br /><br />
+												<input class="button_gen" id="wifiboost_apply_3" onClick="show_log()" type="button" value="显示日志" />
 											</div>
-											<div id="warning" style="font-size:14px;margin:20px auto;"></div>
-											<div style="margin:10px 0 10px 5px;" class="splitLine"></div>
+											<div id="warn_msg_1" style="display: none;text-align:center; line-height: 4em;"><i></i></div>
+											<div id="spl2" style="margin:10px 0 10px 5px;" class="splitLine"></div>
 											<div class="SimpleNote">
 												<li id="msg1">wifi boost通过修改机器出厂wlan设置，突破出厂设定的最大发射功率，须知修改出厂wlan设置有风险，由此带来的风险请自行承担！</li>
 												<li id="msg2">更高的发射功率可能影响速率、稳定性等，甚至有烧功放的风险，请勿盲目追求过高的发射功率，建议设定不超过27.00dBm！</li>
