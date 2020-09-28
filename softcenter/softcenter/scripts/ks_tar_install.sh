@@ -89,7 +89,7 @@ install_tar(){
 			# do the right thing
 			detect_package "$MODULE_NAME"
 
-			if [ -f "${SCRIPT_AB_DIR}/.valid" ] && [ "$(cat ${SCRIPT_AB_DIR}/.valid)" == "arm384" ];then
+			if [ -f "${SCRIPT_AB_DIR}/.valid" -a -n "$(grep arm384 ${SCRIPT_AB_DIR}/.valid)" ];then
 				continue
 			else
 				echo_date 你上传的离线安装包不是arm384平台的离线包！！！
