@@ -1,6 +1,6 @@
 Koolshare Asuswrt-Merlin wifiboost Changelog for HND/AXHND platform
 ===========================================
-2.9
+3.3
    - update	同步hnd/axhnd/axhnd.675x版本wifiboost
 
 1.0
