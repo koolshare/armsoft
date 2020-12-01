@@ -1,5 +1,6 @@
 [
 {"module": "linkease", "git_source": "https://github.com/koolshare/rogsoft_LinkEase.git"},
-{"module": "xunyou", "git_source": "https://github.com/devkoolshare/meilin-armv7.git"}
-{"module": "phddns", "git_source": "https://github.com/OrayDev/phddns_for_koolshare_old.git"}
+{"module": "xunyou", "git_source": "https://github.com/devkoolshare/meilin-armv7.git"},
+{"module": "phddns", "git_source": "https://github.com/OrayDev/phddns_for_koolshare_old.git"},
+{"module": "signdog", "git_source": "https://github.com/koolshare/signdog_hnd.git"}
 ]
