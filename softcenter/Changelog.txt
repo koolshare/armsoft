@@ -1,4 +1,10 @@
 Koolshare arm 384 router software center Changelog
 ===========================================
+1.0.9
+   - add	添加实时日志功能，以替代原先的预设设置功能，使插件安装/卸载更直观；
+   - add	添加查看日志功能，位于页面右上角，可以查看多次的插件安装/卸载记录；
+   - add	现在安装插件，如果会提醒jffs空间，并且如果空间不够不会出现以前的裂图占空位的情况；
+   - update	大大提升了插件安装/卸载的速度；
+
 1.0.0
    - add	add software center support for merlin 384 armV7 series
