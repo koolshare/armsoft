@@ -1,8 +1,13 @@
-#! /bin/sh
+#!/bin/sh
 source /koolshare/scripts/base.sh
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 DIR=$(cd $(dirname $0); pwd)
 module=acme
+ROG_86U=0
+BUILDNO=$(nvram get buildno)
+EXT_NU=$(nvram get extendno)
+EXT_NU=$(echo ${EXT_NU%_*} | grep -Eo "^[0-9]{1,10}$")
+[ -z "${EXT_NU}" ] && EXT_NU="0"
 odmpid=$(nvram get odmpid)
 productid=$(nvram get productid)
 [ -n "${odmpid}" ] && MODEL="${odmpid}" || MODEL="${productid}"
@@ -12,7 +17,7 @@ LINUX_VER=$(uname -r|awk -F"." '{print $1$2}')
 _get_type() {
 	local FWTYPE=$(nvram get extendno|grep koolshare)
 	if [ -d "/koolshare" ];then
-		if [ -n $FWTYPE ];then
+		if [ -n "${FWTYPE}" ];then
 			echo "koolshare官改固件"
 		else
 			echo "koolshare梅林改版固件"
@@ -51,6 +56,21 @@ else
 	exit_install 1
 fi
 
+# 判断固件UI类型
+if [ -n "$(nvram get extendno | grep koolshare)" -a "$(nvram get productid)" == "RT-AC86U" -a "${EXT_NU}" -lt "81918" -a "${BUILDNO}" != "386" ];then
+	ROG_86U=1
+fi
+
+if [ "${MODEL}" == "GT-AC5300" -o "${MODEL}" == "GT-AX11000" -o "${MODEL}" == "GT-AX11000_BO4"  -o "$ROG_86U" == "1" ];then
+	# 官改固件，骚红皮肤
+	ROG=1
+fi
+
+if [ "${MODEL}" == "TUF-AX3000" ];then
+	# 官改固件，橙色皮肤
+	TUF=1
+fi
+
 # 安装插件
 cd /tmp
 cp -rf /tmp/acme/acme /koolshare/
@@ -62,7 +82,18 @@ cp -rf /tmp/acme/uninstall.sh /koolshare/scripts/uninstall_acme.sh
 chmod 755 /koolshare/acme/*
 chmod 755 /koolshare/init.d/*
 chmod 755 /koolshare/scripts/acme*
-sed -i '/rogcss/d' /koolshare/webs/Module_acme.asp
+if [ "$ROG" == "1" ];then
+	echo_date "安装ROG皮肤！"
+	continue
+else
+	if [ "$TUF" == "1" ];then
+		echo_date "安装TUF皮肤！"
+		sed -i 's/3e030d/3e2902/g;s/91071f/92650F/g;s/680516/D0982C/g;s/cf0a2c/c58813/g;s/700618/74500b/g;s/530412/92650F/g' /koolshare/webs/Module_${module}.asp >/dev/null 2>&1
+	else
+		echo_date "安装ASUSWRT皮肤！"
+		sed -i '/rogcss/d' /koolshare/webs/Module_${module}.asp >/dev/null 2>&1
+	fi
+fi
 
 # 离线安装需要向skipd写入安装信息
 dbus set acme_version="$(cat $DIR/version)"
