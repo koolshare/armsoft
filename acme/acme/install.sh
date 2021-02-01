@@ -3,6 +3,9 @@ source /koolshare/scripts/base.sh
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 DIR=$(cd $(dirname $0); pwd)
 module=acme
+odmpid=$(nvram get odmpid)
+productid=$(nvram get productid)
+[ -n "${odmpid}" ] && MODEL="${odmpid}" || MODEL="${productid}"
 LINUX_VER=$(uname -r|awk -F"." '{print $1$2}')
 
 # 获取固件类型
