@@ -2,26 +2,51 @@
 source /koolshare/scripts/base.sh
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 DIR=$(cd $(dirname $0); pwd)
+module=acme
+LINUX_VER=$(uname -r|awk -F"." '{print $1$2}')
 
-# 判断路由架构和平台
-case $(uname -m) in
-	armv7l)
-		if [ "`uname -o|grep Merlin`" ] && [ -d "/koolshare" ] && [ -n "`nvram get buildno|grep 384`" ];then
-			echo_date 固件平台【koolshare merlin armv7l 384】符合安装要求，开始安装插件！
+# 获取固件类型
+_get_type() {
+	local FWTYPE=$(nvram get extendno|grep koolshare)
+	if [ -d "/koolshare" ];then
+		if [ -n $FWTYPE ];then
+			echo "koolshare官改固件"
 		else
-			echo_date 本插件适用于【koolshare merlin armv7l 384】固件平台，你的固件平台不能安装！！！
-			echo_date 退出安装！
-			rm -rf /tmp/acme* >/dev/null 2>&1
-			exit 1
+			echo "koolshare梅林改版固件"
 		fi
-		;;
-	*)
-		echo_date 本插件适用于【koolshare merlin armv7l 384】固件平台，你的平台：$(uname -m)不能安装！！！
-		echo_date 退出安装！
-		rm -rf /tmp/acme* >/dev/null 2>&1
-		exit 1
-	;;
-esac
+	else
+		if [ "$(uname -o|grep Merlin)" ];then
+			echo "梅林原版固件"
+		else
+			echo "华硕官方固件"
+		fi
+	fi
+}
+
+exit_install(){
+	local state=$1
+	case $state in
+		1)
+			echo_date "本插件适用于【koolshare merlin armv7l 384/386】固件平台！"
+			echo_date "你的固件平台不能安装！！!"
+			echo_date "本插件支持机型/平台：https://github.com/koolshare/rogsoft#rogsoft"
+			echo_date "退出安装！"
+			rm -rf /tmp/${module}* >/dev/null 2>&1
+			exit 1
+			;;
+		0|*)
+			rm -rf /tmp/${module}* >/dev/null 2>&1
+			exit 0
+			;;
+	esac
+}
+
+# 判断路由架构和平台：koolshare固件，并且linux版本大于等于4.1
+if [ -d "/koolshare" -a -f "/usr/bin/skipd" -a "${LINUX_VER}" -eq "26" ];then
+	echo_date 机型：${MODEL} $(_get_type) 符合安装要求，开始安装插件！
+else
+	exit_install 1
+fi
 
 # 安装插件
 cd /tmp
@@ -46,5 +71,4 @@ dbus set softcenter_module_acme_description="自动部署SSL证书"
 
 # 完成
 echo_date "Let's Encrypt插件安装完毕！"
-rm -rf /tmp/acme* >/dev/null 2>&1
-exit 0
+exit_install
