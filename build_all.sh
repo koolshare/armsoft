@@ -9,7 +9,7 @@ for module in ${modules}; do
 	#echo ${module}
 	if [ -f ${CURR_PATH}/${module}/build.sh ]; then
 		echo "add .valid to ${module}"
-		cd ${CURR_PATH}/${CURR_PATH}
+		cd ${CURR_PATH}/${module}
 		echo arm384 > .valid
 		cd ../..
 		
