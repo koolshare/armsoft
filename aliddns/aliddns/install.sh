@@ -1,33 +1,75 @@
 #!/bin/sh
 source /koolshare/scripts/base.sh
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
-MODEL=$(nvram get productid)
-module=aliddns
 DIR=$(cd $(dirname $0); pwd)
+module=aliddns
+ROG_86U=0
+BUILDNO=$(nvram get buildno)
+EXT_NU=$(nvram get extendno)
+EXT_NU=$(echo ${EXT_NU%_*} | grep -Eo "^[0-9]{1,10}$")
+[ -z "${EXT_NU}" ] && EXT_NU="0"
+odmpid=$(nvram get odmpid)
+productid=$(nvram get productid)
+[ -n "${odmpid}" ] && MODEL="${odmpid}" || MODEL="${productid}"
+LINUX_VER=$(uname -r|awk -F"." '{print $1$2}')
 
-remove_install_file(){
-	rm -rf /tmp/${module}* >/dev/null 2>&1
+# 获取固件类型
+_get_type() {
+	local FWTYPE=$(nvram get extendno|grep koolshare)
+	if [ -d "/koolshare" ];then
+		if [ -n $FWTYPE ];then
+			echo "koolshare官改固件"
+		else
+			echo "koolshare梅林改版固件"
+		fi
+	else
+		if [ "$(uname -o|grep Merlin)" ];then
+			echo "梅林原版固件"
+		else
+			echo "华硕官方固件"
+		fi
+	fi
 }
 
-# 判断路由架构和平台
-case $(uname -m) in
-	armv7l)
-		if [ "$(uname -o|grep Merlin)" ] && [ -d "/koolshare" ] && [ -n "$(nvram get buildno|grep 384)" ];then
-			echo_date 固件平台【koolshare merlin armv7l 384】符合安装要求，开始安装插件！
-		else
-			echo_date 本插件适用于【koolshare merlin armv7l 384】固件平台，你的固件平台不能安装！！！
-			echo_date 退出安装！
-			remove_install_file
+exit_install(){
+	local state=$1
+	case $state in
+		1)
+			echo_date "本插件适用于【koolshare merlin armv7l 384/386】固件平台！"
+			echo_date "你的固件平台不能安装！！!"
+			echo_date "本插件支持机型/平台：https://github.com/koolshare/rogsoft#rogsoft"
+			echo_date "退出安装！"
+			rm -rf /tmp/${module}* >/dev/null 2>&1
 			exit 1
-		fi
-		;;
-	*)
-		echo_date 本插件适用于【koolshare merlin armv7l 384】固件平台，你的平台：$(uname -m)不能安装！！！
-		echo_date 退出安装！
-		remove_install_file
-		exit 1
-	;;
-esac
+			;;
+		0|*)
+			rm -rf /tmp/${module}* >/dev/null 2>&1
+			exit 0
+			;;
+	esac
+}
+
+# 判断路由架构和平台：koolshare固件，并且linux版本大于等于4.1
+if [ -d "/koolshare" -a -f "/usr/bin/skipd" -a "${LINUX_VER}" -eq "26" ];then
+	echo_date 机型：${MODEL} $(_get_type) 符合安装要求，开始安装插件！
+else
+	exit_install 1
+fi
+
+# 判断固件UI类型
+if [ -n "$(nvram get extendno | grep koolshare)" -a "$(nvram get productid)" == "RT-AC86U" -a "${EXT_NU}" -lt "81918" -a "${BUILDNO}" != "386" ];then
+	ROG_86U=1
+fi
+
+if [ "${MODEL}" == "GT-AC5300" -o "${MODEL}" == "GT-AX11000" -o "${MODEL}" == "GT-AX11000_BO4"  -o "$ROG_86U" == "1" ];then
+	# 官改固件，骚红皮肤
+	ROG=1
+fi
+
+if [ "${MODEL}" == "TUF-AX3000" ];then
+	# 官改固件，橙色皮肤
+	TUF=1
+fi
 
 # stop aliddns first
 enable=$(dbus get aliddns_enable)
@@ -45,10 +87,17 @@ cp -rf /tmp/aliddns/res/* /koolshare/res/
 cp -rf /tmp/aliddns/uninstall.sh /koolshare/scripts/uninstall_aliddns.sh
 chmod +x /koolshare/scripts/aliddns*
 chmod +x /koolshare/init.d/*
-if [ "$(nvram get model)" == "GT-AC5300" ] || [ "$(nvram get model)" == "GT-AX11000" ] || [ -n "$(nvram get extendno | grep koolshare)" -a "$(nvram get productid)" == "RT-AC86U" ];then
+if [ "$ROG" == "1" ];then
+	echo_date "安装ROG皮肤！"
 	continue
 else
-	sed -i '/rogcss/d' /koolshare/webs/Module_aliddns.asp >/dev/null 2>&1
+	if [ "$TUF" == "1" ];then
+		echo_date "安装TUF皮肤！"
+		sed -i 's/3e030d/3e2902/g;s/91071f/92650F/g;s/680516/D0982C/g;s/cf0a2c/c58813/g;s/700618/74500b/g;s/530412/92650F/g' /koolshare/webs/Module_${module}.asp >/dev/null 2>&1
+	else
+		echo_date "安装ASUSWRT皮肤！"
+		sed -i '/rogcss/d' /koolshare/webs/Module_${module}.asp >/dev/null 2>&1
+	fi
 fi
 [ ! -L "/koolshare/init.d/S98Aliddns.sh" ] && ln -sf /koolshare/scripts/aliddns_config.sh /koolshare/init.d/S98Aliddns.sh
 
@@ -73,5 +122,4 @@ fi
 
 # 完成
 echo_date 阿里ddns插件安装完毕！
-rm -rf /tmp/aliddns* >/dev/null 2>&1
-exit 0
+exit_install

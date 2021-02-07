@@ -1,6 +1,9 @@
 Koolshare arm 384 router software center Changelog
 ===========================================
 1.1.0
+   - update	优化安装
+
+1.1.0
    - update	同步rogsoft 1.6.7；
 
 1.0.9

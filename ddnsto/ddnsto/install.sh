@@ -49,7 +49,7 @@ exit_install(){
 	esac
 }
 
-# 判断路由架构和平台：koolshare固件，并且linux版本大于等于4.1
+# 判断路由架构和平台
 if [ -d "/koolshare" -a -f "/usr/bin/skipd" -a "${LINUX_VER}" -eq "26" ];then
 	echo_date 机型：${MODEL} $(_get_type) 符合安装要求，开始安装插件！
 else

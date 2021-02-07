@@ -2,8 +2,8 @@
 
 MODULE="koolproxy"
 VERSION="3.8.4.1"
-TITLE="koolproxy"
-DESCRIPTION="koolproxy"
+TITLE="KidsProtect"
+DESCRIPTION="KP: Kids Protect，互联网内容过滤，保护未成年人上网~"
 HOME_URL="Module_koolproxy.asp"
 
 #  # get latest binary
