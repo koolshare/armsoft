@@ -1,9 +1,9 @@
 {
 "version":"0.6",
-"md5":"9ad2fc9e3acf30ae9bfe70d22f607e1e",
+"md5":"88266549c071049f560496121461e178",
 "home_url":"Module_reboothelper.asp",
 "title":"重启助手",
 "description":"解决重启Bug",
 "changelog":"",
-"build_date":"2021-02-08_15:08:09"
+"build_date":"2021-02-08_15:14:48"
 }
