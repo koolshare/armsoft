@@ -19,7 +19,7 @@ LINUX_VER=$(uname -r|awk -F"." '{print $1$2}')
 _get_type() {
 	local FWTYPE=$(nvram get extendno|grep koolshare)
 	if [ -d "/koolshare" ];then
-		if [ -n $FWTYPE ];then
+		if [ -n "${FWTYPE}" ];then
 			echo "koolshare官改固件"
 		else
 			echo "koolshare梅林改版固件"
