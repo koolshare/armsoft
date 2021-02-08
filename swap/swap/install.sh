@@ -37,7 +37,7 @@ exit_install(){
 		1)
 			echo_date "本插件适用于【koolshare merlin armv7l 384/386】固件平台！"
 			echo_date "你的固件平台不能安装！！!"
-			echo_date "本插件支持机型/平台：https://github.com/koolshare/rogsoft#rogsoft"
+			echo_date "本插件支持机型/平台：https://github.com/koolshare/armsoft#armsoft"
 			echo_date "退出安装！"
 			rm -rf /tmp/${module}* >/dev/null 2>&1
 			exit 1
