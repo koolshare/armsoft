@@ -1,5 +1,8 @@
 Koolshare Asuswrt-Merlin wifiboost Changelog for HND/AXHND platform
 ===========================================
+3.4
+   - update	支持提货码激活；
+
 3.3
    - update	同步hnd/axhnd/axhnd.675x版本wifiboost
 

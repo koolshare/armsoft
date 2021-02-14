@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/sh
 source /koolshare/scripts/base.sh
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 DIR=$(cd $(dirname $0); pwd)
@@ -37,7 +37,7 @@ exit_install(){
 	local state=$1
 	case $state in
 		1)
-			echo_date "本插件适用于【koolshare 梅林改/官改 hnd/axhnd/axhnd.675x】固件平台！"
+			echo_date "本插件适用于【koolshare merlin armv7l 384/386】固件平台！"
 			echo_date "你的固件平台不能安装！！!"
 			echo_date "本插件支持机型/平台：https://github.com/koolshare/armsoft#armsoft"
 			echo_date "退出安装！"
@@ -107,6 +107,7 @@ dbus set softcenter_module_${module}_title="${TITLE}"
 dbus remove wifiboost_warn
 sync
 echo_date "【${TITLE}】插件正在安装，请稍后！"
+sleep 1
 #cd /koolshare/bin && ./wifiboost install
 if [ -f "/koolshare/bin/start-stop-daemon" ];then
 	/koolshare/bin/start-stop-daemon -S -q -b -x /koolshare/bin/wifiboost -- install

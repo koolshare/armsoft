@@ -212,6 +212,10 @@ var dbus;
 var pay_server = '42.192.18.234';
 var pay_port = '8083';
 var online_ver;
+String.prototype.myReplace = function(f, e){
+	var reg = new RegExp(f, "g"); 
+	return this.replace(reg, e); 
+}
 function init() {
 	show_menu(menu_hook);
 	detect_brower();
@@ -289,7 +293,7 @@ function register_event(){
 			var current_maxp52 = '<% nvram_get("1:maxp5gb0a0"); %>';
 			var current_maxp58 = '<% nvram_get("2:maxp5gb0a0"); %>';
 		}
-	}else if(odm == "RT-AX55"){
+	}else if(odm == "RT-AX55" || odm == "RT-AX56U"){
 		// wuo wifi router new format
 		var current_maxp24 = '<% nvram_get("sb/0/maxp2ga0"); %>';
 		var current_maxp52 = '<% nvram_get("sb/1/maxp5gb0a0"); %>';
@@ -541,6 +545,8 @@ function get_wl_status(){
 }
 function boost_now(action){
 	var dbus_new = {};
+	var current_url = window.location.href;
+	net_address = current_url.split("/Module")[0];
 	if(odm == "GT-AC5300" || odm == "GT-AX11000" || odm == "GT-AX11000_BO4" || odm == "RT-AX92U" || odm == "RT-AX95Q" || odm == "RT-AC5300"){
 		if (E("wifiboost_boost_24").checked == false && E("wifiboost_boost_52").checked == false && E("wifiboost_boost_58").checked == false){
 			alert("请至少选择一个你要修改功率的wifi信号！");
@@ -556,6 +562,39 @@ function boost_now(action){
 	if(!wb_key){
 		alert("请先购买激活码并输入后再点击激活按钮！");
 		return false;
+	}
+	if(action == 3 && wb_key.indexOf('wifiboost-') != -1){
+		if(wb_key.length == "46" && wb_key.myReplace("-", "").length == "41"){
+
+			msg = '';
+			msg += '<span style="font-size: 18px;">你正在使用提货码进行激活</span>';
+			msg += '<br/>';
+			msg += '<br/>';
+			msg += '提货码：<span style="color: #CC3300">' + wb_key + '</span>';
+			msg += '<br/>';
+			msg += '<br/>';
+			msg += '提示：一个提货码只能用于一台路由器的wifi boost激活；';
+			msg += '<br/>';
+			msg += '点击立即激活，你将会获得wifi boost激活码，同时提货码将会失效。';
+			
+			require(['/res/layer/layer.js'], function(layer) {
+				layer.confirm(msg, {
+					btn: ['立即激活', '取消'],
+					shade: 0.8,
+					maxWidth: '600px'
+				}, function(index) {
+					layer.close(index);
+					location.href = "http://" + pay_server + ":" + pay_port + "/pay.php?paytype=3&uuid=" + wb_key + "&mcode=" + dbus["wifiboost_mcode"].replace(/\+/g, "-") + "&router=" + net_address;
+					return true;
+				});
+			});
+			E("wifiboost_key").value = "";
+			return true;
+		}else{
+			E("wifiboost_key").value = "";
+			alert("请输入正确格式的提货码！");
+			return false;
+		}
 	}
 	if (wb_key.indexOf('wb_') == -1){
 		alert("请输入正确格式的激活码！");
@@ -651,7 +690,7 @@ function get_log(flag){
 		success: function(response) {
 			var retArea = E("log_content");
 			if (response.search("XU6J03M6") != -1) {
-				retArea.value = response.replace("XU6J03M6", " ");
+				retArea.value = response.myReplace("XU6J03M6", " ");
 				E("ok_button").style.visibility = "visible";
 				retArea.scrollTop = retArea.scrollHeight;
 				if(flag == 1){
@@ -665,7 +704,7 @@ function get_log(flag){
 				return false;
 			}
 			setTimeout("get_log(" + flag + ");", 200);
-			retArea.value = response.replace("XU6J03M6", " ");
+			retArea.value = response.myReplace("XU6J03M6", " ");
 			retArea.scrollTop = retArea.scrollHeight;
 		},
 		error: function(xhr) {
@@ -746,13 +785,14 @@ function open_buy() {
 	var current_url = window.location.href;
 	net_address = current_url.split("/Module")[0];
 	
-	note = "<h2><font color='#FF6600'>【wifi boost】是一款付费插件，Arm384版本价格为20元人民币。</font></h2>";
+	note = "<h2><font color='#FF6600'>【wifi boost】是一款付费插件，arm384/386版本价格为20元人民币。</font></h2>";
 	note += "<hr>";
-	note += "<h3>建议选择 <font color='#22ab39'>微信支付</font> / <font color='#1678ff'>支付宝</font> 购买，可以即时激活【wifi boost】！</h2>";
-	note += "<li>建议在PC上使用chrome浏览器进行购买、激活操作，以免出现未知问题；</li>";
+	note += "<h3>选择 <font color='#22ab39'>微信支付</font> / <font color='#1678ff'>支付宝</font> 购买，可以即时激活【wifi boost】！</h3>";
+	note += "<h5><li>建议在PC上使用chrome浏览器进行购买、激活操作，以免出现未知问题；</li>";
 	note += "<li>扫码支付后，会立即跳转到激活码发放页面，根据页面提示即可激活插件；</li>";
-	note += "<li>如遇到无法支付、无法获得激活码等问题，可以联系下方客服邮箱解决。</li>";
+	note += "<li>如遇到无法支付、无法获得激活码等问题，可以联系下方客服邮箱解决。</li></h5>";
 	note += "<h4 style='text-align:right'>客服邮箱：<a style='color:#22ab39;' href='mailto:mjy211@gmail.com?subject=wifi boost咨询&body=这是邮件的内容'>mjy211@gmail.com</a></h4>";
+	//note += "<h5>如果你已经有<font color='#FF6600'>wifiboost-xxx-xxx-xxx-xxx-xxx</font>形式的提货码，请跳过支付流程，直接在激活码栏内输入提货码即可获得激活码。</h5>";
 	require(['/res/layer/layer.js'], function(layer) {
 		layer.open({
 			type: 0,
@@ -803,8 +843,8 @@ function pop_help() {
 			btnAlign: 'c',
 			moveType: 1,
 			content: '<div style="padding: 50px; line-height: 22px; background-color: #393D49; color: #fff; font-weight: 300;">\
-				<b>wifi boost for arm384</b><br><br>\
-				wifi boost是一款付费插件，此版本支持arm384平台的机器，详情：<a style="color:#e7bd16" target="_blank" href="https://github.com/koolshare/armsoft#%E6%9C%BA%E5%9E%8B%E6%94%AF%E6%8C%81"><u>机型支持</u></a><br>\
+				<b>wifi boost for arm384/386</b><br><br>\
+				wifi boost是一款付费插件，此版本支持arm384/386平台的机器，详情：<a style="color:#e7bd16" target="_blank" href="https://github.com/koolshare/armsoft#%E6%9C%BA%E5%9E%8B%E6%94%AF%E6%8C%81"><u>机型支持</u></a><br>\
 				使用本插件有任何问题，可以前往<a style="color:#e7bd16" target="_blank" href="https://koolshare.cn/forum-98-1.html"><u>koolshare论坛插件板块</u></a>反馈~<br><br>\
 				● 微信订单号获取：<span style="color:#e7bd16">我 → 支付 → 钱包 → 账单 → 点击付款订单 → 转账单号</span><br>\
 				● 支付宝订单号获取：<span style="color:#e7bd16">我的 → 账单 → 点击付款订单 → 订单号</span><br><br>\
@@ -861,7 +901,7 @@ function verifyFields(r) {
 										<div>&nbsp;</div>
 										<div id="qrcode_show" class="content_status">
 											<div style="text-align: center;margin-top:10px">
-												<span id="qrtitle" style="font-size:16px;color:#000;">wifi boost是一款付费插件，arm384版本价格为20元人民币。</span>
+												<span id="qrtitle" style="font-size:16px;color:#000;">wifi boost是一款付费插件，arm384/386版本价格为20元人民币。</span>
 											</div>
 											<div id="qrcode" style="width:520px;height:250px;text-align:center;overflow:hidden" >
 												<canvas width="520px" height="360px" style="display: none;"></canvas>
@@ -923,14 +963,21 @@ function verifyFields(r) {
 													var MODEL = '<% nvram_get("odmpid"); %>' || '<% nvram_get("productid"); %>';
 													var BUILD = '<% nvram_get("buildno"); %>'
 													var FWVER = '<% nvram_get("extendno"); %>';
-													if (FWVER.indexOf('koolshare') != -1){
-														$("#wifiboost_ver").html(MODEL + "&nbsp;&nbsp;" + BUILD + "_" + FWVER + "&nbsp;&nbsp;官改固件");
-													}else if(FWVER == "0"){
-														$("#wifiboost_ver").html(MODEL + "&nbsp;&nbsp;" + BUILD + "&nbsp;&nbsp;梅林改版固件");
+													var RC_SUPPORT = '<% nvram_get("rc_support"); %>';
+													if (FWVER.indexOf('.') != -1){
+														if(RC_SUPPORT.indexOf("koolsoft") != -1){
+															$("#wifiboost_ver").html(MODEL + "&nbsp;&nbsp;" + BUILD + "&nbsp;&nbsp;官改固件");
+														}else{
+															$("#wifiboost_ver").html(MODEL + "&nbsp;&nbsp;" + BUILD + "&nbsp;&nbsp;华硕官方固件");
+														}
 													}else{
-														$("#wifiboost_ver").html(MODEL + "&nbsp;&nbsp;" + "<% nvram_get("firmver"); %>" + "." + BUILD + "_" + FWVER + "&nbsp;&nbsp;华硕官方固件");
+														if(RC_SUPPORT.indexOf("koolsoft") != -1){
+															$("#wifiboost_ver").html(MODEL + "&nbsp;&nbsp;" + BUILD + "&nbsp;&nbsp;梅林改版固件");
+														}else{
+															$("#wifiboost_ver").html(MODEL + "&nbsp;&nbsp;" + BUILD + "&nbsp;&nbsp;梅林原版固件");
+														}
 													}
-												</script>
+												</script>	
 											</tr>
 											<tr>
 												<th>网卡温度</th>
@@ -953,9 +1000,9 @@ function verifyFields(r) {
 												<td><span id="wifiboost_wl_ver"></span></td>
 											</tr>
 											<tr>
-												<th>wifi boost激活码</th>
+												<th>wifi boost 激活码</th>
 												<td>
-													<input type="password" maxlength="100" id="wifiboost_key" class="input_ss_table" style="width:340px;font-size: 95%;" readonly onblur="switchType(this, false);" onfocus="switchType(this, true);this.removeAttribute('readonly');" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" >
+													<input type="password" maxlength="100" id="wifiboost_key" class="input_ss_table" title="此处输入wifi boost激活码或者提货码！" style="width:340px;font-size: 95%;" readonly onblur="switchType(this, false);" onfocus="switchType(this, true);this.removeAttribute('readonly');" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" >
 													<button id="wifiboost_active_btn" onclick="boost_now(3);" class="wifiboost_btn" style="width:50px;cursor:pointer;vertical-align: middle;">激活</button>
 													<button id="wifiboost_buy_btn" onclick="open_buy();" class="wifiboost_btn" style="width:80px;cursor:pointer;vertical-align: middle;">购买激活码</button>
 													<button id="wifiboost_authorized_btn" onclick="open_info();" class="wifiboost_btn" style="width:80px;cursor:pointer;vertical-align: middle;">已激活</button>
