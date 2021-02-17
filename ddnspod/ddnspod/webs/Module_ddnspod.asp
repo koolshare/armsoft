@@ -25,7 +25,7 @@
 <script type="text/javascript" src="/res/softcenter.js"></script>
 <script type="text/javascript">
 var db_ddnspod_ = {};
-var params_input = ["ddnspod_config_id", "ddnspod_config_token", "ddnspod_config_domain", "ddnspod_refresh_time"];
+var params_input = ["ddnspod_config_id", "ddnspod_config_token", "ddnspod_config_domain", "ddnspod_refresh_time", "ddnspod_config_type"];
 var params_check = ["ddnspod_enable"];
 
 function init() {
@@ -219,6 +219,15 @@ function menu_hook(title, tab) {
 														<td colspan="2">基本设置</td>
 													</tr>
 												</thead>
+												<tr>
+													<th width="35%">IP type</th>
+													<td>
+														<select name="ddnspod_config_type" id="ddnspod_config_type" class="input_option">
+															<option value="A">IPv4</option>
+															<option value="AAAA">IPv6</option>
+														</select>
+													</td>
+												</tr>
 												<tr>
 													<th width="35%">dnspod ID</th>
 													<td>
