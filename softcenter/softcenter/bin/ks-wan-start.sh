@@ -1,34 +1,29 @@
 #!/bin/sh
 
-export KSROOT=/koolshare
-source $KSROOT/scripts/base.sh
+source /koolshare/scripts/base.sh
 
 ACTION=$1
 
-if [ $# -lt 1 ]; then
-    printf "Usage: $0 {start|stop|restart|reconfigure|check|kill}\n" >&2
-    exit 1
-fi
+[ $# -lt 1 ] && exit 1
 
 [ $ACTION = stop -o $ACTION = restart -o $ACTION = kill ] && ORDER="-r"
 
 for i in $(find /koolshare/init.d/ -name 'S*' | sort $ORDER ) ;
 do
-    case "$i" in
-        S* | *.sh )
-            # Source shell script for speed.
-            trap "" INT QUIT TSTP EXIT
-            #set $1
-            logger "plugin_wan_log_1 $i"
-            if [ -r "$i" ]; then
-            $i $ACTION
-            fi
-            ;;
-        *)
-            # No sh extension, so fork subprocess.
-            logger "plugin_wan_log_2 $i"
-            . $i $ACTION
-            ;;
-    esac
+	case "$i" in
+		S* | *.sh )
+			# Source shell script for speed.
+			trap "" INT QUIT TSTP EXIT
+			if [ -r "$i" ]; then
+				_LOG "[软件中心]-[${0##*/}]: $i $ACTION"
+				$i $ACTION
+			fi
+			;;
+		*)
+			# No sh extension, so fork subprocess.
+			_LOG "[软件中心]-[${0##*/}]: . $i $ACTION"
+			. $i $ACTION
+			;;
+	esac
 done
 

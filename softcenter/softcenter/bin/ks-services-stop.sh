@@ -2,10 +2,10 @@
 
 source /koolshare/scripts/base.sh
 
-for i in $(find /koolshare/init.d/ -name 'V*' | sort -n);
+for i in $(find /koolshare/init.d/ -name 'T*' | sort -rn);
 do
 	case "$i" in
-		V* | *.sh )
+		T* | *.sh )
 			# Source shell script for speed.
 			trap "" INT QUIT TSTP EXIT
 			if [ -r "$i" ]; then

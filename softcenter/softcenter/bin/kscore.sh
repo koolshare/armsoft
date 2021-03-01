@@ -7,7 +7,6 @@ sh /koolshare/perp/perp.sh
 nvram set jffs2_scripts=1
 nvram commit
 
-#============================================
 # check start up scripts 
 if [ ! -f "/jffs/scripts/wan-start" ];then
 	cat > /jffs/scripts/wan-start <<-EOF
@@ -45,12 +44,23 @@ fi
 if [ ! -f "/jffs/scripts/services-start" ];then
 	cat > /jffs/scripts/services-start <<-EOF
 	#!/bin/sh
-	/koolshare/bin/ks-services-start.sh start
+	/koolshare/bin/ks-services-start.sh
 	EOF
 else
-	STARTCOMAND4=$(cat /jffs/scripts/services-start | grep -c "/koolshare/bin/ks-services-start.sh start")
-	[ "$STARTCOMAND4" -gt "1" ] && sed -i '/ks-services-start.sh/d' /jffs/scripts/services-start && sed -i '1a /koolshare/bin/ks-services-start.sh start' /jffs/scripts/services-start
-	[ "$STARTCOMAND4" == "0" ] && sed -i '1a /koolshare/bin/ks-services-start.sh start' /jffs/scripts/services-start
+	STARTCOMAND4=$(cat /jffs/scripts/services-start | grep -c "/koolshare/bin/ks-services-start.sh")
+	[ "$STARTCOMAND4" -gt "1" ] && sed -i '/ks-services-start.sh/d' /jffs/scripts/services-start && sed -i '1a /koolshare/bin/ks-services-start.sh' /jffs/scripts/services-start
+	[ "$STARTCOMAND4" == "0" ] && sed -i '1a /koolshare/bin/ks-services-start.sh' /jffs/scripts/services-start
+fi
+
+if [ ! -f "/jffs/scripts/services-stop" ];then
+	cat > /jffs/scripts/services-stop <<-EOF
+	#!/bin/sh
+	/koolshare/bin/ks-services-stop.sh
+	EOF
+else
+	STARTCOMAND5=$(cat /jffs/scripts/services-stop | grep -c "/koolshare/bin/ks-services-stop.sh")
+	[ "$STARTCOMAND5" -gt "1" ] && sed -i '/ks-services-stop.sh/d' /jffs/scripts/services-stop && sed -i '1a /koolshare/bin/ks-services-stop.sh' /jffs/scripts/services-stop
+	[ "$STARTCOMAND5" == "0" ] && sed -i '1a /koolshare/bin/ks-services-stop.sh' /jffs/scripts/services-stop
 fi
 
 if [ ! -f "/jffs/scripts/unmount" ];then
@@ -59,9 +69,9 @@ if [ ! -f "/jffs/scripts/unmount" ];then
 	/koolshare/bin/ks-unmount.sh \$1
 	EOF
 else
-	STARTCOMAND5=$(cat /jffs/scripts/unmount | grep -c "/koolshare/bin/ks-unmount.sh $1")
-	[ "$STARTCOMAND5" -gt "1" ] && sed -i '/ks-unmount.sh/d' /jffs/scripts/unmount && sed -i '1a /koolshare/bin/ks-unmount.sh $1' /jffs/scripts/unmount
-	[ "$STARTCOMAND5" == "0" ] && sed -i '1a /koolshare/bin/ks-unmount.sh $1' /jffs/scripts/unmount
+	STARTCOMAND6=$(cat /jffs/scripts/unmount | grep -c "/koolshare/bin/ks-unmount.sh \$1")
+	[ "$STARTCOMAND6" -gt "1" ] && sed -i '/ks-unmount.sh/d' /jffs/scripts/unmount && sed -i '1a /koolshare/bin/ks-unmount.sh $1' /jffs/scripts/unmount
+	[ "$STARTCOMAND6" == "0" ] && sed -i '1a /koolshare/bin/ks-unmount.sh $1' /jffs/scripts/unmount
 fi
 chmod +x /jffs/scripts/*
-#============================================
+sync
