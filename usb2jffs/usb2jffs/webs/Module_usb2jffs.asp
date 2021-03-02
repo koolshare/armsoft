@@ -23,7 +23,7 @@
 <script type="text/javascript" language="JavaScript" src="/client_function.js"></script>
 <script type="text/javascript" src="/res/softcenter.js"></script>
 <style>
-	.show-btn1, .show-btn2, .show-btn3 {
+	.show-btn1, .show-btn2, .show-btn3, .show-btn4, .show-btn5 {
 		font-size:10pt;
 		color: #fff;
 		padding: 10px 3.75px;
@@ -37,7 +37,7 @@
 		border: 1px solid #91071f; /* W3C rogcss */
 		background: none; /* W3C rogcss */
 	}
-	.show-btn1:hover, .show-btn2:hover, .show-btn3:hover, .active {
+	.show-btn1:hover, .show-btn2:hover, .show-btn3:hover, .show-btn4:hover, .show-btn5:hover, .active {
 		border: 1px solid #2f3a3e;
 		background: #2f3a3e;
 		border: 1px solid #91071f; /* W3C rogcss */
@@ -83,7 +83,7 @@
 		background: linear-gradient(to bottom, #27c9c9  0%, #279fd9 100%);
 		background: linear-gradient(to bottom, #cf0a2c  0%, #91071f 100%); /* W3C rogcss */
 	}
-	#usb2jffs_disks_status, #usb2jffs_mount_status, #tablet_1, #tablet_2, #tablet_3 { border:1px solid #91071f; } /* W3C rogcss */
+	#usb2jffs_disks_status, #usb2jffs_mount_status, #tablet_1, #tablet_2, #tablet_3, #tablet_4, #tablet_5 { border:1px solid #91071f; } /* W3C rogcss */
 	.input_option{
 		vertical-align:middle;
 		font-size:12px;
@@ -112,7 +112,7 @@ var dbus = {};
 var _responseLen;
 var noChange = 0;
 var x = 5;
-var params_inp = ['usb2jffs_mount_path', 'usb2jffs_sync', 'usb2jffs_week', 'usb2jffs_day', 'usb2jffs_inter_min', 'usb2jffs_inter_hour', 'usb2jffs_inter_day', 'usb2jffs_inter_pre', 'usb2jffs_custom', 'usb2jffs_time_hour', 'usb2jffs_time_min'];
+var params_inp = ['usb2jffs_mount_path', 'usb2jffs_sync', 'usb2jffs_week', 'usb2jffs_day', 'usb2jffs_inter_min', 'usb2jffs_inter_hour', 'usb2jffs_inter_day', 'usb2jffs_inter_pre', 'usb2jffs_custom', 'usb2jffs_time_hour', 'usb2jffs_time_min', 'usb2jffs_backup_file'];
 var params_chk = ['usb2jffs_rsync'];
 var usbDevicesList;
 var mounted;
@@ -205,9 +205,9 @@ function get_dbus_data() {
 			dbus = data.result[0];
 			conf2obj();
 			get_disks();
+			check_status();
 			toggle_func();
 			update_visibility();
-			check_status();
 		},
 		error: function(XmlHttpRequest, textStatus, errorThrown) {
 			console.log(XmlHttpRequest.responseText);
@@ -229,45 +229,94 @@ function check_status() {
 		success: function(response) {
 			$("#_jffs_status").html(response.result.split("@@")[0]);
 			$("#_mount_status").html(response.result.split("@@")[1]);
+			$('.sbt0').hide();
+			$('.sbt1').hide();
+			$('.sbt2').hide();
 			var MOUNT_FLAG = response.result.split("@@")[2];
 			if (MOUNT_FLAG == 1){
 				mounted = "1";
-				$('.sbt0').hide();
-				$('.sbt1').show();
-				$('#usb2jffs_sync_tr').show();
-				$('#usb2jffs_rsync_tr').show();
-			}else{
+				if($('.show-btn1').hasClass("active")){
+					$('.sbt0').hide();
+					$('.sbt1').show();
+					$('.sbt2').show();
+				}
+			}else if(MOUNT_FLAG == 0){
 				mounted = "0";
-				$('.sbt0').show();
-				$('.sbt1').hide();
-				$('#usb2jffs_sync_tr').hide();
-				$('#usb2jffs_rsync_tr').hide();
+				if($('.show-btn1').hasClass("active")){
+					$('.sbt0').show();
+					$('.sbt1').hide();
+					$('.sbt2').hide();
+				}
+			}else if(MOUNT_FLAG == 2){
+				mounted = "2";
+				if($('.show-btn1').hasClass("active")){
+					$('.sbt0').show();
+					$('.sbt1').hide();
+					$('.sbt2').show();
+				}
+			}
+		}
+	});
+}
+function get_backup_status() {
+	// get snap file
+	var id = parseInt(Math.random() * 100000000);
+	var postData = {"id": id, "method": "usb2jffs_backup_status.sh", "params":[1], "fields": dbus};
+	$.ajax({
+		type: "POST",
+		async: true,
+		cache: false,
+		url: "/_api/",
+		data: JSON.stringify(postData),
+		dataType: "json",
+		success: function(response) {
+			option_file = response.result.split( '>' );
+			//console.log(option_file);
+			$("#usb2jffs_backup_file").find('option').remove().end();
+			for ( var i = 0; i < option_file.length; i++){
+				$("#usb2jffs_backup_file").append('<option value="' + option_file[i] + '">' + option_file[i]  + '</option>');
 			}
 		}
 	});
 }
 
 function select_tablet(w){
-	for (var i = 1; i <= 3; i++) {
+	for (var i = 1; i <= 5; i++) {
+		//将所有标签页移除选中，隐藏所有tablet，隐藏所有button
 		$('.show-btn' + i).removeClass('active');
 		$('#tablet_' + i).hide();
 		$('.bt' + i).hide();
 	}
+	//显示对应标签的内容
 	$('.show-btn' + w).addClass('active');
 	$('#tablet_' + w).show();
-	$('.bt' + w).show();
-	if(mounted == 1 && w == 1){
+	if(w != 1){
+		$('.bt' + w).show();
 		$('.sbt0').hide();
-		$('.sbt1').show();
-	}
-	if(mounted == 0 && w == 1){
-		$('.sbt0').show();
 		$('.sbt1').hide();
+		$('.sbt2').hide();
+	}else if(w == 1){
+		if(mounted == 1){
+			//挂载
+			$('.sbt0').hide();
+			$('.sbt1').show();
+			$('.sbt2').show();
+		}else if(mounted == 0){
+			//未挂载，需要创建
+			$('.sbt0').show();
+			$('.sbt1').hide();
+			$('.sbt2').hide();
+		}else if(mounted == 2){
+			//未挂载，不需要创建
+			$('.sbt0').show();
+			$('.sbt1').hide();
+			$('.sbt2').show();
+		}
 	}
 }
 
 function toggle_func(){
-	//$('.show-btn1').addClass('active');
+	$('.show-btn1').addClass('active');
 	$(".show-btn1").click(
 		function() {
 			select_tablet(1);
@@ -275,13 +324,31 @@ function toggle_func(){
 	$(".show-btn2").click(
 		function() {
 			select_tablet(2);
-			get_log(1);
 		});
 	$(".show-btn3").click(
 		function() {
 			select_tablet(3);
+			get_backup_status();
 		});
-	$('#show_btn1').trigger('click');
+	$(".show-btn4").click(
+		function() {
+			select_tablet(4);
+			get_log(1);
+		});
+	$(".show-btn5").click(
+		function() {
+			select_tablet(5);
+		});
+	//$('#show_btn1').trigger('click');
+}
+
+function update_visibility() {
+	var Ti = E("usb2jffs_sync").value;
+	var In = E("usb2jffs_inter_pre").value;
+	var items = ["re1", "re2", "re3", "re4", "re4_1", "re4_2", "re4_3", "re5"];
+	for ( var i = 1; i < items.length; ++i ) $("." + items[i]).hide();
+	if (Ti != "0") $(".re" + Ti).show();
+	if (Ti == "4") $(".re4_" + In).show();
 }
 
 function save(flag) {
@@ -306,8 +373,21 @@ function save(flag) {
 			dbus_new["usb2jffs_warn_2"] = "1"
 		}
 	}
+	if(flag == 8 ){
+		if(mounted == 0){
+			alert("错误！没有检测到USB磁盘挂载在/jffs，无法备份！\n\n请先挂载USB磁盘到/jffs后再使用本功能！");
+			return false;
+		}
+	}
+	if(flag == 9 || flag == 10 || flag == 11){
+		if(!E("usb2jffs_backup_file").value){
+			alert("没有备份文件！");
+			return false;
+		}
+	}
 	if(flag != 4){
-		$("#show_btn2").trigger("click");
+		// E("log_content_text") == "";
+		// $("#show_btn4").trigger("click");
 		// collect data from input and checkbox
 		for (var i = 0; i < params_inp.length; i++) {
 			dbus_new[params_inp[i]] = E(params_inp[i]).value;
@@ -328,10 +408,26 @@ function save(flag) {
 		success: function(response){
 			//console.log(response);
 			if (response.result == id){
-				if(flag != 4){
-					get_log();
-				}else{
+				if(flag == 11){
+					file_name = E("usb2jffs_backup_file").value;
+					var a = document.createElement('A');
+					a.href = "_root/files/" + file_name;
+					a.download = file_name;
+					document.body.appendChild(a);
+					a.click();
+					document.body.removeChild(a);
+				}
+				else if(flag == 9 || flag == 10){
 					get_log(1);
+					$("#show_btn4").trigger("click");
+				}
+				else if(flag != 4){
+					get_log(1);
+					$("#show_btn4").trigger("click");
+				}
+				else{
+					get_log(1);
+					$("#show_btn4").trigger("click");
 				}
 			}else{
 				alert("脚本运行错误！");
@@ -341,6 +437,73 @@ function save(flag) {
 		error: function(XmlHttpRequest, textStatus, errorThrown){
 			console.log(XmlHttpRequest.responseText);
 			alert("脚本运行错误！");
+		}
+	});
+}
+
+function upload_backup() {
+	// .koolshare_jffs_20210221_092734.tar
+	var file_name = $("#file").val();
+
+	if(!file_name){
+		alert('文件为空，请选择备份文件！');
+		return false;
+	}
+	
+	file_name = file_name.split('\\');
+	file_name = file_name[file_name.length - 1];
+	//console.log("file_name: ", file_name);
+
+	file_suffix = file_name.split('\.');
+	file_suffix = file_suffix[file_suffix.length - 1];
+	//console.log("file_suffix: ", file_suffix);
+	if(file_suffix != "tar"){
+		alert('备份文件的格式不正确！\n\n正确的文件名示例：.koolshare_jffs_20210221_092734.tar');
+		return false;
+	}
+	
+	var regExp = /\.koolshare_jffs_/g;
+	if(!regExp.test(file_name)){
+		alert('备份文件的文件名前缀不正确！\n\n正确的文件名示例：.koolshare_jffs_20210221_092734.tar');
+		return false;	
+	}
+
+	document.getElementById('file_info').style.display = "none";
+	var formData = new FormData();
+	formData.append(file_name, $('#file')[0].files[0]);
+	//changeButton(true);
+	$.ajax({
+		url: '/_upload',
+		type: 'POST',
+		cache: false,
+		data: formData,
+		processData: false,
+		contentType: false,
+		complete: function(res) {
+			if (res.status == 200) {
+				var Info = {
+					"usb2jffs_backupfile_name": file_name,
+				};
+				document.getElementById('file_info').style.display = "block";
+				restore_backup(Info);
+			}
+		}
+	});
+}
+
+function restore_backup(Info) {
+	var id = parseInt(Math.random() * 100000000);
+	var postData = {"id": id, "method": "usb2jffs_config.sh", "params": [12], "fields": Info };
+	$.ajax({
+		type: "POST",
+		url: "/_api/",
+		data: JSON.stringify(postData),
+		dataType: "json",
+		success: function(response) {
+			if(response.result == id){
+				get_log(1);
+				$("#show_btn4").trigger("click");
+			}
 		}
 	});
 }
@@ -359,6 +522,7 @@ function get_log(flag){
 				if(flag){
 					return true;
 				}else{
+					//return true;
 					setTimeout("refreshpage();", 2500);
 				}
 			}
@@ -370,7 +534,7 @@ function get_log(flag){
 			if (noChange > 50) {
 				return false;
 			} else {
-				setTimeout("get_log();", 600);
+				setTimeout("get_log(" + flag + ");", 300);
 			}
 			//retArea.value = response;
 			retArea.scrollTop = retArea.scrollHeight;
@@ -386,15 +550,6 @@ function get_log(flag){
 			}
 		}
 	});
-}
-
-function update_visibility() {
-	var Ti = E("usb2jffs_sync").value;
-	var In = E("usb2jffs_inter_pre").value;
-	var items = ["re1", "re2", "re3", "re4", "re4_1", "re4_2", "re4_3", "re5"];
-	for ( var i = 1; i < items.length; ++i ) $("." + items[i]).hide();
-	if (Ti != "0") $(".re" + Ti).show();
-	if (Ti == "4") $(".re4_" + In).show();
 }
 
 (function($) {
@@ -535,17 +690,6 @@ function reload_Soft_Center(){
 function help(){
 	window.open('https://koolshare.cn/forum-98-1.html');
 }
-function cleanCode(){
-	$("#qrcode_show").fadeOut(300);
-}
-function donate(w){
-	if(!w){
-		$("#qrcode_show").css("margin-top", "820px");
-	}else{
-		$("#qrcode_show").css("margin-top", "-40px");
-	}
-	$("#qrcode_show").fadeIn(300);
-}
 </script>
 </head>
 <body onload="init();">
@@ -583,9 +727,6 @@ function donate(w){
 									<td bgcolor="#4D595D" colspan="3" valign="top">
 										<div>&nbsp;</div>
 										<div id="qrcode_show" class="content_status" style="box-shadow: 3px 3px 10px #000;margin-top:-40px;margin-left:120px;display: none;width:520px;height:340px;background: #fff;">
-											<div style="text-align: center;margin-top:10px">
-												<span id="qrtitle" style="font-size:16px;color:#000;">捐赠：狗粮 → sadog</span>
-											</div>
 											<div id="qrcode" style="margin: 10px 5px 10px 0px;width:520px;height:240px;text-align:center;overflow:hidden" >
 												<canvas width="520px" height="360px" style="display: none;"></canvas>
 												<img style="height:240px" src="https://firmware.koolshare.cn/binary/image_bed/sadog/sadog.png"/>
@@ -600,7 +741,6 @@ function donate(w){
 										<div style="margin-left:5px;" id="head_illustrate">
 											<li>使用USB2JFFS插件，轻松用U盘挂载系统JFFS分区。
 											<a type="button" href="https://github.com/koolshare/armsoft/blob/master/usb2jffs/Changelog.txt" target="_blank" class="ks_btn" style="cursor: pointer;margin-left:5px;border:none" >更新日志</a>
-											<a type="button" href="javascript:void(0);" class="ks_btn" style="cursor: pointer;margin-left:5px;border:none" onclick="donate(1)">捐赠狗粮</a>
 											</li>
 										</div>
 										
@@ -625,14 +765,28 @@ function donate(w){
 												<tr>
 													<td cellpadding="0" cellspacing="0" style="padding:0" border="1" bordercolor="#222">
 														<input id="show_btn1" class="show-btn1" style="cursor:pointer" type="button" value="操作"/>
-														<input id="show_btn2" class="show-btn2" style="cursor:pointer" type="button" value="日志"/>
-														<input id="show_btn3" class="show-btn3" style="cursor:pointer" type="button" value="帮助"/>
+														<input id="show_btn2" class="show-btn2" style="cursor:pointer" type="button" value="同步"/>
+														<input id="show_btn3" class="show-btn3" style="cursor:pointer" type="button" value="备份"/>
+														<input id="show_btn4" class="show-btn4" style="cursor:pointer" type="button" value="日志"/>
+														<input id="show_btn5" class="show-btn5" style="cursor:pointer" type="button" value="帮助"/>
 													</td>
 													</tr>
 											</table>
 										</div>
 										<div id="tablet_1">
 											<table id="usb2jffs_config" width="100%" border="0" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable">
+												<script type="text/javascript">
+													$('#usb2jffs_config').forms([
+														{ title: '选择挂载路径', multi: [
+															{ id:'usb2jffs_mount_path', type:'select', style:'width:auto', func:'u', options:[], value:'0'},
+															{ suffix:'&nbsp;<span id="msg_1" style="display:none;" >没有符合要求的磁盘！</span>'}
+														]}
+													]);
+												</script>
+											</table>
+										</div>
+										<div id="tablet_2" style="display: none;">
+											<table id="usb2jffs_filesync" width="100%" border="0" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable">
 												<script type="text/javascript">
 													var title1 = "填写说明：&#13;此处填写1-23之间任意小时&#13;小时间用逗号间隔，如：&#13;当天的8点、10点、15点则填入：8,10,15"
 													var option_rebc = [["0", "关闭"], ["1", "每天"], ["2", "每周"], ["3", "每月"], ["4", "每隔"], ["5", "自定义"]];
@@ -667,13 +821,9 @@ function donate(w){
 														_tmp[1] = _i + "分";
 														option_rebm.push(_tmp);
 													}
-													$('#usb2jffs_config').forms([
-														{ title: '选择挂载路径', multi: [
-															{ id:'usb2jffs_mount_path', type:'select', style:'width:auto', func:'u', options:[], value:'0'},
-															{ suffix:'&nbsp;<span id="msg_1" style="display:none;" >没有符合要求的磁盘！</span>'}
-														]},
+													$('#usb2jffs_filesync').forms([
 														{ title: '定时同步（USB_JFFS → MTD_JFFS）', rid:'usb2jffs_sync_tr', multi: [
-															{ id:'usb2jffs_sync', type:'select', style:'width:auto', func:'u', options:option_rebc, value:'4'},
+															{ id:'usb2jffs_sync', type:'select', style:'width:auto', func:'u', options:option_rebc, value:'0'},
 															{ id:'usb2jffs_week', type:'select', style:'width:auto;display:none;', css:'re2', options:option_rebw, value:'1'},
 															{ id:'usb2jffs_day', type:'select', style:'width:auto;display:none;', css:'re3', options:option_rebd, value:'1'},
 															{ id:'usb2jffs_inter_min', type:'select', style:'width:auto;display:none;', css:'re4_1', options:option_rebim, value:'1'},
@@ -684,22 +834,49 @@ function donate(w){
 															{ suffix:'<span style="display:none;" class="re5">&nbsp;小时</span>'},
 															{ id:'usb2jffs_time_hour', type:'select', style:'width:auto;display:none;', css:'re1 re2 re3 re4_3', options:option_rebh, value:'0'},
 															{ id:'usb2jffs_time_min', type:'select', style:'width:auto;display:none;', css:'re1 re2 re3 re4_3 re5', options:option_rebm, value:'0'},
-															{ suffix:'&nbsp;<a type="button" class="ks_btn sbt1" style="cursor:pointer;display:none;" onclick="save(6)">应用定时设定</a>'},
+															{ suffix:'&nbsp;<a type="button" class="ks_btn bt2" style="cursor:pointer;display:none;" onclick="save(6)">应用定时设定</a>'}
 														]},
 														{ title: '卸载/删除时同步', rid:'usb2jffs_rsync_tr', multi: [
-															{ id:'usb2jffs_rsync', func:'u', type:'checkbox', value:true},
-															{ suffix:'&nbsp;<a type="button" class="ks_btn sbt1" style="cursor:pointer;display:none;" onclick="save(7)">应用此设定</a>'},
-														]}
+															{ id:'usb2jffs_rsync', func:'u', type:'checkbox', value:false},
+															{ suffix:'&nbsp;<a type="button" class="ks_btn bt2" style="cursor:pointer;display:none;" onclick="save(7)">应用此设定</a>'}
+														]},
 													]);
 												</script>
 											</table>
 										</div>
-										<div id="tablet_2" style="display: none;">
+										<div id="tablet_3" style="display: none;">
+											<table id="usb2jffs_snapshot" width="100%" border="0" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable">
+												<tr>
+													<th>上传备份</th>
+													<td>
+														&nbsp;<a class="ks_btn bt3" href="javascript:void(0);" onclick="upload_backup()">上传备份</a>
+														<input style="color:#FFCC00;*color:#000;width: 350px;vertical-align: middle;" id="file" type="file" name="file"/>
+														<img id="loadingicon" style="margin-left:5px;margin-right:5px;display:none;" src="/images/InternetScan.gif">
+														<span id="file_info" style="display:none;">完成</span>
+													</td>
+												</tr>												
+												<script type="text/javascript">
+													$('#usb2jffs_snapshot').forms([
+														{ title: '创建备份', multi: [
+															{ suffix:'&nbsp;<a type="button" class="ks_btn bt3" style="cursor:pointer;" onclick="save(8)">创建备份</a>'}
+														]},
+														{ title: '备份恢复', multi: [
+															{ id:'usb2jffs_backup_file', type:'select', style:'width:auto', func:'u', options:[], value:'0'},
+															{ suffix:'&nbsp;<a type="button" class="ks_btn bt3" style="cursor:pointer;" onclick="save(9)">恢复</a>'},
+															{ suffix:'&nbsp;<a type="button" class="ks_btn bt3" style="cursor:pointer;" onclick="save(10)">删除</a>'},
+															{ suffix:'&nbsp;<a type="button" class="ks_btn bt3" style="cursor:pointer;" onclick="save(11)">下载</a>'}
+														]}
+													]);
+												</script>
+											</tr>										
+											</table>
+										</div>
+										<div id="tablet_4" style="display: none;">
 											<div id="log_content" style="margin-top:-1px;display:block;overflow:hidden;">
-												<textarea cols="63" rows="20" wrap="on" readonly="readonly" id="log_content_text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+												<textarea cols="63" rows="22" wrap="on" readonly="readonly" id="log_content_text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
 											</div>
 										</div>
-										<div id="tablet_3" style="display: none;">
+										<div id="tablet_5" style="display: none;">
 											<table style="margin:-1px 0px 0px 0px;" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable">
 												<tr>
 												<td>
@@ -708,9 +885,8 @@ function donate(w){
 															&nbsp;&nbsp;&nbsp;&nbsp;1. 使用USB2JFFS插件，轻松用U盘挂载系统JFFS分区。<br />
 															&nbsp;&nbsp;&nbsp;&nbsp;2. 部分实现参考了：<a href="https://koolshare.cn/thread-161017-1-1.html" title="" target="_blank"><em>此koolshare论坛贴</em></a>，不过已经大不相同。<br />
 															&nbsp;&nbsp;&nbsp;&nbsp;3. 插件GITHUB开源地址：<a href="https://github.com/koolshare/armsoft/tree/master/usb2jffs" title="" target="_blank"><em>https://github.com/koolshare/armsoft/tree/master/usb2jffs</em></a><br />
-															&nbsp;&nbsp;&nbsp;&nbsp;4. 如果你觉得插件好用，可以考虑<a type="button" href="javascript:void(0);" class="ks_btn" style="cursor: pointer;margin-left:5px;border:none" onclick="donate(1)">捐赠开发者</a><br />
 														<h4><i>插件使用</i></h4>
-															&nbsp;&nbsp;&nbsp;&nbsp;1. 使用本插件，你需要提前准备一个已经格式化成ext3/ext4格式的U盘。<br />
+															&nbsp;&nbsp;&nbsp;&nbsp;1. 使用本插件，你需要提前准备一个已经格式化成ext3/ext4格式的U盘（或者和虚拟内存一个盘）。<br />
 															&nbsp;&nbsp;&nbsp;&nbsp;2. 使用的U盘质量不能太差，要求读写速度不能太低，可长时间稳定运行，不然可能极度影响使用体验。<br />
 															&nbsp;&nbsp;&nbsp;&nbsp;3. 用USB磁盘挂载JFFS的时候，建议路由器只插入一个USB设备，以免出现未知问题。<br />
 															&nbsp;&nbsp;&nbsp;&nbsp;4. 建议使用本插件挂载了USB JFFS后保持路由器长时间开机，不要频繁重启。
@@ -719,26 +895,27 @@ function donate(w){
 															&nbsp;&nbsp;&nbsp;&nbsp;卸载： 仅会移除/jffs与USB磁盘的挂载关系，并不会删除U盘和JFFS里的任何内容。<br />
 															&nbsp;&nbsp;&nbsp;&nbsp;删除： 不仅会移除/jffs与USB磁盘的挂载关系，还会删除USB磁盘里的.koolshare_jffs目录。<br />
 															&nbsp;&nbsp;&nbsp;&nbsp;同步： 点击同步，会将USB磁盘里.koolshare_jffs目录和固件FLASH里的原始jffs挂载点分区进行同步。<br />
+															&nbsp;&nbsp;&nbsp;&nbsp;备份： 点击备份，会将USB磁盘里.koolshare_jffs目录打包成tar格式的压缩包，并且可以进行恢复和下载。。<br />
 														<h4><i>关于测速</i></h4>
 															&nbsp;&nbsp;&nbsp;&nbsp;在创建挂载时，USB2JFFS插件会对USB磁盘进行简单的读写速度测试。<br />
 															&nbsp;&nbsp;&nbsp;&nbsp;因为测试文件块较小，此测试速度和USB磁盘实际速度可能有一定差别，因此本插件的读写速度结果仅供参考。<br />
 															&nbsp;&nbsp;&nbsp;&nbsp;在同等测试条件下，RT-AC86U, RT-AX88U, GT-AC5300等机型的flash读为10MB/s, 写为30MB/s。<br />
 															&nbsp;&nbsp;&nbsp;&nbsp;如果你的USB磁盘读写速度较低，使用本插件将会得到更差的实际体验！。<br />
-															&nbsp;&nbsp;&nbsp;&nbsp;因此，USB2JFFS插件要求USB磁盘设备读取不低于20MB/s, 写入速度不低于为35MB/s。<br />
+															&nbsp;&nbsp;&nbsp;&nbsp;因此，USB2JFFS插件要求USB磁盘设备读取不低于20MB/s, 写入速度不低于为30MB/s。<br />
 														<h4><i>注意事项</i></h4>
 															&nbsp;&nbsp;文件同步：<br />
 															&nbsp;&nbsp;&nbsp;&nbsp;1. 在成功挂载后，会复制原jffs目录下所有文件到USB磁盘的新jffs目录（即.koolshare_jffs文件夹）<br />
 															&nbsp;&nbsp;&nbsp;&nbsp;2. 因路由器系统相关文件写入/更新、软件中心插件安装/更新等操作，新jffs内的文件会比原jffs新<br />
-															&nbsp;&nbsp;&nbsp;&nbsp;3. 设定自动同步，或者手动点击同步按钮，会将新jffs下的文件和原jffs文件进行对比，并进行更新<br />									
+															&nbsp;&nbsp;&nbsp;&nbsp;3. 设定自动同步，或者手动点击同步按钮，会将新jffs下的文件和原jffs文件进行对比，并进行更新<br />
 															&nbsp;&nbsp;&nbsp;&nbsp;4. 自动同步和点击同步按钮不宜太频繁，避免文件频繁更新导致原jffs出现问题。<br />
-															&nbsp;&nbsp;&nbsp;&nbsp;5. 如果安装了很多插件导致jffs目录大小大于原jffs分区大小，同步功能将只同步系统相关文件，如证书文件等。<br />
+															&nbsp;&nbsp;&nbsp;&nbsp;5. 如果安装了很多插件导致.koolshare_jffs目录大于原jffs分区大小，同步功能将只同步系统相关文件，如证书文件等。<br />
 															&nbsp;&nbsp;拔出USB磁盘：<br />
-															&nbsp;&nbsp;&nbsp;&nbsp;1. 请勿在已经挂在了USB型JFFS的状态下拔掉USB磁盘！<br />
+															&nbsp;&nbsp;&nbsp;&nbsp;1. 请勿在已经使用USB磁盘挂载了JFFS的状态下拔掉USB磁盘！<br />
 															&nbsp;&nbsp;&nbsp;&nbsp;2. 如果需要，请先在插件内点击卸载按钮，卸载USB型JFFS<br />
 															&nbsp;&nbsp;&nbsp;&nbsp;3. 再使用固件自带的功能卸载USB磁盘，最后拔下USB磁盘。<br />
 															&nbsp;&nbsp;重启路由器：<br />
 															&nbsp;&nbsp;&nbsp;&nbsp;1. 如非必要，请保持路由器长时间开机，如需重启可以在后台管理界面点击重启，或者直接关闭电源后开机<br />
-															&nbsp;&nbsp;&nbsp;&nbsp;2. 已知的问题：使用本插件后，SSH连路由器后台后使用reboot重启会无效！！<br />
+															&nbsp;&nbsp;&nbsp;&nbsp;2. 目前已经修复reboot命令无法重启路由的问题（在386固件下测试）<br />
 															&nbsp;&nbsp;重置路由器：<br />
 															&nbsp;&nbsp;&nbsp;&nbsp;1. 虽然插件考虑到了重置路由器的情况，但是还是建议你用以下操作<br />
 															&nbsp;&nbsp;&nbsp;&nbsp;2. 插件内点击卸载按钮，卸载USB型JFFS，固件内卸载USB设备，拔下USB磁盘<br />
@@ -749,13 +926,12 @@ function donate(w){
 											</table>
 										</div>
 										<div id="apply_button" class="apply_gen">
-											<input class="button_gen bt1 sbt0" type="button" onclick="save(1)" value="应用" style="display: none;">
-											<input class="button_gen bt1 sbt1" type="button" onclick="save(2)" value="卸载" style="display: none;">
-											<input class="button_gen bt1 sbt1" type="button" onclick="save(3)" value="删除" style="display: none;">
-											<input class="button_gen bt1 sbt1" type="button" onclick="save(5)" value="同步" style="display: none;">
-											<input class="button_gen bt2" type="button" onclick="save(4)" value="清除日志" style="display: none;">
-											<input class="button_gen bt3" type="button" onclick="help()" value="交流反馈" style="display: none;">
-											<input class="button_gen bt3" type="button" onclick="donate()" value="捐赠开发者" style="display: none;">
+											<input class="button_gen sbt0" type="button" onclick="save(1)" value="应用" style="display: none;">
+											<input class="button_gen sbt1" type="button" onclick="save(2)" value="卸载" style="display: none;">
+											<input class="button_gen sbt2" type="button" onclick="save(3)" value="删除" style="display: none;">
+											<input class="button_gen bt2" type="button" onclick="save(5)" value="手动同步" style="display: none;">
+											<input class="button_gen bt4" type="button" onclick="save(4)" value="清除日志" style="display: none;">
+											<input class="button_gen bt5" type="button" onclick="help()" value="交流反馈" style="display: none;">
 										</div>
 									</td>
 								</tr>

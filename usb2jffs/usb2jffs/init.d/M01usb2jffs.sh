@@ -1,32 +1,37 @@
 #!/bin/sh
 
+# usb2jffs 开机自动挂载脚本
+
 export KSROOT=/koolshare
 source $KSROOT/scripts/base.sh
 eval $(dbus export usb2jffs_)
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】'
+#LOG_FILE=/data/usb2jffs_log_m.txt
 LOG_FILE=/tmp/upload/usb2jffs_log.txt
 
-ACTION=$1
-MTPATH=$2
+MTPATH=$1
 
 stop_software_center(){
 	killall skipd >/dev/null 2>&1
-	/koolshare/perp/perp.sh stop >/dev/null 2>&1
+	killall skipd >/dev/null 2>&1
+	killall perpboot >/dev/null 2>&1
+	killall tinylog >/dev/null 2>&1
+	killall perpd >/dev/null 2>&1
+	killall httpdb >/dev/null 2>&1
+	[ -n "$(pidof httpdb)" ] && kill -9 $(pidof httpdb) >/dev/null 2>&1
 }
 
 start_software_center(){
-	killall skipd >/dev/null 2>&1
-	/koolshare/perp/perp.sh stop >/dev/null 2>&1
-	sleep 1
+	stop_software_center
 	service start_skipd >/dev/null 2>&1
 	/koolshare/perp/perp.sh start >/dev/null 2>&1
 }
 
 get_current_jffs_device(){
-	# 查看当前/jffs是什么设备挂载的
-	local cur_patition=$(df -h | grep /jffs |awk '{print $1}')
-	if [ -n "$cur_patition" ];then
-		jffs_device=$cur_patition
+	# 查看当前/jffs的挂载点是什么设备，如/dev/mtdblock9, /dev/sda1；有usb2jffs的时候，/dev/sda1，无usb2jffs的时候，/dev/mtdblock9，出问题未正确挂载的时候，为空
+	local cur_patition=$(df -h | /bin/grep /jffs |awk '{print $1}')
+	if [ -n "${cur_patition}" ];then
+		jffs_device=${cur_patition}
 		return 0
 	else
 		jffs_device=""
@@ -34,34 +39,34 @@ get_current_jffs_device(){
 	fi
 }
 
-get_current_usb_device(){
-	# 查看USB磁盘是什么设备挂载的
-	local cur_patition=$(df -h | grep $MTPATH |awk '{print $1}')
-	if [ -n "$cur_patition" ];then
-		usb_device=$cur_patition
-		return 0
+_get_model(){
+	local odmpid=$(nvram get odmpid)
+	local MODEL=$(nvram get productid)
+	if [ -n "${odmpid}" ];then
+		echo "${odmpid}"
 	else
-		usb_device=""
-		return 1
+		echo "${MODEL}"
 	fi
 }
 
 get_jffs_original_mount_device(){
-	# 查看原始JFFS分区是用FLASH里的哪个分区挂载的
-	local mtd_jffs=$(df -h | grep -E "/jffs|cifs2" | awk '{print $1}' | grep "/dev/mtd")
-	if [ -n "$mtd_jffs" ];then
-		mtd_disk="$mtd_jffs"
+	local mtd_jffs=$(df -h | /bin/grep -E "/jffs|cifs2" | awk '{print $1}' | /bin/grep "/dev/mtd" | head -n1)
+	if [ -n "${mtd_jffs}" ];then
+		mtd_disk="${mtd_jffs}"
 		return 0
 	else
-		# incase of cifs2 not mounted
-		local model=$(nvram get model)
-		case $model in
+		local model=$(_get_model)
+		case ${model} in
 			RT-AC86U|GT-AC5300)
 				mtd_disk="/dev/mtdblock8"
 				return 0
 				;;
-			RT-AX88U|GT-AX11000)
+			RT-AX88U|GT-AX11000|TUF-AX3000|RT-AX56U)
 				mtd_disk="/dev/mtdblock9"
+				return 0
+				;;
+			RT-AC5300|RT-AC88U)
+				mtd_disk="/dev/mtdblock4"
 				return 0
 				;;
 			*)
@@ -74,47 +79,50 @@ get_jffs_original_mount_device(){
 
 set_sync_job(){
 	if [ "${usb2jffs_sync}" == "0" ]; then
-		echo_date "删除插件定时同步任务..."
+		echo_date "USB2JFFS：删除插件定时同步任务..."
 		sed -i '/usb2jffs_sync/d' /var/spool/cron/crontabs/* >/dev/null 2>&1
 	elif [ "${usb2jffs_sync}" == "1" ]; then
-		echo_date "设置每天${usb2jffs_time_hour}时${usb2jffs_time_min}分同步文件..."
+		echo_date "USB2JFFS：设置每天${usb2jffs_time_hour}时${usb2jffs_time_min}分同步文件..."
 		cru a usb2jffs_sync ${usb2jffs_time_min} ${usb2jffs_time_hour}" * * * sh /koolshare/scripts/usb2jffs_config.sh sync"
 	elif [ "${usb2jffs_sync}" == "2" ]; then
-		echo_date "设置每周${usb2jffs_week}的${usb2jffs_time_hour}时${usb2jffs_time_min}分同步文件..."
+		echo_date "USB2JFFS：设置每周${usb2jffs_week}的${usb2jffs_time_hour}时${usb2jffs_time_min}分同步文件..."
 		cru a usb2jffs_sync ${usb2jffs_time_min} ${usb2jffs_time_hour}" * * "${usb2jffs_week}" sh /koolshare/scripts/usb2jffs_config.sh sync"
 	elif [ "${usb2jffs_sync}" == "3" ]; then
-		echo_date "设置每月${usb2jffs_day}日${usb2jffs_time_hour}时${usb2jffs_time_min}分同步文件..."
+		echo_date "USB2JFFS：设置每月${usb2jffs_day}日${usb2jffs_time_hour}时${usb2jffs_time_min}分同步文件..."
 		cru a usb2jffs_sync ${usb2jffs_time_min} ${usb2jffs_time_hour} ${usb2jffs_day}" * * sh /koolshare/scripts/usb2jffs_config.sh sync"
 	elif [ "${usb2jffs_sync}" == "4" ]; then
 		if [ "${usb2jffs_inter_pre}" == "1" ]; then
-			echo_date "设置每隔${usb2jffs_inter_min}分钟同步文件..."
+			echo_date "USB2JFFS：设置每隔${usb2jffs_inter_min}分钟同步文件..."
 			cru a usb2jffs_sync "*/"${usb2jffs_inter_min}" * * * * sh /koolshare/scripts/usb2jffs_config.sh sync"
 		elif [ "${usb2jffs_inter_pre}" == "2" ]; then
-			echo_date "设置每隔${usb2jffs_inter_hour}小时同步文件..."
+			echo_date "USB2JFFS：设置每隔${usb2jffs_inter_hour}小时同步文件..."
 			cru a usb2jffs_sync "0 */"${usb2jffs_inter_hour}" * * * sh /koolshare/scripts/usb2jffs_config.sh sync"
 		elif [ "${usb2jffs_inter_pre}" == "3" ]; then
-			echo_date "设置每隔${usb2jffs_inter_day}天${usb2jffs_inter_hour}小时${usb2jffs_time_min}分钟同步文件..."
+			echo_date "USB2JFFS：设置每隔${usb2jffs_inter_day}天${usb2jffs_inter_hour}小时${usb2jffs_time_min}分钟同步文件..."
 			cru a usb2jffs_sync ${usb2jffs_time_min} ${usb2jffs_time_hour}" */"${usb2jffs_inter_day} " * * sh /koolshare/scripts/usb2jffs_config.sh sync"
 		fi
 	elif [[ "${usb2jffs_sync}" == "5" ]]; then
 		check_custom_time=`dbus get usb2jffs_custom | base64_decode`
-		echo_date "设置每天${check_custom_time}时的${usb2jffs_time_min}分同步文件..."
+		echo_date "USB2JFFS：设置每天${check_custom_time}时的${usb2jffs_time_min}分同步文件..."
 		cru a usb2jffs_sync ${usb2jffs_time_min} ${check_custom_time}" * * * sh /koolshare/scripts/usb2jffs_config.sh sync"
 	fi
 }
 
 JFFS2USB(){
+	echo "======================== USB2JFFS - 开机自动挂载 ========================"
+	echo_date "USB2JFFS：${0##*/} $@"
+	
 	# 检测是否已经有USB设备挂载了jffs，如果JFFS的挂载设备有多个，说明已经挂在
 	# 防止用户在路由器开机状态，并且已经替换了JFFS为USB的情况下，再插入一个有.koolshare_jffs目录的USB储存设备导致重复挂载
 	get_current_jffs_device
-	local mounted_nu=$(mount | grep "${jffs_device}" | grep -c "/dev/s")
-	if [ "$mounted_nu" -gt "1" ]; then
-		echo_date "USB2JFFS：检测到你的USB磁盘${jffs_device}已经挂载在/jffs上了"
+	local mounted_nu=$(mount | /bin/grep "${jffs_device}" | grep -E "/tmp/mnt/|/jffs"|/bin/grep -c "/dev/s")
+	if [ "${mounted_nu}" == "2" ]; then
+		# echo_date "USB2JFFS：检测到你的USB磁盘${jffs_device}已经挂载在/jffs上了，跳过！"
 		return 1
 	fi
 	
 	# 判断插入USB磁盘设备的格式
-	local format=$(mount | grep "${MTPATH}" | awk '{print $5}')
+	local format=$(mount | /bin/grep "${MTPATH}" | awk '{print $5}')
 	if [ "${format}" == "ext2" -o "${format}" == "ext3" -o "${format}" == "ext4" ];then
 		echo_date "USB2JFFS：USB磁盘${MTPATH}格式为${format}，符合USB2JFFS要求！"
 	else
@@ -123,23 +131,23 @@ JFFS2USB(){
 	fi
 	
 	# 寻找是否已经安装有软件中心
-	if [ -d "${MTPATH}/.koolshare_jffs" ]; then
+	if [ -d "${MTPATH}/.koolshare_jffs/.koolshare" ]; then
 		echo_date "USB2JFFS：USB磁盘${MTPATH}内找到jffs目录：.koolshare_jffs"
 	else
 		# U盘里没有软件中心
-		echo_date "USB2JFFS：USB磁盘${MTPATH}内没有找到jffs目录：.koolshare_jffs，不进行任何操作，跳过！"
+		# echo_date "USB2JFFS：USB磁盘${MTPATH}内没有找到jffs目录：.koolshare_jffs，不进行任何操作，跳过！"
 		return 1
 	fi
 
 	# 获取jffs原始设备
 	get_jffs_original_mount_device
-	if [ -z "$mtd_disk" ]; then
+	if [ -z "${mtd_disk}" ]; then
 		echo_date "无法找到原始/jffs挂载设备！请重启后重试！"
 		return 1
 	fi
 
 	# 检测是否有不挂载的标记文件
-	if [ -f ${MTPATH}/.koolshare_jffs/.usb2jffs_flag ]; then
+	if [ -f "${MTPATH}/.koolshare_jffs/.usb2jffs_flag" ]; then
 		echo_date "USB2JFFS：因为你上次手动卸载了USB jffs的挂载，本次开机启动不进行挂载操作！"
 		echo_date "USB2JFFS：如需继续挂载，请使用USB2JFFS插件重新手动挂载！"
 		return 1
@@ -152,9 +160,9 @@ JFFS2USB(){
 	fi
 
 	# 检测并重写挂载点，因为重启路由等操作可能导致设备挂载路点字改变，比如 /tmp/mnt/sda1 → /tmp/mnt/sdb1
-	if [ "${usb2jffs_mount_path}" != "$MTPATH" ]; then
-		echo_date "USB2JFFS：检测到挂载点发生改变：${usb2jffs_mount_path} → $MTPATH，更新挂载点记录！"
-		dbus set usb2jffs_mount_path=$MTPATH
+	if [ "${usb2jffs_mount_path}" != "${MTPATH}" ]; then
+		echo_date "USB2JFFS：检测到挂载点发生改变：${usb2jffs_mount_path} → ${MTPATH}，更新挂载点记录！"
+		dbus set usb2jffs_mount_path=${MTPATH}
 	fi
 	
 	# 关闭skipd和httpdb进程
@@ -170,7 +178,8 @@ JFFS2USB(){
 	if [ "$?" == "0" ]; then
 		echo_date "USB2JFFS：/jffs卸载成功！"
 	else
-		echo_date "USB2JFFS：/jffs卸载失败！"
+		echo_date "USB2JFFS：/jffs卸载失败！退出！"
+		echo_date "USB2JFFS：重启软件中心相关进程！"
 		start_software_center
 		return 1
 	fi
@@ -178,8 +187,8 @@ JFFS2USB(){
 	echo_date "USB2JFFS：挂载USB磁盘目录：${MTPATH}/.koolshare_jffs → /jffs"
 	mount -o rbind ${MTPATH}/.koolshare_jffs /jffs
 	if [ "$?" == "0" ]; then
-		echo_date "USB2JFFS：挂载成功，挂载方式：${MTPATH}/.koolshare_jffs → /jffs"
-		echo_date "USB2JFFS：软件中心相关进程：重启动！"
+		echo_date "USB2JFFS：挂载成功！继续！"
+		echo_date "USB2JFFS：重启软件中心相关进程！"
 		start_software_center
 		
 		echo_date "USB2JFFS：启动完毕，一点点扫尾工作..."
@@ -193,10 +202,14 @@ JFFS2USB(){
 		# 把原来的jffs分区挂载到cifs
 		mount -t jffs2 -o rw,noatime ${mtd_disk} /cifs2
 
-		sleep 2
-		
 		# 重新弄获取skipd值
 		eval $(dbus export usb2jffs_)
+
+		# 再次检测并重写挂载点，因为重启路由等操作可能导致设备挂载路点字改变，比如 /tmp/mnt/sda1 → /tmp/mnt/sdb1
+		if [ "${usb2jffs_mount_path}" != "${MTPATH}" ]; then
+			echo_date "USB2JFFS：检测到挂载点发生改变：${usb2jffs_mount_path} → ${MTPATH}，更新挂载点记录！"
+			dbus set usb2jffs_mount_path=${MTPATH}
+		fi
 		
 		# 设定定时同步
 		set_sync_job
@@ -206,6 +219,7 @@ JFFS2USB(){
 		start-stop-daemon -S -q -b -x /koolshare/bin/ks-services-start.sh start
 		echo_date "USB2JFFS：完成！"
 	fi
+	echo "========================================================================"
 }
 
-JFFS2USB | tee -a $LOG_FILE
+JFFS2USB $@ | tee -a ${LOG_FILE}

@@ -1,5 +1,18 @@
 Koolshare Asuswrt-Merlin USB2JFFS Changelog
 ===========================================
+
+1.7
+   - update	将插件使用条件改为读20MB/s，写30MB/s
+   - update	现在插件更新的时候将同时更新到USB JFFS和原始的MTD JFFS
+   - update	优化插件开机启动逻辑，修复部分机器开机后不自动挂载的问题
+   - update	优化路由器关机时，插件的运行逻辑
+   - update	同步功能移动到同步标签页内
+   - update	新安装插件时，同步功能默认关闭
+   - update	优化插件的状态显示
+   - add	添加备份功能，现在可以自由备份.koolshare_jffs文件夹，并且可以下载备份，上传备份
+   - fix	修复重启路由器时间过长的问题
+   - fix	卸载USB2JFFS插件后导致软件中心停止工作的问题
+
 1.6 
    - add	添加arm384机型支持。（需要arm384的1.0.4版本软件中心支持）
    - update	根据反馈，将插件使用条件：读30MB/s，写50MB/s改为读20MB/s，写35MB/s
