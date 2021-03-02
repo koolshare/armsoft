@@ -232,15 +232,15 @@
             "version": "1.5"
         }, 
         {
-            "build_date": "2021-02-08_19:47:32", 
+            "build_date": "2021-03-02_10:53:51", 
             "changelog": "", 
             "description": "让路由器运行更稳定~", 
             "home_url": "Module_swap.asp", 
-            "md5": "d5dbbadbab38e7f920c1c36c7971e96a", 
+            "md5": "81e722aab3a914efa1e89a4525fd9c20", 
             "name": "swap", 
             "tar_url": "swap/swap.tar.gz", 
             "title": "虚拟内存", 
-            "version": "2.2"
+            "version": "2.3"
         }
     ], 
     "home_url": "https://raw.githubusercontent.com/koolshare/koolshare.github.io/master", 

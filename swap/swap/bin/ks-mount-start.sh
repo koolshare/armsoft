@@ -1,33 +1,32 @@
 #!/bin/sh
 
-export KSROOT=/koolshare
-source $KSROOT/scripts/base.sh
+# called by script /jffs/scripts/post-mount with $1 like /tmp/mnt/sda1
+# call scripts in /koolshare/init.d/M*, eg: M50swap.sh /tmp/mnt/sda1
 
-ACTION=$1
+source /koolshare/scripts/base.sh
 
-if [ $# -lt 1 ]; then
-    printf "Usage: $0 {start|stop|restart|reconfigure|check|kill}\n" >&2
-    exit 1
-fi
+[ $# -lt 2 ] && exit 1
 
-[ $ACTION = stop -o $ACTION = restart -o $ACTION = kill ] && ORDER="-r"
+MOPATH=$2
 
-for i in $(find /koolshare/init.d/ -name 'M*' | sort $ORDER ) ;
+[ "${MOPATH}" == "start" ] && exit 1
+
+
+for i in $(find /koolshare/init.d/ -name 'M*' | sort -n) ;
 do
-    case "$i" in
-        M* | *.sh )
-            # Source shell script for speed.
-            trap "" INT QUIT TSTP EXIT
-            #set $1
-            logger "plugin_log_mount_1 $i"
-            if [ -r "$i" ]; then
-            . $i $ACTION
-            fi
-            ;;
-        *)
-            # No sh extension, so fork subprocess.
-            logger "plugin_log_mount_2 $i"
-            $i $ACTION
-            ;;
-    esac
+	case "$i" in
+		M* | *.sh)
+			# Source shell script for speed.
+			trap "" INT QUIT TSTP EXIT
+			if [ -r "$i" ]; then
+				_LOG "[软件中心]-[${0##*/}]: $i $MOPATH"
+				$i $MOPATH
+			fi
+			;;
+		*)
+			# No sh extension, so fork subprocess.
+			_LOG "[软件中心]-[${0##*/}]: . $i $MOPATH"
+			. $i $MOPATH
+			;;
+	esac
 done

@@ -1,38 +1,35 @@
 #!/bin/sh
 
-export KSROOT=/koolshare
-source $KSROOT/scripts/base.sh
-eval `dbus export swap_`
+source /koolshare/scripts/base.sh
+eval $(dbus export swap_)
 mkdir -p /tmp/upload
-echo "" > /tmp/upload/swap_log.txt
 
-parts=`dbus list swap_check_partName|cut -d "=" -f2`
+parts=$(dbus list swap_check_partName|cut -d "=" -f2)
 
-if [ -z "$parts" ];then
+if [ -z "${parts}" ];then
 	http_response "没有找到符合格式要求的磁盘！"
 	dbus remove swap_auto_mount
 else
-	for part in $parts
+	for part in ${parts}
 	do
-		if [ -f $part/swapfile ];then
-			sleep 1
-			SWAPTOTAL=`free|grep Swap|awk '{print $2}'`
-			SWAPUSED=`free|grep Swap|awk '{print $3}'`
+		if [ -f "${part}/swapfile" ];then
+			SWAPTOTAL=$(free|grep Swap|awk '{print $2}')
+			SWAPUSED=$(free|grep Swap|awk '{print $3}')
 			if [ "$SWAPTOTAL" != "0" ];then
 				http_response "在$part下找到swapfile，且已成功挂载！@@$SWAPUSED@@$SWAPTOTAL"
-				dbus set swap_auto_mount=$part/swapfile
+				dbus set swap_auto_mount="${part}/swapfile"
 				exit
 			else
-				swapon $part/swapfile
+				swapon "${part}/swapfile"
 				if [ "$?" == "0" ];then
-					SWAPTOTAL=`free|grep Swap|awk '{print $2}'`
-					SWAPUSED=`free|grep Swap|awk '{print $3}'`
+					SWAPTOTAL=$(free|grep Swap|awk '{print $2}')
+					SWAPUSED=$(free|grep Swap|awk '{print $3}')
 					http_response "在$part下找到swapfile，且已成功挂载！@@$SWAPUSED@@$SWAPTOTAL"
-					dbus set swap_auto_mount=$part/swapfile
+					dbus set swap_auto_mount="${part}/swapfile"
 					exit
 				else
-					SWAPTOTAL=`free|grep Swap|awk '{print $2}'`
-					SWAPUSED=`free|grep Swap|awk '{print $3}'`
+					SWAPTOTAL=$(free|grep Swap|awk '{print $2}')
+					SWAPUSED=$(free|grep Swap|awk '{print $3}')
 					STATUS="2"
 					dbus remove swap_auto_mount
 				fi
