@@ -220,6 +220,15 @@ function menu_hook(title, tab) {
 													</tr>
 												</thead>
 												<tr>
+													<th width="35%">IP type</th>
+													<td>
+														<select name="ddnspod_config_type" id="ddnspod_config_type" class="input_option">
+															<option value="A">IPv4</option>
+															<option value="AAAA">IPv6</option>
+														</select>
+													</td>
+												</tr>
+												<tr>
 													<th width="35%">dnspod ID</th>
 													<td>
 														<input type="text" class="input_ss_table" size="30" style="width:60px;" id="ddnspod_config_id" name="ddnspod_config_id" maxlength="50" placeholder="ID" value="">
