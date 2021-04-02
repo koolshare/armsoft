@@ -68,7 +68,6 @@ get_ui_type(){
 	[ "${MODEL}" == "GT-AC5300" ] && local ROG_GTAC5300=1
 	[ "${MODEL}" == "GT-AX11000" ] && local ROG_GTAX11000=1
 	[ "${MODEL}" == "GT-AXE11000" ] && local ROG_GTAXE11000=1
-	UI_TYPE="ASUSWRT"
 	local KS_TAG=$(nvram get extendno|grep koolshare)
 	local EXT_NU=$(nvram get extendno)
 	local EXT_NU=$(echo ${EXT_NU%_*} | grep -Eo "^[0-9]{1,10}$")
@@ -352,6 +351,8 @@ install_ks_module() {
 		cp -rf /tmp/${softcenter_installing_todo}/uninstall.sh /koolshare/scripts/uninstall_${softcenter_installing_todo}.sh
 	fi
 
+	get_ui_type
+
 	# 15. 皮肤预处理-1，目前softwarece center采用ROG文件夹方式存放皮肤
 	if [ -d /tmp/${softcenter_installing_todo}/ROG -a "${UI_TYPE}" == "ROG" ]; then
 		cp -rf /tmp/${softcenter_installing_todo}/ROG/* /tmp/${softcenter_installing_todo}/
@@ -365,9 +366,11 @@ install_ks_module() {
 	# 16. 皮肤预处理-2，一般来说插件的install.sh里会处理，但是避免一些插件没有处理，所以安装前先处理一次
 	if [ "${UI_TYPE}" == "ROG" ];then
 		echo_date "为插件【${softcenter_installing_name}】安装ROG风格皮肤..."
+		sed -i '/asuscss/d' /tmp/${softcenter_installing_todo}/webs/Module_${softcenter_installing_todo}.asp >/dev/null 2>&1
 	else
 		if [ "${UI_TYPE}" == "TUF" ];then
 			echo_date "为插件【${softcenter_installing_name}】安装TUF风格皮肤..."
+			sed -i '/asuscss/d' /tmp/${softcenter_installing_todo}/webs/Module_${softcenter_installing_todo}.asp >/dev/null 2>&1
 			sed -i 's/3e030d/3e2902/g;s/91071f/92650F/g;s/680516/D0982C/g;s/cf0a2c/c58813/g;s/700618/74500b/g;s/530412/92650F/g' /tmp/${softcenter_installing_todo}/webs/Module_${softcenter_installing_todo}.asp >/dev/null 2>&1
 		else
 			echo_date "为插件【${softcenter_installing_name}】安装ASUSWRT风格皮肤..."

@@ -1,5 +1,8 @@
 Koolshare arm 384 router software center Changelog
 ===========================================
+1.1.3
+   - update	优化安装
+
 1.1.0
    - update	优化安装
 

@@ -19,7 +19,6 @@ FW_TYPE_NAME=
 TAR_NAME=$(dbus get soft_name)
 LOG_FILE=/tmp/upload/soft_log.txt
 LOG_FILE_BACKUP=/tmp/upload/soft_install_log_backup.txt
-eval $(dbus export soft)
 TARGET_DIR=/tmp/upload
 
 get_model(){

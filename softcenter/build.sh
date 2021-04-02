@@ -1,5 +1,5 @@
 #! /bin/sh
-VERSION=1.1.2
+VERSION=1.1.3
 
 echo $VERSION > ./softcenter/.soft_ver
 
