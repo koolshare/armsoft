@@ -4,8 +4,8 @@
 #
 # Copyright (C) 2010/2021 kooldev
 #
-# 此脚为 hnd/axhnd/axhnd.675x/p1axhnd.675x 平台软件中心插件离线安装脚本。
-# 软件中心地址: https://github.com/koolshare/rogsoft
+# 此脚为 koolshare merlin armv7l 384/386 平台软件中心插件离线安装脚本。
+# 软件中心地址: https://github.com/koolshare/armsoft
 #
 ########################################################################
 
@@ -353,14 +353,15 @@ install_tar(){
 		echo_date "安装此插件不进行JFFS空间检测，交由插件自行检测！请自行注意JFFS使用情况！"
 	fi	
 
-	# 16. 检查下安装包是否是hnd的
-	if [ -f "${SCRIPT_AB_DIR}/.valid" -a -n "$(grep arm384 ${SCRIPT_AB_DIR}/.valid)" ];then
+	# 16. 检查下安装包是否是arm384|arm386的
+	local PLATFORM=$(grep -E "arm384|arm386" ${SCRIPT_AB_DIR}/.valid)
+	if [ -f "${SCRIPT_AB_DIR}/.valid" -a -n "${PLATFORM}" ];then
 		continue
 	elif [ "${MODULE_NAME}" == "shadowsocks" ];then
-		# hnd的不可描述包，有些版本没有校验字符串，避免安装失败
+		# arm384|arm386的不可描述包，有些版本没有校验字符串，避免安装失败
 		continue
 	else
-		echo_date "你上传的离线安装包不是hnd/axhnd/axhnd.675x平台的离线包！！！"
+		echo_date "你上传的离线安装包不是【koolshare merlin armv7l 384/386】平台的离线包！！！"
 		echo_date "请上传正确的离线安装包！！！"
 		echo_date "删除相关文件并退出..."
 		exit_tar_install 1
