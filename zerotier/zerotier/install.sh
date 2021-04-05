@@ -125,25 +125,43 @@ install_ui(){
 
 install_now(){
 	# default value
-	local TITLE="Let's Encrypt"
-	local DESCR="自动部署SSL证书"
+	local TITLE="ZeroTier"
+	local DESCR="ZeroTier 内网穿透"
 	local PLVER=$(cat ${DIR}/version)
+
+	# stop first
+	local ENABLE=$(dbus get ${module}_enable)
+	if [ "${ENABLE}" == "1" ];then
+		echo_date "先关闭zerotier插件，保证文件更新成功..."
+		/koolshare/scripts/zerotier_config stop
+	fi
+
+	# remove some file first
+	rm -rf /koolshare/scripts/zerotier*
+	find /koolshare/init.d -name "*zerotier*" | xargs rm -rf
 
 	# isntall file
 	echo_date "安装插件相关文件..."
 	cd /tmp
-	cp -rf /tmp/${module}/${module} /koolshare/
 	cp -rf /tmp/${module}/res/* /koolshare/res/
 	cp -rf /tmp/${module}/scripts/* /koolshare/scripts/
+	cp -rf /tmp/${module}/init.d/* /koolshare/init.d/
 	cp -rf /tmp/${module}/webs/* /koolshare/webs/
+	cp -rf /tmp/${module}/share /koolshare/
 	cp -rf /tmp/${module}/uninstall.sh /koolshare/scripts/uninstall_${module}.sh
+	mkdir -p /koolshare/lib/
+	if [ ! -x "/koolshare/bin/jq" ]; then
+		echo_date "安装jq..."
+		cp -fP /tmp/${module}/bin/jq /koolshare/bin/
+	fi
+	echo_date "安装32位zerotier-one..."
+	cp -fP /tmp/${module}/bin32/* /koolshare/bin/
+	cp -fP /tmp/${module}/lib32/* /koolshare/lib/
+	cp -fP /tmp/${module}/lib32/.flag_*.txt /koolshare/lib/
 
 	# Permissions
-	chmod +X /koolshare/${module}/* >/dev/null 2>&1
 	chmod +X /koolshare/scripts/* >/dev/null 2>&1
-
-	# make start up script link
-	[ ! -L "/koolshare/init.d/S99${module}.sh" ] && ln -sf /koolshare/scripts/${module}_config.sh /koolshare/init.d/S99${module}.sh
+	chmod +X /koolshare/bin/* >/dev/null 2>&1
 
 	# intall different UI
 	install_ui
@@ -156,6 +174,12 @@ install_now(){
 	dbus set softcenter_module_${module}_name="${module}"
 	dbus set softcenter_module_${module}_title="${TITLE}"
 	dbus set softcenter_module_${module}_description="${DESCR}"
+
+	# re-enable
+	if [ "${ENABLE}" == "1" ];then
+		echo_date "安装完毕，重新启用zerotier插件！"
+		/koolshare/scripts/zerotier_config start
+	fi
 	
 	# finish
 	echo_date "${TITLE}插件安装完毕！"

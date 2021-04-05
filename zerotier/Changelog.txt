@@ -1,0 +1,6 @@
+Koolshare Asuswrt-Merlin ZeroTier Changelog for qca-ipq806x platform
+===========================================
+
+1.0
+   - add	ZeroTier插件上线，Zerotier是一款开源，跨平台，简单易用的内网穿透工具，轻松帮你实现虚拟局域网的组建。
+   			因为1.6.4版本在旧的内核版本系统中工作还有些许问题，因此此次上线的zerotier为1.4.6版本
