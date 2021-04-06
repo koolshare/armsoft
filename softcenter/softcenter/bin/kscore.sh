@@ -73,5 +73,7 @@ else
 	[ "$STARTCOMAND6" -gt "1" ] && sed -i '/ks-unmount.sh/d' /jffs/scripts/unmount && sed -i '1a /koolshare/bin/ks-unmount.sh $1' /jffs/scripts/unmount
 	[ "$STARTCOMAND6" == "0" ] && sed -i '1a /koolshare/bin/ks-unmount.sh $1' /jffs/scripts/unmount
 fi
-chmod +x /jffs/scripts/*
+chmod 755 /jffs/scripts/* >/dev/null 2>&1
+chmod 755 /koolshare/bin/* >/dev/null 2>&1
+chmod 755 /koolshare/scripts/* >/dev/null 2>&1
 sync
