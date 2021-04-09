@@ -538,13 +538,6 @@ clean_backup_log() {
 	unset logdata
 }
 
-backup_log_file(){
-	sleep 3
-	clean_backup_log
-	echo XU6J03M6 | tee -a ${LOG_FILE}
-	cat ${LOG_FILE} >> ${LOG_FILE_BACKUP}
-}
-
 # echo_date \$2: $2 | tee -a $LOG_FILE
 case $2 in
 download_log)
@@ -558,17 +551,15 @@ clean_log)
 ks_app_remove)
 	true > ${LOG_FILE}
 	http_response $1
-	echo_date "============================ start ================================" | tee -a ${LOG_FILE}
-	uninstall_ks_module | tee -a ${LOG_FILE}
-	backup_log_file | tee -a ${LOG_FILE}
+	echo_date "============================ start ================================" | tee -a ${LOG_FILE} ${LOG_FILE_BACKUP}
+	uninstall_ks_module | tee -a ${LOG_FILE} ${LOG_FILE_BACKUP}
+	clean_backup_log
 	;;
 install|update|ks_app_install|*)
 	true > ${LOG_FILE}
 	http_response $1
-	echo_date "=========================== step 1 ================================" | tee -a ${LOG_FILE}
-	install_ks_module | tee -a ${LOG_FILE}
-	#install_ks_module >> $LOG_FILE 2>&1
-	echo_date "============================= end ================================="
-	backup_log_file | tee -a ${LOG_FILE}
+	echo_date "=========================== step 1 ================================" | tee -a ${LOG_FILE} ${LOG_FILE_BACKUP}
+	install_ks_module | tee -a ${LOG_FILE} ${LOG_FILE_BACKUP}
+ 	clean_backup_log
 	;;
 esac

@@ -287,7 +287,21 @@ install_tar(){
 		exit_tar_install 1
 	fi
 
-	# 15. check jffs space
+	# 16. 检查下安装包是否是arm384|arm386的
+	local PLATFORM=$(grep -E "arm384|arm386" ${SCRIPT_AB_DIR}/.valid)
+	if [ -f "${SCRIPT_AB_DIR}/.valid" -a -n "${PLATFORM}" ];then
+		continue
+	elif [ "${MODULE_NAME}" == "shadowsocks" ];then
+		# arm384|arm386的不可描述包，有些版本没有校验字符串，避免安装失败
+		continue
+	else
+		echo_date "你上传的离线安装包不是【koolshare merlin armv7l 384/386】平台的离线包！！！"
+		echo_date "请上传正确的离线安装包！！！"
+		echo_date "删除相关文件并退出..."
+		exit_tar_install 1
+	fi
+
+	# 16. check jffs space
 	local JFFS_AVAIL1=$(jffs_space)
 	local JFFS_AVAIL2=$((${JFFS_AVAIL1} - 2048))
 	local JFFS_NEEDED=$(du -s /tmp/${MODULE_NAME} | awk '{print $1}')
@@ -352,20 +366,6 @@ install_tar(){
 	# 本脚本不检测jffs容量，插件自己检测
 	if [ "${MODULE_UPGRADE}" == "4" ];then
 		echo_date "安装此插件不进行JFFS空间检测，交由插件自行检测！请自行注意JFFS使用情况！"
-	fi	
-
-	# 16. 检查下安装包是否是arm384|arm386的
-	local PLATFORM=$(grep -E "arm384|arm386" ${SCRIPT_AB_DIR}/.valid)
-	if [ -f "${SCRIPT_AB_DIR}/.valid" -a -n "${PLATFORM}" ];then
-		continue
-	elif [ "${MODULE_NAME}" == "shadowsocks" ];then
-		# arm384|arm386的不可描述包，有些版本没有校验字符串，避免安装失败
-		continue
-	else
-		echo_date "你上传的离线安装包不是【koolshare merlin armv7l 384/386】平台的离线包！！！"
-		echo_date "请上传正确的离线安装包！！！"
-		echo_date "删除相关文件并退出..."
-		exit_tar_install 1
 	fi
 
 	# 17. 开始安装
@@ -406,7 +406,8 @@ install_tar(){
 	echo_date "========================== step 2 ==============================="
 	start-stop-daemon -S -q -x ${INSTALL_SCRIPT} 2>&1
 	if [ "$?" != "0" ];then
-		echo_date "因为插件${MODULE_NAME}安装失败！退出离线安装！"
+		echo_date "========================== step 3 ==============================="
+		echo_date "ks_tar_install.sh: 因为插件${MODULE_NAME}安装失败！退出离线安装！"
 		exit_tar_install 1 ${MODULE_NAME}
 	fi
 	
@@ -477,15 +478,7 @@ clean_backup_log() {
 	unset logdata
 }
 
-backup_log_file(){
-	sleep 3
-	clean_backup_log
-	echo XU6J03M6 | tee -a ${LOG_FILE}
-	cat ${LOG_FILE} >> ${LOG_FILE_BACKUP}
-}
-
 true > ${LOG_FILE}
 http_response "$1"
-install_tar | tee -a ${LOG_FILE}
-backup_log_file
-
+install_tar | tee -a ${LOG_FILE} ${LOG_FILE_BACKUP}
+clean_backup_log
