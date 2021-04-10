@@ -144,13 +144,7 @@ install_now(){
 	# isntall file
 	echo_date "安装插件相关文件..."
 	cd /tmp
-	local ARCH=$(uname -m)
-	if [ "${ARCH}" == "aarch64" ];then
-		cp -rf /tmp/${module}/bin/ddnsto_aarch64 /koolshare/bin/ddnsto
-	fi
-	if [ "${ARCH}" == "armv7l" ];then
-		cp -rf /tmp/${module}/bin/ddnsto_arm /koolshare/bin/ddnsto
-	fi
+	cp -rf /tmp/${module}/bin/* /koolshare/bin/
 	cp -rf /tmp/${module}/res/* /koolshare/res/
 	cp -rf /tmp/${module}/scripts/* /koolshare/scripts/
 	cp -rf /tmp/${module}/webs/* /koolshare/webs/

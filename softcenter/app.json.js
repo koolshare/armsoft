@@ -210,15 +210,15 @@
             "version": "1.0"
         }, 
         {
-            "build_date": "2021-04-10_23:11:05", 
+            "build_date": "2021-04-10_23:14:36", 
             "changelog": "", 
             "description": "ddnsto内网穿透", 
             "home_url": "Module_ddnsto.asp", 
-            "md5": "20d7c8b1d79d8231906fbff3849f0b9a", 
+            "md5": "0184c7c14d36576c132a818b61c8ac87", 
             "name": "ddnsto", 
             "tar_url": "ddnsto/ddnsto.tar.gz", 
             "title": "ddnsto", 
-            "version": "2.3"
+            "version": "2.4"
         }, 
         {
             "build_date": "2021-04-10_23:11:06", 
