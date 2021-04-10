@@ -10,4 +10,4 @@ rm -rf /koolshare/scripts/reboothelper_*.sh
 rm -rf /koolshare/webs/Module_reboothelper.asp
 rm -rf /tmp/reboothelper*
 rm -rf /koolshare/init.d/*Reboothelper*
-
+rm -rf /koolshare/scripts/uninstall_reboothelper.sh

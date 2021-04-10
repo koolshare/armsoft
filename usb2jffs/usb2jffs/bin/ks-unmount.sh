@@ -13,13 +13,13 @@ do
 			# fork subprocess.
 			trap "" INT QUIT TSTP EXIT
 			if [ -r "$i" ]; then
-				_LOG "[软件中心]-[${0##*/}]: $i $KSPATH"
+				_LOG "[杞欢涓績]-[${0##*/}]: $i $KSPATH"
 				$i $KSPATH
 			fi
 			;;
 		*)
 			# No sh extension, Source shell script for speed.
-			_LOG "[软件中心]-[${0##*/}]: . $i $KSPATH"
+			_LOG "[杞欢涓績]-[${0##*/}]: . $i $KSPATH"
 			. $i $KSPATH
 			;;
 	esac

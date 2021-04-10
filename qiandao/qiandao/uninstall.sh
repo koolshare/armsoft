@@ -7,3 +7,5 @@ rm -rf /koolshare/webs/Module_qiandao.asp
 rm -rf /koolshare/res/icon-qiandao.png
 rm -rf /koolshare/res/qiandao_run.htm
 rm -rf /koolshare/init.d/*qiandao.sh
+
+rm -rf /koolshare/scripts/uninstall_qiandao.sh

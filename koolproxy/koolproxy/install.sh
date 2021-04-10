@@ -1,35 +1,89 @@
-#! /bin/sh
+#!/bin/sh
 source /koolshare/scripts/base.sh
-eval `dbus export koolproxy`
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
+MODEL=
+UI_TYPE=ASUSWRT
+FW_TYPE_CODE=
+FW_TYPE_NAME=
 DIR=$(cd $(dirname $0); pwd)
-module=koolproxy
-ROG_86U=0
-BUILDNO=$(nvram get buildno)
-EXT_NU=$(nvram get extendno)
-EXT_NU=$(echo ${EXT_NU%_*} | grep -Eo "^[0-9]{1,10}$")
-[ -z "${EXT_NU}" ] && EXT_NU="0"
-odmpid=$(nvram get odmpid)
-productid=$(nvram get productid)
-[ -n "${odmpid}" ] && MODEL="${odmpid}" || MODEL="${productid}"
-LINUX_VER=$(uname -r|awk -F"." '{print $1$2}')
-mkdir -p /tmp/upload
-touch /tmp/upload/kp_log.txt
-# 获取固件类型
-_get_type() {
-	local FWTYPE=$(nvram get extendno|grep koolshare)
+module=${DIR##*/}
+
+get_model(){
+	local ODMPID=$(nvram get odmpid)
+	local PRODUCTID=$(nvram get productid)
+	if [ -n "${ODMPID}" ];then
+		MODEL="${ODMPID}"
+	else
+		MODEL="${PRODUCTID}"
+	fi
+}
+
+get_fw_type() {
+	local KS_TAG=$(nvram get extendno|grep koolshare)
 	if [ -d "/koolshare" ];then
-		if [ -n "${FWTYPE}" ];then
-			echo "koolshare官改固件"
+		if [ -n "${KS_TAG}" ];then
+			FW_TYPE_CODE="2"
+			FW_TYPE_NAME="koolshare官改固件"
 		else
-			echo "koolshare梅林改版固件"
+			FW_TYPE_CODE="4"
+			FW_TYPE_NAME="koolshare梅林改版固件"
 		fi
 	else
 		if [ "$(uname -o|grep Merlin)" ];then
-			echo "梅林原版固件"
+			FW_TYPE_CODE="3"
+			FW_TYPE_NAME="梅林原版固件"
 		else
-			echo "华硕官方固件"
+			FW_TYPE_CODE="1"
+			FW_TYPE_NAME="华硕官方固件"
 		fi
+	fi
+}
+
+platform_test(){
+	local LINUX_VER=$(uname -r|awk -F"." '{print $1$2}')
+	if [ -d "/koolshare" -a -f "/usr/bin/skipd" -a "${LINUX_VER}" -eq "26" ];then
+		echo_date 机型："${MODEL} ${FW_TYPE_NAME} 符合安装要求，开始安装插件！"
+	else
+		exit_install 1
+	fi
+}
+
+get_ui_type(){
+	# default value
+	[ "${MODEL}" == "RT-AC86U" ] && local ROG_RTAC86U=0
+	[ "${MODEL}" == "GT-AC2900" ] && local ROG_GTAC2900=1
+	[ "${MODEL}" == "GT-AC5300" ] && local ROG_GTAC5300=1
+	[ "${MODEL}" == "GT-AX11000" ] && local ROG_GTAX11000=1
+	[ "${MODEL}" == "GT-AXE11000" ] && local ROG_GTAXE11000=1
+	local KS_TAG=$(nvram get extendno|grep koolshare)
+	local EXT_NU=$(nvram get extendno)
+	local EXT_NU=$(echo ${EXT_NU%_*} | grep -Eo "^[0-9]{1,10}$")
+	local BUILDNO=$(nvram get buildno)
+	[ -z "${EXT_NU}" ] && EXT_NU="0" 
+	# RT-AC86U
+	if [ -n "${KS_TAG}" -a "${MODEL}" == "RT-AC86U" -a "${EXT_NU}" -lt "81918" -a "${BUILDNO}" != "386" ];then
+		# RT-AC86U的官改固件，在384_81918之前的固件都是ROG皮肤，384_81918及其以后的固件（包括386）为ASUSWRT皮肤
+		ROG_RTAC86U=1
+	fi
+	# GT-AC2900
+	if [ "${MODEL}" == "GT-AC2900" ] && [ "{FW_TYPE_CODE}" == "3" -o "{FW_TYPE_CODE}" == "4" ];then
+		# GT-AC2900从386.1开始已经支持梅林固件，其UI是ASUSWRT
+		ROG_GTAC2900=0
+	fi
+	# GT-AX11000
+	if [ "${MODEL}" == "GT-AX11000" -o "${MODEL}" == "GT-AX11000_BO4" ] && [ "{FW_TYPE_CODE}" == "3" -o "{FW_TYPE_CODE}" == "4" ];then
+		# GT-AX11000从386.2开始已经支持梅林固件，其UI是ASUSWRT
+		ROG_GTAX11000=0
+	fi
+	# ROG UI
+	if [ "${ROG_GTAC5300}" == "1" -o "${ROG_RTAC86U}" == "1" -o "${ROG_GTAC2900}" == "1" -o "${ROG_GTAX11000}" == "1" -o "${ROG_GTAXE11000}" == "1" ];then
+		# GT-AC5300、RT-AC86U部分版本、GT-AC2900部分版本、GT-AX11000部分版本、GT-AXE11000全部版本，骚红皮肤
+		UI_TYPE="ROG"
+	fi
+	# TUF UI
+	if [ "${MODEL}" == "TUF-AX3000" ];then
+		# 官改固件，橙色皮肤
+		UI_TYPE="TUF"
 	fi
 }
 
@@ -51,104 +105,122 @@ exit_install(){
 	esac
 }
 
-# 判断路由架构和平台：koolshare固件，并且linux版本大于等于4.1
-if [ -d "/koolshare" -a -f "/usr/bin/skipd" -a "${LINUX_VER}" -eq "26" ];then
-	echo_date 机型：${MODEL} $(_get_type) 符合安装要求，开始安装插件！
-else
-	exit_install 1
-fi
-
-# 判断固件UI类型
-if [ -n "$(nvram get extendno | grep koolshare)" -a "$(nvram get productid)" == "RT-AC86U" -a "${EXT_NU}" -lt "81918" -a "${BUILDNO}" != "386" ];then
-	ROG_86U=1
-fi
-
-if [ "${MODEL}" == "GT-AC5300" -o "${MODEL}" == "GT-AX11000" -o "${MODEL}" == "GT-AX11000_BO4"  -o "$ROG_86U" == "1" ];then
-	# 官改固件，骚红皮肤
-	ROG=1
-fi
-
-if [ "${MODEL}" == "TUF-AX3000" ];then
-	# 官改固件，橙色皮肤
-	TUF=1
-fi
-
-# stop koolproxy first
-if [ "$koolproxy_enable" == "1" ] && [ -f "/koolshare/koolproxy/kp_config.sh" ];then
-	sh /koolshare/koolproxy/kp_config.sh stop
-fi
-
-# remove old files, do not remove user.txt incase of upgrade
-rm -rf /koolshare/bin/koolproxy >/dev/null 2>&1
-rm -rf /koolshare/scripts/KoolProxy* >/dev/null 2>&1
-rm -rf /koolshare/webs/Module_koolproxy.asp >/dev/null 2>&1
-rm -rf /koolshare/res/icon-koolproxy.png >/dev/null 2>&1
-rm -rf /koolshare/koolproxy/*.sh >/dev/null 2>&1
-rm -rf /koolshare/koolproxy/data/dnsmasq.adblock >/dev/null 2>&1
-rm -rf /koolshare/koolproxy/data/gen_ca.sh >/dev/null 2>&1
-rm -rf /koolshare/koolproxy/data/koolproxy_ipset.conf >/dev/null 2>&1
-rm -rf /koolshare/koolproxy/data/openssl.cnf >/dev/null 2>&1
-rm -rf /koolshare/koolproxy/data/serial >/dev/null 2>&1
-rm -rf /koolshare/koolproxy/data/version >/dev/null 2>&1
-rm -rf /koolshare/koolproxy/data/rules/*.dat >/dev/null 2>&1
-rm -rf /koolshare/koolproxy/data/rules/daily.txt >/dev/null 2>&1
-rm -rf /koolshare/koolproxy/data/rules/koolproxy.txt >/dev/null 2>&1
-
-# copy new files
-cd /tmp
-mkdir -p /koolshare/koolproxy
-mkdir -p /koolshare/koolproxy/data
-mkdir -p /koolshare/koolproxy/data/rules
-
-cp -rf /tmp/koolproxy/scripts/* /koolshare/scripts/
-cp -rf /tmp/koolproxy/webs/* /koolshare/webs/
-cp -rf /tmp/koolproxy/res/* /koolshare/res/
-if [ "$ROG" == "1" ];then
-	echo_date "安装ROG皮肤！"
-	continue
-else
-	if [ "$TUF" == "1" ];then
+install_ui(){
+	# intall different UI
+	get_ui_type
+	if [ "${UI_TYPE}" == "ROG" ];then
+		echo_date "安装ROG皮肤！"
+		sed -i '/asuscss/d' /koolshare/webs/Module_${module}.asp >/dev/null 2>&1
+	fi
+	if [ "${UI_TYPE}" == "TUF" ];then
 		echo_date "安装TUF皮肤！"
+		sed -i '/asuscss/d' /koolshare/webs/Module_${module}.asp >/dev/null 2>&1
 		sed -i 's/3e030d/3e2902/g;s/91071f/92650F/g;s/680516/D0982C/g;s/cf0a2c/c58813/g;s/700618/74500b/g;s/530412/92650F/g' /koolshare/webs/Module_${module}.asp >/dev/null 2>&1
-	else
+	fi
+	if [ "${UI_TYPE}" == "ASUSWRT" ];then
 		echo_date "安装ASUSWRT皮肤！"
 		sed -i '/rogcss/d' /koolshare/webs/Module_${module}.asp >/dev/null 2>&1
 	fi
-fi
-if [ ! -f /koolshare/koolproxy/data/rules/user.txt ];then
-	cp -rf /tmp/koolproxy/koolproxy /koolshare/
-else
-	mv /koolshare/koolproxy/data/rules/user.txt /tmp/user.txt.tmp
-	cp -rf /tmp/koolproxy/koolproxy /koolshare/
-	mv /tmp/user.txt.tmp /koolshare/koolproxy/data/rules/user.txt
-fi
-cp -f /tmp/koolproxy/uninstall.sh /koolshare/scripts/uninstall_koolproxy.sh
-#[ ! -L "/koolshare/bin/koolproxy" ] && ln -sf /koolshare/koolproxy/koolproxy /koolshare/bin/koolproxy
-chmod 755 /koolshare/koolproxy/*
-chmod 755 /koolshare/koolproxy/data/*
-chmod 755 /koolshare/scripts/*
+}
 
-# 创建开机启动文件
-find /koolshare/init.d/ -name "*koolproxy*" | xargs rm -rf
-[ ! -L "/koolshare/init.d/S98koolproxy.sh" ] && ln -sf /koolshare/koolproxy/kp_config.sh /koolshare/init.d/S98koolproxy.sh
-[ ! -L "/koolshare/init.d/N98koolproxy.sh" ] && ln -sf /koolshare/koolproxy/kp_config.sh /koolshare/init.d/N98koolproxy.sh
+install_now(){
+	# default value
+	local TITLE="Kids_Protect"
+	local DESCR="KP: Kids Protect，互联网内容过滤，保护未成年人上网~"
+	local PLVER=$(cat ${DIR}/version)
 
-# 设置默认值
-[ -z "$koolproxy_mode" ] && dbus set koolproxy_mode=1
-[ -z "$koolproxy_acl_default" ] && dbus set koolproxy_acl_default=1
+	# stop first
+	local ENABLE=$(dbus get ${module}_enable)
+	if [ "${ENABLE}" == "1" -a -f "/koolshare/koolproxy/kp_config.sh" ];then
+		echo_date "安装前先关闭${TITLE}插件，以保证更新成功！"
+		sh /koolshare/koolproxy/kp_config.sh stop >/dev/null 2>&1
+	fi
 
-# 离线安装用
-dbus set koolproxy_version="$(cat $DIR/version)"
-dbus set softcenter_module_koolproxy_version="$(cat $DIR/version)"
-dbus set softcenter_module_koolproxy_install="1"
-dbus set softcenter_module_koolproxy_name="koolproxy"
-dbus set softcenter_module_koolproxy_title="KidsProtect"
-dbus set softcenter_module_koolproxy_description="KP: Kids Protect，互联网内容过滤，保护未成年人上网~"
+	# remove some file first
+	find /koolshare/init.d -name "*koolproxy*" | xargs rm -rf >/dev/null 2>&1
 
-# restart
-if [ "$koolproxy_enable" == "1" ] && [ -f "/koolshare/koolproxy/kp_config.sh" ];then
-	sh /koolshare/koolproxy/kp_config.sh restart
-fi
-# 完成
-echo_date "koolproxy插件安装完毕！"
-exit_install
+	# remove old files, do not remove user.txt incase of upgrade
+	rm -rf /koolshare/bin/${module} >/dev/null 2>&1
+	rm -rf /koolshare/scripts/KoolProxy* >/dev/null 2>&1
+	rm -rf /koolshare/webs/Module_${module}.asp >/dev/null 2>&1
+	rm -rf /koolshare/res/icon-${module}.png >/dev/null 2>&1
+	rm -rf /koolshare/${module}/*.sh >/dev/null 2>&1
+	rm -rf /koolshare/${module}/data/dnsmasq.adblock >/dev/null 2>&1
+	rm -rf /koolshare/${module}/data/gen_ca.sh >/dev/null 2>&1
+	rm -rf /koolshare/${module}/data/${module}_ipset.conf >/dev/null 2>&1
+	rm -rf /koolshare/${module}/data/openssl.cnf >/dev/null 2>&1
+	rm -rf /koolshare/${module}/data/serial >/dev/null 2>&1
+	rm -rf /koolshare/${module}/data/version >/dev/null 2>&1
+	rm -rf /koolshare/${module}/data/rules/*.dat >/dev/null 2>&1
+	rm -rf /koolshare/${module}/data/rules/daily.txt >/dev/null 2>&1
+	rm -rf /koolshare/${module}/data/rules/${module}.txt >/dev/null 2>&1
+
+	# isntall file
+	echo_date "安装插件相关文件..."
+	cd /tmp
+	mkdir -p /koolshare/${module}
+	mkdir -p /koolshare/${module}/data
+	mkdir -p /koolshare/${module}/data/rules
+	cp -rf /tmp/${module}/res/* /koolshare/res/
+	cp -rf /tmp/${module}/scripts/* /koolshare/scripts/
+	cp -rf /tmp/${module}/webs/* /koolshare/webs/
+	cp -rf /tmp/${module}/uninstall.sh /koolshare/scripts/uninstall_${module}.sh
+	if [ ! -f "/koolshare/koolproxy/data/rules/user.txt" ];then
+		cp -rf /tmp/koolproxy/koolproxy /koolshare/
+	else
+		mv /koolshare/koolproxy/data/rules/user.txt /tmp/user.txt.tmp
+		cp -rf /tmp/koolproxy/koolproxy /koolshare/
+		mv /tmp/user.txt.tmp /koolshare/koolproxy/data/rules/user.txt
+	fi
+	mkdir -p /tmp/upload
+	touch /tmp/upload/kp_log.txt
+	
+	# Permissions
+	chmod 755 /koolshare/${module}/koolproxy >/dev/null 2>&1
+	chmod 755 /koolshare/${module}/kp_config.sh >/dev/null 2>&1
+	chmod 755 /koolshare/${module}/data/* >/dev/null 2>&1
+	chmod 755 /koolshare/scripts/* >/dev/null 2>&1
+
+	# make start up script link
+	if [ ! -L "/koolshare/init.d/S98koolproxy.sh" -a "/koolshare/koolproxy/kp_config.sh" ];then
+		ln -sf /koolshare/koolproxy/kp_config.sh /koolshare/init.d/S98koolproxy.sh
+	fi
+	if [ ! -L "/koolshare/init.d/N98koolproxy.sh" -a "/koolshare/koolproxy/kp_config.sh" ];then
+		ln -sf /koolshare/koolproxy/kp_config.sh /koolshare/init.d/N98koolproxy.sh
+	fi
+	
+	# intall different UI
+	install_ui
+
+	# dbus value
+	echo_date "设置插件默认参数..."
+	dbus set ${module}_version="${PLVER}"
+	dbus set softcenter_module_${module}_version="${PLVER}"
+	dbus set softcenter_module_${module}_install="1"
+	dbus set softcenter_module_${module}_name="${module}"
+	dbus set softcenter_module_${module}_title="${TITLE}"
+	dbus set softcenter_module_${module}_description="${DESCR}"
+
+	# defalut value
+	[ -z "$(dbus get koolproxy_mode)" ] && dbus set koolproxy_mode=1
+	[ -z "$(dbus get koolproxy_acl_default)" ] && dbus set koolproxy_acl_default=1
+
+	# re-enable
+	if [ "${ENABLE}" == "1" -a -f "/koolshare/koolproxy/kp_config.sh" ];then
+		echo_date "安装完毕，重新启用${TITLE}插件！"
+		sh /koolshare/koolproxy/kp_config.sh restart
+	fi
+	
+	# finish
+	echo_date "${TITLE}插件安装完毕！"
+	exit_install
+}
+
+install(){
+	get_model
+	get_fw_type
+	platform_test
+	install_now
+}
+
+install

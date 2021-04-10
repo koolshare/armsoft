@@ -1,7 +1,7 @@
 #!/bin/sh
 
 source /koolshare/scripts/base.sh
-alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】'
+alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 eval $(dbus export aliddns_)
 LOG_FILE=/tmp/upload/aliddns_log.txt
 

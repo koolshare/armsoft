@@ -15,3 +15,7 @@ dbus list wifiboost|cut -d "=" -f1|sed 's/^/dbus remove /g' >> /tmp/remove_wifib
 chmod +x /tmp/remove_wifiboost.sh
 sh /tmp/remove_wifiboost.sh
 rm -rf /tmp/remove_wifiboost.sh
+
+# remove myself
+rm -rf /koolshare/scripts/uninstall_wifiboost.sh
+
