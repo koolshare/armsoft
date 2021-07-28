@@ -109,6 +109,15 @@ set_sync_job(){
 }
 
 JFFS2USB(){
+	# 某些没有安装在原始JFFS中的，却在USBJFFS中安装了的，且赖mount-start的插件，比如swap，aria2等，无法开机启动
+	# 所以需要原始JFFS中的M01usb2jffs.sh运行完毕后，再次运行一次所有的 /koolshare/init.d/Mxxxx.sh的脚本
+	# 但是又不需要运行到USBJFFS中的M01usb2jffs.sh
+	if [ -f "/tmp/ks_postmount_flag" ];then
+		rm -rf /tmp/ks_postmount_flag
+		return 1
+	fi
+
+	# 开始主逻辑
 	echo "======================== USB2JFFS - 开机自动挂载 ========================"
 	echo_date "USB2JFFS：${0##*/} $@"
 	
@@ -214,9 +223,21 @@ JFFS2USB(){
 		# 设定定时同步
 		set_sync_job
 		
+		# 1. [service-start]
 		# 因为service-start启动太早，所以要在这里再启动一次
-		# /koolshare/bin/ks-services-start.sh start
-		start-stop-daemon -S -q -b -x /koolshare/bin/ks-services-start.sh start
+		start-stop-daemon -S -q -b -x /jffs/.koolshare/bin/ks-services-start.sh
+
+		# 2. [wan-start]
+		# 某些插件只存在于usbjffs中，并不在原始jffs，导致无法随wan-start启动，需要再启动一次
+		if [ -f "/tmp/ks_wanstart_flag" ];then
+			start-stop-daemon -S -q -b -x /jffs/.koolshare/bin/ks-wan-start.sh -- start
+			rm -rf /tmp/ks_wanstart_flag
+		fi
+
+		# 3. [post-mount]
+		# 某些插件只存在于usbjffs中，并不在原始jffs，导致无法随post-mount启动，需要再启动一次
+		start-stop-daemon -S -q -b -x /jffs/.koolshare/bin/ks-mount-start.sh -- start $@
+		touch /tmp/ks_postmount_flag
 		echo_date "USB2JFFS：完成！"
 	fi
 	echo "========================================================================"

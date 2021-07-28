@@ -144,15 +144,15 @@
             "version": "1.3"
         }, 
         {
-            "build_date": "2021-04-10_23:11:04", 
+            "build_date": "2021-07-28_10:46:06", 
             "changelog": "", 
             "description": "轻松用U盘挂载jffs", 
             "home_url": "Module_usb2jffs.asp", 
-            "md5": "56e70068eea3966014fed8c8c2fe70ef", 
+            "md5": "06a22d9a3ffbbbdd9a434ecff17098b1", 
             "name": "usb2jffs", 
             "tar_url": "usb2jffs/usb2jffs.tar.gz", 
             "title": "USB2JFFS", 
-            "version": "1.9"
+            "version": "1.9.1"
         }, 
         {
             "build_date": "2021-04-10_23:11:04", 
@@ -255,7 +255,7 @@
         }
     ], 
     "home_url": "https://raw.githubusercontent.com/koolshare/koolshare.github.io/master", 
-    "md5": "127cd0b4d8b232925af1c8d299949415", 
+    "md5": "db984109044e0da3edb4f2048dff6d43", 
     "tar_url": "softcenter/softcenter.tar.gz", 
-    "version": "1.1.6"
+    "version": "1.1.7"
 }

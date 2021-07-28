@@ -339,7 +339,6 @@ function appUninstallModule(moduleInfo) {
 }
 
 function initInstallStatus(){
-	console.log("sadog!");
 	$.ajax({
 		url: '/_temp/soft_install_log.txt',
 		type: 'GET',

@@ -1,5 +1,7 @@
 Koolshare Asuswrt-Merlin USB2JFFS Changelog
 ===========================================
+1.9.1
+   - fix	修复某些只安装再USBJFFS中的插件无法开机启动
 
 1.7 - 1.8
    - update	将插件使用条件改为读20MB/s，写30MB/s

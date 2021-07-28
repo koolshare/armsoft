@@ -216,7 +216,12 @@ install_tar(){
 
 	# 8. before untar, remove some file/folder if exist：tar.gz file and folder contain install.sh
 	rm -rf /tmp/*.tar.gz >/dev/null 2>&1
-	local INSTALL_SCRIPT_TMP=$(find /tmp -name "install.sh")
+	local MAXDEPTH_SUPP=$(find --help 2>&1|grep -Eco maxdepth)
+	if [ "${MAXDEPTH_SUPP}" == "1" ];then
+		local INSTALL_SCRIPT_TMP=$(find /tmp -name "install.sh" -maxdepth 2)
+	else
+		local INSTALL_SCRIPT_TMP=$(find /tmp -name "install.sh")
+	fi
 	local SCRIPT_AB_DIR_TMP=$(dirname ${INSTALL_SCRIPT_TMP})
 	rm -rf ${SCRIPT_AB_DIR_TMP} >/dev/null 2>&1
 
@@ -287,7 +292,7 @@ install_tar(){
 		exit_tar_install 1
 	fi
 
-	# 16. 检查下安装包是否是arm384|arm386的
+	# 15. 检查下安装包是否是arm384|arm386的
 	local PLATFORM=$(grep -E "arm384|arm386" ${SCRIPT_AB_DIR}/.valid)
 	if [ -f "${SCRIPT_AB_DIR}/.valid" -a -n "${PLATFORM}" ];then
 		continue
