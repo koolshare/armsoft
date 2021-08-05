@@ -1,5 +1,8 @@
 Koolshare arm 384 router software center Changelog
 ===========================================
+1.1.8
+   - fix	修复插件卸载问题
+
 1.1.7
    - fix	修复USB设备文件过多时，在线/离线安装插件速度非常慢的问题
 

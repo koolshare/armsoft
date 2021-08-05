@@ -468,6 +468,11 @@ uninstall_ks_module() {
 		echo_date "使用插件【${softcenter_installing_title}】自带卸载脚本：uninstall_${softcenter_installing_todo}.sh 卸载！"
 		# sh /koolshare/scripts/uninstall_${softcenter_installing_todo}.sh
  		start-stop-daemon -S -q -x /koolshare/scripts/uninstall_${softcenter_installing_todo}.sh 2>&1
+ 		if [ "$?" == "1" ];then
+			echo_date "============================= end ================================="
+ 			echo "XU6J03M6"
+			exit
+ 		fi
 	else
 		echo_date "没有找到插件【${softcenter_installing_title}】自带的卸载脚本，使用软件中心的卸载功能进行卸载！"
 		rm -rf /koolshare/${softcenter_installing_todo} >/dev/null 2>&1
