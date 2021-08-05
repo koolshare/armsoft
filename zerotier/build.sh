@@ -5,7 +5,8 @@ VERSION="1.0"
 TITLE="ZeroTier"
 DESCRIPTION="ZeroTier 内网穿透"
 HOME_URL="Module_zerotier.asp"
-
+TAGS="内网穿透 VPN"
+AUTHOR="sadog"
 
 # Check and include base
 DIR="$( cd "$( dirname "$BASH_SOURCE[0]" )" && pwd )"

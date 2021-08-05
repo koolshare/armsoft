@@ -5,6 +5,8 @@ VERSION="2.4"
 TITLE="虚拟内存"
 DESCRIPTION="让路由器运行更稳定~"
 HOME_URL="Module_swap.asp"
+TAGS="工具 USB"
+AUTHOR="sadog"
 
 # Check and include base
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

@@ -5,6 +5,8 @@ VERSION="1.2"
 TITLE="ss-server"
 DESCRIPTION="ss-server"
 HOME_URL="Module_ssserver.asp"
+TAGS="网络 工具"
+AUTHOR="sadog"
 
 # Check and include base
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

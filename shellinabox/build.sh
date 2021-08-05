@@ -5,6 +5,8 @@ VERSION="1.5"
 TITLE="shellinabox"
 DESCRIPTION="超强的SSH网页客户端~"
 HOME_URL="Module_shellinabox.asp"
+TAGS="系统 工具"
+AUTHOR="sadog"
 
 # Check and include base
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

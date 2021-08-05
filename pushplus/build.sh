@@ -5,6 +5,8 @@ VERSION="0.3"
 TITLE="pushplus全能推送"
 DESCRIPTION="通过pushplus将路由器状态推送到微信上"
 HOME_URL="Module_pushplus.asp"
+TAGS="推送"
+AUTHOR="囍冯总囍"
 
 # Check and include base
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

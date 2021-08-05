@@ -5,6 +5,7 @@ VERSION="1.5"
 TITLE="系统工具"
 DESCRIPTION="kms"
 HOME_URL="Module_kms.asp"
+TAGS="辅助 工具"
 
 # Check and include base
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

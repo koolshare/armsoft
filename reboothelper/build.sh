@@ -5,6 +5,9 @@ VERSION="0.6"
 TITLE="重启助手"
 DESCRIPTION="解决重启Bug"
 HOME_URL="Module_reboothelper.asp"
+TAGS="系统 工具"
+AUTHOR="Lonlykids"
+LINK="https://koolshare.cn/thread-167906-1-1.html"
 
 # Check and include base
 DIR="$( cd "$( dirname "$BASH_SOURCE[0]" )" && pwd )"

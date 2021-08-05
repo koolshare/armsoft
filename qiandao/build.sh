@@ -5,6 +5,8 @@ VERSION="1.5"
 TITLE="自动签到"
 DESCRIPTION="自动签到"
 HOME_URL="Module_qiandao.asp"
+TAGS="签到"
+AUTHOR="Carseason"
 
 # Check and include base
 DIR="$( cd "$( dirname "$BASH_SOURCE[0]" )" && pwd )"

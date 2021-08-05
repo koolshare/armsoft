@@ -5,6 +5,8 @@ VERSION="1.5"
 TITLE="ddnspod"
 DESCRIPTION="ddnspod"
 HOME_URL="Module_ddnspod.asp"
+TAGS="网络 DDNS"
+AUTHOR="freexiaoyao"
 
 # Check and include base
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

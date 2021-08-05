@@ -5,6 +5,8 @@ VERSION="1.3"
 TITLE="中文SSID"
 DESCRIPTION="中文SSID，装逼利器！"
 HOME_URL="Module_ssid.asp"
+TAGS="系统 工具"
+AUTHOR="sadog"
 
 # Check and include base
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

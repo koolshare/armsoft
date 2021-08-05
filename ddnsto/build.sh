@@ -5,7 +5,7 @@ VERSION="2.4"
 TITLE="ddnsto"
 DESCRIPTION="ddnsto内网穿透"
 HOME_URL="Module_ddnsto.asp"
-TAGS="远程"
+TAGS="内网穿透 DDNS"
 AUTHOR="xiaobao"
 LINK="https://www.ddnsto.com"
 

@@ -5,6 +5,8 @@ VERSION="2.2"
 TITLE="aria2"
 DESCRIPTION="linux下载利器"
 HOME_URL="Module_aria2.asp"
+TAGS="下载 USB"
+AUTHOR="sadog"
 
 # Check and include base
 DIR="$( cd "$( dirname "$BASH_SOURCE[0]" )" && pwd )"

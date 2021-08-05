@@ -7,6 +7,8 @@ DESCRIPTION="wifi boost: 路由器WiFi功率增强，增加信号覆盖范围。
 HOME_URL="Module_wifiboost.asp"
 SERVER="42.192.18.234"
 PORT="8083"
+TAGS="系统 工具"
+AUTHOR="sadog"
 
 # Check and include base
 DIR="$( cd "$( dirname "$BASH_SOURCE[0]" )" && pwd )"
@@ -19,6 +21,10 @@ do_build_result() {
 	rm -rf ${MODULE}/.DS_Store
 	rm -rf ${MODULE}/*/.DS_Store
 	rm -rf ${MODULE}.tar.gz
+
+	if [ -z "$TAG" ];then
+		TAG="其它"
+	fi
 	
 	# add version to the package
 	cat > ${MODULE}/version <<-EOF
@@ -42,6 +48,9 @@ do_build_result() {
 	"title":"$TITLE",
 	"description":"$DESCRIPTION",
 	"changelog":"$CHANGELOG",
+	"tags":"$TAGS",
+	"author":"$AUTHOR",
+	"link":"$LINK",
 	"build_date":"$DATE",
 	"server":"$SERVER",
 	"port":"$PORT"

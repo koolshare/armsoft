@@ -5,6 +5,8 @@ VERSION="1.5"
 TITLE="frps穿透服务器"
 DESCRIPTION="内网穿透利器，谁用谁知道。"
 HOME_URL="Module_frps.asp"
+TAGS="内网穿透 DDNS"
+AUTHOR="clang"
 
 # Check and include base
 DIR="$( cd "$( dirname "$BASH_SOURCE[0]" )" && pwd )"

@@ -5,6 +5,8 @@ VERSION="1.9.1"
 TITLE="USB2JFFS"
 DESCRIPTION="轻松用U盘挂载jffs"
 HOME_URL="Module_usb2jffs.asp"
+TAGS="工具 USB"
+AUTHOR="sadog"
 
 # Check and include base
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
