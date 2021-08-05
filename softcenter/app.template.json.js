@@ -12,6 +12,8 @@
 	"ver":"0.5",
 	"home_url":"/Module_xunlei.asp",
 	"tar_url":"adm/adm.tar.gz",
+  "author":"",
+  "tags":"工具",
 	"md5":"31559b347f6c8081ccdece78e50156d5"
 },
 {

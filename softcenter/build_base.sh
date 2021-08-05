@@ -8,6 +8,10 @@ if [ "$VERSION" = "" ]; then
 	exit 3
 fi
 
+if [ -z "$TAGS" ];then
+  TAGS="其它"
+fi
+
 rm -f ${MODULE}.tar.gz
 #清理mac os 下文件
 rm -f $MODULE/.DS_Store
@@ -35,6 +39,9 @@ cat > ./config.json.js <<EOF
 "home_url":"$HOME_URL",
 "title":"$TITLE",
 "description":"$DESCRIPTION",
+"tags":"$TAGS",
+"author":"$AUTHOR",
+"link":"$LINK",
 "changelog":"$CHANGELOG",
 "build_date":"$DATE"
 }
