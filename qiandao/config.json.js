@@ -1,9 +1,12 @@
 {
 "version":"1.5",
-"md5":"764c49d30c0f28387d840fa34a37bc6e",
+"md5":"8ba65c5401f1db0320101c0f58f12999",
 "home_url":"Module_qiandao.asp",
 "title":"自动签到",
 "description":"自动签到",
+"tags":"签到",
+"author":"Carseason",
+"link":"",
 "changelog":"",
-"build_date":"2021-04-10_23:11:04"
+"build_date":"2021-08-05_20:49:35"
 }
