@@ -22,6 +22,17 @@ _get_mac(){
   echo $_MACMD5
 }
 
+get_current_jffs_status(){
+  local cur_patition=$(df | /bin/grep /jffs)
+  if [ -z "${cur_patition}" ];then
+    local used=$(echo ${cur_patition} | awk '{print $3}')
+    local total=$(echo ${cur_patition} | awk '{print $2}')
+    echo "${used} ${total}"
+  else
+    echo "0 0"
+  fi
+}
+
 eval $(dbus export ddnsto_)
 DDNSTO_URL=${ddnsto_url}
 if [ -z "${DDNSTO_URL}" ]; then
@@ -29,7 +40,7 @@ if [ -z "${DDNSTO_URL}" ]; then
   DDNSTO_URL=$(echo "https://asus-${UQ_ID:0:8}.kooldns.cn")
 fi
 
-DDNSTO_INSTALL=`dbus get softcenter_module_ddnsto_install`
+DDNSTO_INSTALL=$(dbus get softcenter_module_ddnsto_install)
 if [ -n "${DDNSTO_INSTALL}" ]; then
   if [ ! -f "/koolshare/bin/ddnsto" ]; then
     DDNSTO_INSTALL=0
@@ -38,14 +49,14 @@ else
   DDNSTO_INSTALL=0
 fi
 
-DDNSTO_STATUS=`ps | grep -w ddnsto | grep -cv grep`
-DDNSTO_PID=`pidof ddnsto`
+DDNSTO_STATUS=$(ps | grep -w ddnsto | grep -cv grep)
+DDNSTO_PID=$(pidof ddnsto)
 
-BOOT_CFG=`nvram get ddnsto_boot_cfg`
+BOOT_CFG=$(nvram get ddnsto_boot_cfg)
 DDNSTO_DEVICE_ID=
 if [ -n "${BOOT_CFG}" ]; then
-  DDNSTO_DEVICE_ID=`/koolshare/bin/ddnsto -w|cut -d ' ' -f2`
+  DDNSTO_DEVICE_ID=$(/koolshare/bin/ddnsto -w|cut -d ' ' -f2)
 fi
 
-RESP=`echo '{\"ddnsto_url\":\"'${DDNSTO_URL}'\",\"ddnsto_token\":\"'${ddnsto_token}'\",\"ddnsto_install\":'${DDNSTO_INSTALL}',\"ddnsto_status\":'${DDNSTO_STATUS}',\"ddnsto_device_id\":\"'${DDNSTO_DEVICE_ID}'\",\"ddnsto_pid\":\"'${DDNSTO_PID}'\"}'`
-http_response "${RESP}"
+RESP=$(echo '{\"ddnsto_url\":\"'${DDNSTO_URL}'\",\"ddnsto_token\":\"'${ddnsto_token}'\",\"ddnsto_install\":'${DDNSTO_INSTALL}',\"ddnsto_status\":'${DDNSTO_STATUS}',\"ddnsto_device_id\":\"'${DDNSTO_DEVICE_ID}'\",\"ddnsto_pid\":\"'${DDNSTO_PID}'\",\"jffs_status\":\"'$(get_current_jffs_status)'\"}')
+http_response  "${RESP}"
