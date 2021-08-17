@@ -70,14 +70,37 @@ switch_new(){
 switch_center(){
 	if [ -f /jffs/.koolshare/webs/Module_Softcenter_old.asp -a -f /jffs/.koolshare/.soft_ver_old ];then
 		switch_old jffs
+		CENTER_TYPE=$(cat /koolshare/webs/Module_Softcenter.asp | grep -Eo "/softcenter/app.json.js")
+		if [ -z "$CENTER_TYPE" ];then
+			return 1
+		else
+			return 0
+		fi
 	elif [ -f /jffs/.koolshare/webs/Module_Softcenter_new.asp -a -f /jffs/.koolshare/.soft_ver_new ];then
 		switch_new jffs
+		CENTER_TYPE=$(cat /koolshare/webs/Module_Softcenter.asp | grep -Eo "/softcenter/app.json.js")
+		if [ -z "$CENTER_TYPE" ];then
+			return 0
+		else
+			return 1
+		fi
+	else
+		return 1
 	fi
 }
 
 if [ $# == 2 -a $(number_test $1) == 0 ];then
-	http_response "$1"
 	switch_center
+	if [ "$?" == "0" ];then
+		http_response "$1"
+	else
+		CENTER_TYPE=$(cat /koolshare/webs/Module_Softcenter.asp | grep -Eo "/softcenter/app.json.js")
+		if [ -z "$CENTER_TYPE" ];then
+			http_response "错误：没有检测到softcenter，不切换！"
+		else
+			http_response "错误：没有检测到koolcenter，不切换！"
+		fi
+	fi
 	exit 0
 fi
 
