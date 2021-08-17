@@ -1,5 +1,5 @@
-#! /bin/sh
-VERSION=1.1.9
+#!/bin/sh
+VERSION=1.9.0.3
 
 echo $VERSION > ./softcenter/.soft_ver
 
@@ -7,11 +7,12 @@ cat version
 rm -f softcenter.tar.gz
 mkdir -p ./softcenter/res
 
-python ./gen_install.py stage1 
+python ./gen_install.py stage1
 
 chmod 755 ./softcenter/scripts/app_install.sh
 
 tar -zcvf softcenter.tar.gz softcenter
+cp -rf softcenter.tar.gz koolcenter.tar.gz
 md5value=`md5sum softcenter.tar.gz|tr " " "\n"|sed -n 1p`
 cat > ./version <<EOF
 $VERSION
