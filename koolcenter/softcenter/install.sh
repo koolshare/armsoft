@@ -332,7 +332,7 @@ center_install() {
 	# reset some default value
 	echo_date "设定一些默认值..."
 	if [ -z "${CENTER_TYPE_1}" ];then
-		nvram set sc_url="https://rogsoft.ddnsto.com"
+		nvram set sc_url="https://armsoft.ddnsto.com"
 		nvram commit
 	fi
 	if [ -n "$(pidof skipd)" -a -f "/usr/bin/dbus" ];then
