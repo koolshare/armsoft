@@ -1,5 +1,8 @@
 Koolshare arm 384 router software center Changelog
 ===========================================
+1.2.1
+   - fix	修复软件中心的一个安全问题
+
 1.2.0
    - fix	修复软件中心自身离线安装的一些问题
 
