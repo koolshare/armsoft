@@ -15,13 +15,13 @@
             "version": "1.4.1"
         }, 
         {
-            "author": "", 
-            "build_date": "2021-08-05_20:49:34", 
+            "author": "anonymous", 
+            "build_date": "2021-08-22_16:10:09", 
             "changelog": "", 
             "description": "kms", 
             "home_url": "Module_kms.asp", 
             "link": "", 
-            "md5": "febc8d2bd16621c0784c63cd4e105bf4", 
+            "md5": "3c778b48a33b50e8ad2b37524008b572", 
             "name": "kms", 
             "tags": "辅助 工具", 
             "tar_url": "kms/kms.tar.gz", 
@@ -338,7 +338,7 @@
         }
     ], 
     "home_url": "https://raw.githubusercontent.com/koolshare/koolshare.github.io/master", 
-    "md5": "000e307985b842bfba4160fd58b2fea9", 
+    "md5": "22dbf8d5b85fc2a81737ccb2a68d5fbf", 
     "tar_url": "koolcenter/softcenter.tar.gz", 
-    "version": "1.9.0.15"
+    "version": "1.9.0.16"
 }
