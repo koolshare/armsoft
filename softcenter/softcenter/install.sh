@@ -244,7 +244,7 @@ center_install() {
 	cp -rf /tmp/${module}/init.d/* /${KSHOME}/.koolshare/init.d/
 	cp -rf /tmp/${module}/bin/* /${KSHOME}/.koolshare/bin/
 	#for axhnd
-	if [ "${MODEL}" == "RT-AX88U" ] || [ "${MODEL}" == "GT-AX11000" ];then
+	if [ "${MODEL}" == "RT-AX88U" -o "${MODEL}" == "GT-AX11000" -o "${MODEL}" == "RT-AX86U" -o "${MODEL}" == "RT-AX68U" ];then
 		cp -rf /tmp/${module}/axbin/* /${KSHOME}/.koolshare/bin/
 	fi
 	cp -rf /tmp/${module}/perp /${KSHOME}/.koolshare/
@@ -348,7 +348,6 @@ center_install() {
 	echo_date "设定一些默认值..."
 	if [ -z "${CENTER_TYPE_1}" ];then
 		nvram set sc_url="https://armsoft.ddnsto.com"
-		nvram commit
 	fi
 	if [ -n "$(pidof skipd)" -a -f "/usr/bin/dbus" ];then
 		/usr/bin/dbus set softcenter_installing_todo=""
@@ -380,6 +379,10 @@ center_install() {
 			dbus set softcenter_version=${SOFTVER}
 		fi
 	fi
+
+	# remove some value discard exist
+	nvram unset rc_service
+	nvram commit
 	#============================================
 	# now try to reboot httpdb if httpdb not started
 	# /koolshare/bin/start-stop-daemon -S -q -x /koolshare/perp/perp.sh
