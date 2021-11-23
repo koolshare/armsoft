@@ -3,16 +3,15 @@
 # build script for armsoft project
 
 MODULE="center"
-VERSION="1.3"
-TITLE="koolcenter 一键切换"
-DESCRIPTION="Node.js"
-HOME_URL="koolcenter → softcenter 一键切换！"
+VERSION="1.4"
+TITLE="软件中心一键切换"
+DESCRIPTION="koolcenter/softcenter 一键来回切换！"
+HOME_URL="Module_center.asp"
 TAGS="辅助 工具"
 AUTHOR="sadog"
 
 # Check and include base
 DIR="$( cd "$( dirname "$BASH_SOURCE[0]" )" && pwd )"
-
 
 # now include build_base.sh
 . $DIR/../softcenter/build_base.sh

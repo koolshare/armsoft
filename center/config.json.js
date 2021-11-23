@@ -1,12 +1,12 @@
 {
-"version":"1.3",
-"md5":"da9957c935ab9e5a3345bedeaf9c3953",
-"home_url":"koolcenter → softcenter 一键切换！",
-"title":"koolcenter 一键切换",
-"description":"Node.js",
+"version":"1.4",
+"md5":"0fd3f816bb4519a885336a0883d8d68a",
+"home_url":"Module_center.asp",
+"title":"软件中心一键切换",
+"description":"koolcenter/softcenter 一键来回切换！",
 "tags":"辅助 工具",
 "author":"sadog",
 "link":"",
 "changelog":"",
-"build_date":"2021-08-17_21:56:49"
+"build_date":"2021-11-23_21:26:16"
 }
