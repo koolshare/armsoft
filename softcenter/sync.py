@@ -78,7 +78,7 @@ def sync_module(module, git_path):
         cmd = ""
         tar_path = os.path.join(module_path, "%s.tar.gz" % module);
         if os.path.isdir(module_path):
-            cmd = "cd $module_path && git reset --hard && $git_bin pull && rm -f $module.tar.gz && tar -zcf $module.tar.gz $module" 
+            cmd = "cd $module_path && $git_bin reset --hard && $git_bin clean -fdqx && $git_bin pull && rm -f $module.tar.gz && tar -zcf $module.tar.gz $module" 
         else:
             cmd = "cd $parent_path && $git_bin clone $git_path $module_path && cd $module_path && tar -zcf $module.tar.gz $module"
         t = Template(cmd)

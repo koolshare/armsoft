@@ -7,7 +7,7 @@
 <meta HTTP-EQUIV="Expires" CONTENT="-1">
 <link rel="shortcut icon" href="images/favicon.png">
 <link rel="icon" href="images/favicon.png">
-<title>KoolShare - 软件中心</title>
+<title>KoolCenter - 软件中心</title>
 <link rel="stylesheet" type="text/css" href="index_style.css">
 <link rel="stylesheet" type="text/css" href="form_style.css">
 <link rel="stylesheet" type="text/css" href="/res/softcenter.css">
@@ -569,12 +569,12 @@ $(function() {
 			$("#spnCurrVersion").html("<em>" + db_softcenter_["softcenter_version"] + "</em>");
 			var EXT = '<% nvram_get("extendno"); %>';
 			if (EXT.indexOf('koolshare') != -1){
-				console.log("正在使用koolshare官改固件！");
+				console.log("正在使用KoolCenter官改固件！");
 			}else{
-				console.log("正在使用koolshare梅林改版固件！");
+				console.log("正在使用KoolCenter梅林改版固件！");
 				var jff2_scripts="<% nvram_get("jffs2_scripts"); %>";
 				if(jff2_scripts != 1){
-					$('#software_center_message').html('<h1><font color="#FF9900">错误！</font></h1><h2>软件中心不可用！</h2><h2>因为你没有开启Enable JFFS custom scripts and configs选项！</h2><h2>请前往【系统管理】-<a href="Advanced_System_Content.asp"><u><em>【系统设置】</em></u></a>开启此选项再使用软件中心！</h2><h2>如果你是官改固件，请尝试重置路由器以重新初始化软件中心！</h2><h2>需要更多帮助，请前往<a href="https://koolshare.cn"><em><u>https://koolshare.cn</u></em></a>koolshare论坛交流反馈</h2>')
+					$('#software_center_message').html('<h1><font color="#FF9900">错误！</font></h1><h2>软件中心不可用！</h2><h2>因为你没有开启Enable JFFS custom scripts and configs选项！</h2><h2>请前往【系统管理】-<a href="Advanced_System_Content.asp"><u><em>【系统设置】</em></u></a>开启此选项再使用软件中心！</h2><h2>如果你是官改固件，请尝试重置路由器以重新初始化软件中心！</h2><h2>需要更多帮助，请前往<a href="https://koolcenter.com"><em><u>https://koolcenter.com</u></em></a>网站查找解决方法</h2>')
 					return false;
 				}
 			}
@@ -893,9 +893,9 @@ function ks_online() {
 																		<tr>
 																			<td>
 																				<ul style="padding-left:25px;">
-																					<h2 id="push_titile"><em>软件中心&nbsp;-&nbsp;by&nbsp;koolshare</em></h2>
+																					<h2 id="push_titile"><em>软件中心&nbsp;-&nbsp;by&nbsp;KoolCenter</em></h2>
 																					<li>
-																						<h4 id="push_content1" ><font color='#1E90FF'>交流反馈:&nbsp;&nbsp;</font><a href='https://github.com/koolshare/armsoft' target='_blank'><em>1.软件中心GitHub项目</em></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='https://t.me/xbchat' target='_blank'><em>2.加入telegram群</em></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='http://shang.qq.com/wpa/qunwpa?idkey=f475468129ba8019245425559b5df5bdad7d7201ac7780417dd0218bbb4e1322' target='_blank'><em>3.加入QQ群</em></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='http://koolshare.cn/forum-98-1.html' target='_blank'><em>4.Koolshare论坛插件版块</em></a></h4>
+																						<h4 id="push_content1" ><font color='#1E90FF'>交流反馈:&nbsp;&nbsp;</font><a href='https://github.com/koolshare/armsoft' target='_blank'><em>1.软件中心GitHub项目</em></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='https://t.me/xbchat' target='_blank'><em>2.加入telegram群</em></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='http://shang.qq.com/wpa/qunwpa?idkey=f475468129ba8019245425559b5df5bdad7d7201ac7780417dd0218bbb4e1322' target='_blank'><em>3.加入QQ群</em></a>&nbsp;&nbsp;&nbsp;&nbsp;</h4>
 																					</li>
 																					<li id="push_content2_li" style="display: none;">
 																						<h4 id="push_content2"></h4>
@@ -939,7 +939,7 @@ function ks_online() {
 														</tr>
 													</table>
 												<div id="ks_logo" class="KoolshareBottom">
-													论坛技术支持: <a href="https://koolshare.cn" target="_blank"> <i><u>https://koolshare.cn</u></i></a><br />
+													网站技术支持: <a href="https://koolcenter.com" target="_blank"> <i><u>https://koolcenter.com</u></i></a><br />
 													GitHub: <a href="https://github.com/koolshare/armsoft" target="_blank"><i><u>https://github.com/koolshare</u></i></a><br />
 													Shell & Web by: <a href="mailto:sadoneli@gmail.com"><i>sadoneli</i></a>, <i>Xiaobao</i>
 												</div>
