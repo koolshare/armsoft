@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# build script for armsoft project
+
 MODULE="fastd1ck"
 VERSION="1.6"
 TITLE="迅雷快鸟"

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# build script for armsoft project
+
 MODULE="qiandao"
 VERSION="1.5"
 TITLE="自动签到"

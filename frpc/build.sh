@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# build script for armsoft project
+
 MODULE="frpc"
 VERSION="1.6"
 TITLE="frpc内网穿透"

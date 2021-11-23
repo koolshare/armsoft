@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# build script for armsoft project
+
 MODULE="zerotier"
 VERSION="1.0"
 TITLE="ZeroTier"

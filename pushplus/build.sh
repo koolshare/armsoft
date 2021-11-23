@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# build script for armsoft project
+
 MODULE="pushplus"
 VERSION="0.3"
 TITLE="pushplus全能推送"
@@ -9,16 +11,8 @@ TAGS="推送"
 AUTHOR="囍冯总囍"
 
 # Check and include base
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-if [ "$MODULE" == "" ]; then
-	echo "module not found"
-	exit 1
-fi
+DIR="$( cd "$( dirname "$BASH_SOURCE[0]" )" && pwd )"
 
-if [ -f "$DIR/$MODULE/$MODULE/install.sh" ]; then
-	echo "install script not found"
-	exit 2
-fi
 
 # now include build_base.sh
 . $DIR/../softcenter/build_base.sh

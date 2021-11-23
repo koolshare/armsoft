@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# build script for armsoft project
+
 MODULE="wifiboost"
 VERSION="3.4"
 TITLE="wifi boost"

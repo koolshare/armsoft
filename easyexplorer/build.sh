@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# build script for armsoft project
+
 MODULE="easyexplorer"
 VERSION="2.4"
 TITLE="易有云"

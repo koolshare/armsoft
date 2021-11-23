@@ -1,4 +1,7 @@
 #!/bin/sh
+
+# build script for armsoft project
+
 VERSION=1.9.0.20
 echo $VERSION > ./softcenter/.soft_ver
 

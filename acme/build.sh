@@ -1,6 +1,8 @@
 #!/bin/sh
 
-MODULE=acme
+# build script for armsoft project
+
+MODULE="acme"
 VERSION="3.4"
 TITLE="Let's Encrypt"
 DESCRIPTION="自动部署SSL证书"

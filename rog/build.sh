@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# build script for armsoft project
+
 MODULE="rog"
 VERSION="2.7"
 TITLE="ASUS工具箱"

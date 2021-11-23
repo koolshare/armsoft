@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# build script for armsoft project
+
 MODULE="kms"
 VERSION="1.5"
 TITLE="系统工具"
@@ -9,16 +11,8 @@ HOME_URL="Module_kms.asp"
 TAGS="辅助 工具"
 
 # Check and include base
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-if [ "$MODULE" == "" ]; then
-	echo "module not found"
-	exit 1
-fi
+DIR="$( cd "$( dirname "$BASH_SOURCE[0]" )" && pwd )"
 
-if [ -f "$DIR/$MODULE/$MODULE/install.sh" ]; then
-	echo "install script not found"
-	exit 2
-fi
 
 # now include build_base.sh
 . $DIR/../softcenter/build_base.sh

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# build script for armsoft project
+
 MODULE="cfddns"
 VERSION="1.0"
 TITLE="CloudFlare DDNS"

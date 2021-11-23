@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# build script for armsoft project
+
 MODULE="ddnsto"
 VERSION="2.4"
 TITLE="ddnsto"

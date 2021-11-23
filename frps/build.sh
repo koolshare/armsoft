@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# build script for armsoft project
+
 MODULE="frps"
 VERSION="1.5"
 TITLE="frps穿透服务器"
