@@ -13,7 +13,7 @@ for module in ${modules}; do
 		cd ${SOFT_PATH}/${module}
 		
 		echo "add .valid to ${module}"
-		echo hnd >${SOFT_PATH}/${module}/softcenter/.valid
+		echo arm384 >${SOFT_PATH}/${module}/softcenter/.valid
 
 		echo "build ${module}"
 		sh build.sh

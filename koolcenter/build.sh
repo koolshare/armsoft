@@ -2,7 +2,8 @@
 
 # build script for armsoft project
 
-VERSION=1.9.0.20
+VERSION=1.9.1.1
+
 echo $VERSION > ./softcenter/.soft_ver
 
 cat version
@@ -11,7 +12,7 @@ mkdir -p ./softcenter/res
 
 python ./gen_install.py stage1
 
-chmod 755 ./softcenter/scripts/app_install.sh
+chmod 755 ./softcenter/scripts/ks_app_install.sh
 
 tar -zcvf softcenter.tar.gz softcenter
 cp -rf softcenter.tar.gz koolcenter.tar.gz
