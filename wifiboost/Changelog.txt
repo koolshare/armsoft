@@ -1,5 +1,11 @@
 Koolshare Asuswrt-Merlin wifiboost Changelog for HND/AXHND platform
 ===========================================
+3.6
+   - update	修复部分机型wifi显示offline的bug；
+
+3.5
+   - update	上线arm384/386软件中心；
+
 3.4
    - update	支持提货码激活；
 
