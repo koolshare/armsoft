@@ -66,12 +66,12 @@ get_ui_type(){
 		ROG_RTAC86U=1
 	fi
 	# GT-AC2900
-	if [ "${MODEL}" == "GT-AC2900" ] && [ "{FW_TYPE_CODE}" == "3" -o "{FW_TYPE_CODE}" == "4" ];then
+	if [ "${MODEL}" == "GT-AC2900" ] && [ "${FW_TYPE_CODE}" == "3" -o "${FW_TYPE_CODE}" == "4" ];then
 		# GT-AC2900从386.1开始已经支持梅林固件，其UI是ASUSWRT
 		ROG_GTAC2900=0
 	fi
 	# GT-AX11000
-	if [ "${MODEL}" == "GT-AX11000" -o "${MODEL}" == "GT-AX11000_BO4" ] && [ "{FW_TYPE_CODE}" == "3" -o "{FW_TYPE_CODE}" == "4" ];then
+	if [ "${MODEL}" == "GT-AX11000" -o "${MODEL}" == "GT-AX11000_BO4" ] && [ "${FW_TYPE_CODE}" == "3" -o "${FW_TYPE_CODE}" == "4" ];then
 		# GT-AX11000从386.2开始已经支持梅林固件，其UI是ASUSWRT
 		ROG_GTAX11000=0
 	fi
@@ -98,6 +98,10 @@ exit_install(){
 			rm -rf /tmp/${module}* >/dev/null 2>&1
 			exit 1
 			;;
+		2)
+			rm -rf /tmp/${module}* >/dev/null 2>&1
+			exit 1
+			;;
 		0|*)
 			rm -rf /tmp/${module}* >/dev/null 2>&1
 			exit 0
@@ -110,9 +114,11 @@ install_ui(){
 	get_ui_type
 	if [ "${UI_TYPE}" == "ROG" ];then
 		echo_date "安装ROG皮肤！"
+		sed -i '/asuscss/d' /koolshare/webs/Module_${module}.asp >/dev/null 2>&1
 	fi
 	if [ "${UI_TYPE}" == "TUF" ];then
 		echo_date "安装TUF皮肤！"
+		sed -i '/asuscss/d' /koolshare/webs/Module_${module}.asp >/dev/null 2>&1
 		sed -i 's/3e030d/3e2902/g;s/91071f/92650F/g;s/680516/D0982C/g;s/cf0a2c/c58813/g;s/700618/74500b/g;s/530412/92650F/g' /koolshare/webs/Module_${module}.asp >/dev/null 2>&1
 	fi
 	if [ "${UI_TYPE}" == "ASUSWRT" ];then
@@ -128,14 +134,16 @@ install_now(){
 	local PLVER=$(cat ${DIR}/version)
 
 	# remove some useless file
-	if [ -f "/koolshare/res/wifiboost" ];then
-		rm -rf /koolshare/res/wifiboost
-	fi
+	rm -rf /koolshare/res/wifiboost >/dev/null 2>&1
+	rm -rf /koolshare/bin/wifiboost* >/dev/null 2>&1
+	rm -rf /koolshare/scripts/wifiboost* >/dev/null 2>&1
+	rm -rf /koolshare/scripts/*wifiboost* >/dev/null 2>&1
 
 	# isntall file
 	echo_date "安装插件相关文件..."
 	cd /tmp
-	cp -rf /tmp/${module}/bin/wifiboost /koolshare/bin/
+	[ -f /tmp/${module}/bin/wifiboost ] && cp -rf /tmp/${module}/bin/wifiboost /koolshare/bin/
+	[ -f /tmp/${module}/bin/wifiboost.sh ] && cp -rf /tmp/${module}/bin/wifiboost.sh /koolshare/bin/
 	cp -rf /tmp/${module}/res/* /koolshare/res/
 	cp -rf /tmp/${module}/scripts/* /koolshare/scripts/
 	cp -rf /tmp/${module}/webs/* /koolshare/webs/
@@ -143,6 +151,10 @@ install_now(){
 
 	if [ "${MODEL}" == "GT-AC5300" -a ! -x "/koolshare/bin/wl" ];then
 		cp -rf /tmp/${module}/bin/wl /koolshare/bin/
+	fi
+
+	if [ "${MODEL}" == "RAX80" -o "${MODEL}" == "RAX50" ];then
+		cp -rf /tmp/${module}/bin/xxd /koolshare/bin/
 	fi
 
 	# Permissions
@@ -162,14 +174,22 @@ install_now(){
 	dbus set softcenter_module_${module}_description="${DESCR}"
 	dbus remove wifiboost_warn
 	sync
+	echo 1 > /proc/sys/vm/drop_caches
 	sleep 2
 	echo_date "【${TITLE}】插件正在安装，请稍后！"
-	if [ -x "/koolshare/bin/start-stop-daemon" ];then
-		/koolshare/bin/start-stop-daemon -S -q -b -x /koolshare/bin/wifiboost -- install
-	else
-		/koolshare/bin/wifiboost install
-	fi	
-
+	if [ -x "/koolshare/bin/wifiboost.sh"  ];then
+		if [ -x "/koolshare/bin/start-stop-daemon" ];then
+			/koolshare/bin/start-stop-daemon -S -q -b -x /koolshare/bin/wifiboost.sh -- install
+		else
+			/koolshare/bin/wifiboost.sh install
+		fi
+	elif [ -x "/koolshare/bin/wifiboost"  ];then
+		if [ -x "/koolshare/bin/start-stop-daemon" ];then
+			/koolshare/bin/start-stop-daemon -S -q -b -x /koolshare/bin/wifiboost -- install
+		else
+			/koolshare/bin/wifiboost install
+		fi	
+	fi
 	# finish
 	echo_date "【${TITLE}】插件安装完毕！"
 	exit_install
