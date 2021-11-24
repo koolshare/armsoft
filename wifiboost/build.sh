@@ -3,7 +3,7 @@
 # build script for armsoft project
 
 MODULE="wifiboost"
-VERSION="3.7"
+VERSION="3.8"
 TITLE="wifi boost arm"
 DESCRIPTION="wifi boost: 路由器WiFi功率增强，增加信号覆盖范围。"
 HOME_URL="Module_wifiboost.asp"

@@ -1,5 +1,8 @@
 Koolshare Asuswrt-Merlin wifiboost Changelog for HND/AXHND platform
 ===========================================
+3.7 - 3.8
+   - fix	修复RT-AC5300无法修改5G-1和5G-2的问题；
+
 3.6
    - update	修复部分机型wifi显示offline的bug；
 
