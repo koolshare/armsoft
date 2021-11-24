@@ -7,7 +7,7 @@
 <meta HTTP-EQUIV="Expires" CONTENT="-1"/>
 <link rel="shortcut icon" href="images/favicon.png"/>
 <link rel="icon" href="images/favicon.png"/>
-<title>软件中心 - wifi boost</title>
+<title>软件中心 - wifi boost for arm</title>
 <link rel="stylesheet" type="text/css" href="index_style.css"/> 
 <link rel="stylesheet" type="text/css" href="form_style.css"/>
 <link rel="stylesheet" type="text/css" href="css/element.css">
@@ -25,6 +25,7 @@
 .wifiboost_btn {
 	border: none;
 	background: linear-gradient(to bottom, #003333  0%, #000000 100%); /* W3C */
+	background: linear-gradient(to bottom, #91071f  0%, #700618 100%); /* W3C rogcss */
 	font-size:10pt;
 	color: #fff;
 	padding: 5px 5px;
@@ -37,6 +38,7 @@
 .wifiboost_btn:hover {
 	border: none;
 	background: linear-gradient(to bottom, #27c9c9  0%, #279fd9 100%); /* W3C */
+	background: linear-gradient(to bottom, #cf0a2c  0%, #91071f 100%); /* W3C rogcss */
 }
 .loading_bar {
 	width:250px;
@@ -85,6 +87,7 @@ a:focus {
 	color: #ff002f;
 	font-style: normal;
 }
+#wifiboost_main { border:1px solid #91071f; } /* W3C rogcss */
 .SimpleNote { padding:5px 10px;}
 .ui-slider {
 	position: relative;
@@ -105,12 +108,14 @@ a:focus {
 .ui-widget-content {
 	/*border: 2px solid #000;*/
 	background-color:#000;
+	background-color:#700618; /* W3C rogcss */
 }
 .ui-state-default,
 .ui-widget-content .ui-state-default,
 .ui-widget-header .ui-state-default {
 	border: 1px solid ;
 	background: #e6e6e6;
+	background: #cf0a2c; /* W3C rogcss */
 	margin-top:-4px;
 	margin-left:-6px;
 }
@@ -155,6 +160,7 @@ a:focus {
 }
 #slider .ui-slider-handle {
 	border-color: #93E7FF;
+	border-color: #cf0a2c; /* W3C rogcss */
 }
 .parental_th{
 	color:white;
@@ -200,6 +206,10 @@ body .layui-layer-lan .layui-layer-btn {text-align:center}
 }
 </style>
 <script>
+var MODEL = '<% nvram_get("odmpid"); %>' || '<% nvram_get("productid"); %>';
+var BUILD = '<% nvram_get("buildno"); %>'
+var FWVER = '<% nvram_get("extendno"); %>';
+var RC_SUPPORT = '<% nvram_get("rc_support"); %>';
 var orig_region = '<% nvram_get("location_code"); %>';
 var odm = '<% nvram_get("productid"); %>'
 var params_chk = ['wifiboost_boost_24', 'wifiboost_boost_52', 'wifiboost_boost_58'];
@@ -307,6 +317,13 @@ function register_event(){
 			var current_maxp52 = '<% nvram_get("1:maxp5gb0a0"); %>';
 		}
 	}
+
+	if(MODEL == "RAX50"){
+		var current_maxp24 = '<% nvram_get("sb/0/maxp2ga0"); %>';
+		var current_maxp52 = '<% nvram_get("1:maxp5gb0a0"); %>';
+	}
+
+
 	if(E("wifiboost_boost_24").checked == true){
 		var maxp = current_maxp24;
 	}else{
@@ -364,6 +381,24 @@ function show_hide_elem(){
 		E("wifiboost_boost_58").style.display = "";
 		E("LABLE_58").style.display = "";
 		E("LABLE_52").innerHTML = "5G-1";
+	}
+	if(MODEL == "RAX80"){
+		E("msg1").style.display = "none";
+		E("msg3").style.display = "none";
+		E("msg6").style.display = "none";
+		E("msg5").innerHTML = "修改完成后，卸载wifi boost插件、重置/双清固件、升级固件版本（梅林）、等操作均会保持最后一次的功率修改效果。";
+		E("msg7").innerHTML = "但是由于RAX80为移植机型，在刷回网件后将失去boost效果，再刷回梅林固件后，需要重新安装插件再进行一次boost操作。";
+	}else if(MODEL == "RAX50"){
+		E("msg1").style.display = "none";
+		E("msg3").style.display = "none";
+		E("msg6").style.display = "none";
+		E("msg5").innerHTML = "修改完成后，卸载wifi boost插件、重置/双清固件、升级梅林/网件远程固件、等操作均会保持最后一次的功率修改效果。";
+		E("msg7").innerHTML = "虽然RAX50为梅林移植机型，但是即使其刷回网件原厂固件后再刷回梅林固件，其wifi boost的修改效果也不会丢失！";
+	} else {
+		E("msg1").style.display = "";
+		E("msg3").style.display = "";
+		E("msg6").style.display = "";
+		E("msg7").style.display = "none";
 	}
 }
 function get_dbus_data(){
@@ -481,7 +516,7 @@ function show_err_code() {
 			err_mesg = '<br/><span style="color: #CC3300">错误代码4：读取原厂wlan配置失败，重启或重置路由器后重试！！</span><br/><br>';
 		break;
 		case "5":
-			err_mesg = '<br/><span style="color: #CC3300">错误代码5：读取原厂wlan配置失败，重启或重置路由器后重试！！</span><br/><br>';
+			err_mesg = '<br/><span style="color: #CC3300">错误代码5：未发现任何出厂WLAN配置，退出！！</span><br/><br>';
 		break;
 		case "6":
 			err_mesg = '<br/><span style="color: #CC3300">错误代码6：检测到你的路由器不是国行机器！！</span><hr>非国行机器因【无线网络】-【专业设置】中没有澳大利亚区域选项，从而使得插件无法发挥作用！！<br/><hr>';
@@ -490,10 +525,10 @@ function show_err_code() {
 			err_mesg = '<br/><span style="color: #CC3300">错误代码7：检测到你的路由器出厂配置有误！！</span><br/><br>';
 		break;
 		case "8":
-			err_mesg = '<br/><span style="color: #CC3300">错误代码8：检测到错误！请重启或者重置路由器后重试！！</span><br/><br>';
+			err_mesg = '<br/><span style="color: #CC3300">错误代码8：出厂WLAN配置读取/写入出现错误！请重启或者重置路由器后重试！！</span><br/><br>';
 		break;
 		case "9":
-			err_mesg = '<br/><span style="color: #CC3300">错误代码8：检测到错误！请重启或者重置路由器后重试！！</span><br/><br>';
+			err_mesg = '<br/><span style="color: #CC3300">错误代码9：检测到错误！请重启或者重置路由器后重试！！</span><br/><br>';
 		break;
 	}
 	require(['/res/layer/layer.js'], function(layer) {
@@ -509,7 +544,7 @@ function show_err_code() {
 }
 function get_wl_status(){
 	var id = parseInt(Math.random() * 100000000);
-	var postData = {"id": id, "method": "wifiboost_status", "params":[2], "fields": ""};
+	var postData = {"id": id, "method": "wifiboost_status.sh", "params":[2], "fields": ""};
 	$.ajax({
 		type: "POST",
 		cache:false,
@@ -584,7 +619,7 @@ function boost_now(action){
 					maxWidth: '600px'
 				}, function(index) {
 					layer.close(index);
-					location.href = "http://" + pay_server + ":" + pay_port + "/pay.php?paytype=3&uuid=" + wb_key + "&mcode=" + dbus["wifiboost_mcode"].replace(/\+/g, "-") + "&router=" + net_address;
+					location.href = "http://" + pay_server + ":" + pay_port + "/pay_arm384.php?paytype=3&uuid=" + wb_key + "&mcode=" + dbus["wifiboost_mcode"].replace(/\+/g, "-") + "&router=" + net_address;
 					return true;
 				});
 			});
@@ -635,7 +670,7 @@ function boost_now(action){
 	E("wifiboost_apply_1").disabled = true;
 	E("wifiboost_apply_2").disabled = true;
 	var id = parseInt(Math.random() * 100000000);
-	var postData = {"id": id, "method": "wifiboost_config", "params": [action], "fields": dbus_new};
+	var postData = {"id": id, "method": "wifiboost_config.sh", "params": [action], "fields": dbus_new};
 	$.ajax({
 		type: "POST",
 		url: "/_api/",
@@ -844,7 +879,7 @@ function pop_help() {
 			moveType: 1,
 			content: '<div style="padding: 50px; line-height: 22px; background-color: #393D49; color: #fff; font-weight: 300;">\
 				<b>wifi boost for arm384/386</b><br><br>\
-				wifi boost是一款付费插件，此版本支持arm384/386平台的机器，详情：<a style="color:#e7bd16" target="_blank" href="https://github.com/koolshare/armsoft#%E6%9C%BA%E5%9E%8B%E6%94%AF%E6%8C%81"><u>机型支持</u></a><br>\
+				wifi boost是一款付费插件，此版本仅支持arm384/386平台的机器，详情：<a style="color:#e7bd16" target="_blank" href="https://github.com/koolshare/armsoft#%E6%9C%BA%E5%9E%8B%E6%94%AF%E6%8C%81"><u>机型支持</u></a><br>\
 				使用本插件有任何问题，可以前往<a style="color:#e7bd16" target="_blank" href="https://koolshare.cn/forum-98-1.html"><u>koolshare论坛插件板块</u></a>反馈~<br><br>\
 				● 微信订单号获取：<span style="color:#e7bd16">我 → 支付 → 钱包 → 账单 → 点击付款订单 → 转账单号</span><br>\
 				● 支付宝订单号获取：<span style="color:#e7bd16">我的 → 账单 → 点击付款订单 → 订单号</span><br><br>\
@@ -937,7 +972,7 @@ function verifyFields(r) {
 												<input class="button_gen" type="button" onclick="close_info();" value="关闭">
 											</div>
 										</div>
-										<div class="formfonttitle">wifi boost<lable id="wifiboost_version"></lable></div>
+										<div class="formfonttitle">wifi boost for arm384/386<lable id="wifiboost_version"></lable></div>
 										<div style="float:right; width:15px; height:25px;margin-top:-20px">
 											<img id="return_btn" onclick="reload_Soft_Center();" align="right" style="cursor:pointer;position:absolute;margin-left:-30px;margin-top:-25px;" title="返回软件中心" src="/images/backprev.png" onMouseOver="this.src='/images/backprevclick.png'" onMouseOut="this.src='/images/backprev.png'"></img>
 										</div>
@@ -960,21 +995,17 @@ function verifyFields(r) {
 												<th>固件版本</th>
 												<td id="wifiboost_ver"></td>
 												<script type="text/javascript">
-													var MODEL = '<% nvram_get("odmpid"); %>' || '<% nvram_get("productid"); %>';
-													var BUILD = '<% nvram_get("buildno"); %>'
-													var FWVER = '<% nvram_get("extendno"); %>';
-													var RC_SUPPORT = '<% nvram_get("rc_support"); %>';
-													if (FWVER.indexOf('.') != -1){
+													if (BUILD.indexOf(".") != -1){
 														if(RC_SUPPORT.indexOf("koolsoft") != -1){
-															$("#wifiboost_ver").html(MODEL + "&nbsp;&nbsp;" + BUILD + "&nbsp;&nbsp;官改固件");
+															$("#wifiboost_ver").html(MODEL + "&nbsp;&nbsp;" + BUILD + "_" + FWVER + "&nbsp;&nbsp;梅林改版固件");
 														}else{
-															$("#wifiboost_ver").html(MODEL + "&nbsp;&nbsp;" + BUILD + "&nbsp;&nbsp;华硕官方固件");
+															$("#wifiboost_ver").html(MODEL + "&nbsp;&nbsp;" + BUILD + "_" + FWVER + "&nbsp;&nbsp;梅林原版固件");
 														}
 													}else{
 														if(RC_SUPPORT.indexOf("koolsoft") != -1){
-															$("#wifiboost_ver").html(MODEL + "&nbsp;&nbsp;" + BUILD + "&nbsp;&nbsp;梅林改版固件");
+															$("#wifiboost_ver").html(MODEL + "&nbsp;&nbsp;" + BUILD + "_" + FWVER + "&nbsp;&nbsp;官改固件");
 														}else{
-															$("#wifiboost_ver").html(MODEL + "&nbsp;&nbsp;" + BUILD + "&nbsp;&nbsp;梅林原版固件");
+															$("#wifiboost_ver").html(MODEL + "&nbsp;&nbsp;" + BUILD + "_" + FWVER + "&nbsp;&nbsp;华硕官方固件");
 														}
 													}
 												</script>	
@@ -1043,9 +1074,10 @@ function verifyFields(r) {
 											<li id="msg1">wifi boost通过修改机器出厂wlan设置，突破出厂设定的最大发射功率，须知修改出厂wlan设置有风险，由此带来的风险请自行承担！</li>
 											<li id="msg2">更高的发射功率可能影响速率、稳定性等，甚至有烧功放的风险，请勿盲目追求过高的发射功率，建议设定不超过27.00dBm！</li>
 											<li id="msg3">虽然插件可以保证修改过程相对安全，但还是强烈建议不要过于频繁的进行修改，以免发生意外导致机器wlan出厂设置被损坏。</li>
-											<li id="msg4">修改后需要将wifi区域更改为澳大利亚才会有效果，非澳大利亚的功率和修改前一样。如果修改后功率未起作用，请重置一次路由。</li>
+											<li id="msg4">修改后插件会自动将地区切换为澳大利亚以发挥效果，非澳大利亚的功率和修改前一样。如果修改后功率未起作用，请重置一次路由。</li>
 											<li id="msg5">修改完成后，卸载wifi boost插件、升级固件版本、刷三方固件/原厂固件等操作均会保持最后一次的功率修改效果。</li>
 											<li id="msg6">wifi boost是开发者sadog个人作品，软件中心仅提供上线平台，wifi boost产品经营与koolshare软件中心/koolshare无关。</li>
+											<li id="msg7"></li>
 										</div>
 									</td>
 								</tr>
