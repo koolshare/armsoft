@@ -3,7 +3,7 @@
 # build script for rogsoft project
 
 MODULE="cfetool"
-VERSION="1.0"
+VERSION="1.1"
 TITLE="CFE国行修改器"
 DESCRIPTION="CFE国行修改器，查看CFE信息，改机器为国区"
 HOME_URL="Module_cfetool.asp"
