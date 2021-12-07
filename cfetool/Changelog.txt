@@ -1,6 +1,6 @@
 Koolshare Asuswrt-Merlin cfetool Changelog for arm platform
 ===========================================
-1.1
+1.1 - 1.2
    - fix	修复一点小问题
 
 1.0
