@@ -1,5 +1,9 @@
 Koolshare Asuswrt-Merlin wifiboost Changelog for HND/AXHND platform
 ===========================================
+4.0
+   - fix	修复恢复原厂功率时，只有5G无法恢复的问题
+   - fix	修复部分RT-AC3100机型修改成功后，实际功率无法达到最大功率的问题
+
 3.9
    - fix	修复人工邮件购买二维码图片
    - fix	修复激活插件时，有时候无限弹出激活窗口的问题
