@@ -176,6 +176,7 @@ start)
 		echo_date "======================================" >> $LOG_FILE
 		echo_date "检测到网络拨号..." >> $LOG_FILE
 		check_update >> $LOG_FILE
+		set_interval_update >> $LOG_FILE
 	else
 		logger "[软件中心]: CloudFlare DDNS未设置开机启动，跳过！"
 	fi
