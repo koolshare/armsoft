@@ -181,7 +181,7 @@ start)
 	fi
 	;;
 update)
-	echo_date 触发更新
+	echo_date 触发更新 >> $LOG_FILE
 	check_update >> $LOG_FILE
 	;;
 esac
