@@ -58,17 +58,33 @@
         }, 
         {
             "author": "sadog", 
-            "build_date": "2021-08-05_20:49:34", 
+            "build_date": "2021-11-24_11:03:45", 
             "changelog": "", 
             "description": "CloudFlare DDNS", 
             "home_url": "Module_cfddns.asp", 
             "link": "", 
-            "md5": "fe1167c6fa013098c372523d9536cb06", 
+            "md5": "ef14adb89c43338a50e4c970b5345050", 
             "name": "cfddns", 
-            "tags": "网络 DDNS", 
+            "tags": "DDNS", 
             "tar_url": "cfddns/cfddns.tar.gz", 
             "title": "CloudFlare DDNS", 
-            "version": "1.0"
+            "version": "1.1"
+        }, 
+        {
+            "author": "sadog", 
+            "build_date": "2021-12-07_23:09:49", 
+            "changelog": "", 
+            "description": "CFE国行修改器，查看CFE信息，改机器为国区", 
+            "home_url": "Module_cfetool.asp", 
+            "link": "", 
+            "md5": "3b48bb27397893ad198051dc6fb81add", 
+            "name": "cfetool", 
+            "port": "8083", 
+            "server": "42.192.18.234", 
+            "tags": "系统 工具", 
+            "tar_url": "cfetool/cfetool.tar.gz", 
+            "title": "CFE国行修改器", 
+            "version": "1.4"
         }, 
         {
             "author": "freexiaoyao", 
@@ -338,19 +354,19 @@
         }, 
         {
             "author": "sadog", 
-            "build_date": "2021-08-05_20:49:35", 
+            "build_date": "2021-12-24_23:07:14", 
             "changelog": "", 
             "description": "wifi boost: 路由器WiFi功率增强，增加信号覆盖范围。", 
             "home_url": "Module_wifiboost.asp", 
             "link": "", 
-            "md5": "edcc0b9ce12cff14ba02391ef6ebf1e3", 
+            "md5": "5bca39a3173f3faea3ddd7a41ab041b8", 
             "name": "wifiboost", 
             "port": "8083", 
             "server": "42.192.18.234", 
             "tags": "系统 工具", 
             "tar_url": "wifiboost/wifiboost.tar.gz", 
-            "title": "wifi boost", 
-            "version": "3.4"
+            "title": "wifi boost arm", 
+            "version": "4.0"
         }, 
         {
             "author": "sadog", 
@@ -368,7 +384,7 @@
         }
     ], 
     "home_url": "https://raw.githubusercontent.com/koolshare/koolshare.github.io/master", 
-    "md5": "90f3c43e14334b531efcf2829a4ee256", 
+    "md5": "de2a0887b5a5fbe0d0e3e8f8c4ed25eb", 
     "tar_url": "koolcenter/softcenter.tar.gz", 
-    "version": "1.9.1.1"
+    "version": "1.9.1.2"
 }
