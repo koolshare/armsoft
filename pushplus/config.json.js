@@ -1,6 +1,6 @@
 {
 "version":"0.5",
-"md5":"bb23477ee07395c9b1fcc6d1f6310027",
+"md5":"2aeebfe43e5b9848734b61a03e661332",
 "home_url":"Module_pushplus.asp",
 "title":"pushplus全能推送",
 "description":"通过pushplus将路由器状态推送到微信上",
