@@ -2,9 +2,9 @@
 #
 ########################################################################
 #
-# Copyright (C) 2010/2021 kooldev
+# Copyright (C) 2011/2022 kooldev
 #
-# 此脚为arm384/arm386软件中心安装脚本。
+# 此脚本为arm384/arm386软件中心插件在线安装脚本。
 # 软件中心地址: https://github.com/koolshare/armsoft
 #
 ########################################################################
@@ -22,7 +22,6 @@ LOG_FILE=/tmp/upload/soft_install_log.txt
 LOG_FILE_BACKUP=/tmp/upload/soft_install_log_backup.txt
 URL_SPLIT="/"
 UI_TYPE=ASUSWRT
-softcenter_home_url=$(dbus get softcenter_home_url)
 
 get_model(){
 	local ODMPID=$(nvram get odmpid)
@@ -70,6 +69,7 @@ get_ui_type(){
 	[ "${MODEL}" == "GT-AC5300" ] && local ROG_GTAC5300=1
 	[ "${MODEL}" == "GT-AX11000" ] && local ROG_GTAX11000=1
 	[ "${MODEL}" == "GT-AXE11000" ] && local ROG_GTAXE11000=1
+	[ "${MODEL}" == "GT-AX6000" ] && local ROG_GTAX6000=1
 	local KS_TAG=$(nvram get extendno|grep koolshare)
 	local EXT_NU=$(nvram get extendno)
 	local EXT_NU=$(echo ${EXT_NU%_*} | grep -Eo "^[0-9]{1,10}$")
@@ -96,8 +96,8 @@ get_ui_type(){
 		ROG_GTAX11000=0
 	fi
 	
-	if [ "${ROG_GTAC5300}" == "1" -o "${ROG_RTAC86U}" == "1" -o "${ROG_GTAC2900}" == "1" -o "${ROG_GTAX11000}" == "1" -o "${ROG_GTAXE11000}" == "1" ];then
-		# GT-AC5300、RT-AC86U部分版本、GT-AC2900部分版本、GT-AX11000部分版本、GT-AXE11000全部版本，骚红皮肤
+	if [ "${ROG_GTAC5300}" == "1" -o "${ROG_RTAC86U}" == "1" -o "${ROG_GTAC2900}" == "1" -o "${ROG_GTAX11000}" == "1" -o "${ROG_GTAXE11000}" == "1" -o "${ROG_GTAX6000}" == "1" ];then
+		# GT-AC5300、RT-AC86U部分版本、GT-AC2900部分版本、GT-AX11000部分版本、GT-AXE11000全部版本， GT-AX6000 骚红皮肤
 		UI_TYPE="ROG"
 	fi
 	
@@ -134,6 +134,24 @@ jffs_space(){
 }
 
 install_ks_module() {
+	# 0. if under koolcenter, dbus value of softcenter_home_url is not defined by default
+	local LINUX_VER=$(uname -r|awk -F"." '{print $1$2}')
+	if [ "${LINUX_VER}" -ge "41" ];then
+		local SC_URL=https://rogsoft.ddnsto.com
+	fi
+	if [ "${LINUX_VER}" -eq "26" ];then
+		local SC_URL=https://armsoft.ddnsto.com
+	fi
+	local SC_URL_NVRAM=$(nvram get sc_url)
+	if [ -z "${SC_URL_NVRAM}" -o "${SC_URL_NVRAM}" != "${SC_URL}" ];then
+		nvram set sc_url=${SC_URL}
+		nvram commit
+	fi
+	local softcenter_home_url=$(dbus get softcenter_home_url)
+	if [ -z "${softcenter_home_url}" ];then
+		local softcenter_home_url=${SC_URL}
+	fi
+
 	# 1. before install, detect if some value (passed from web) exist.
 	if [ -z "${softcenter_home_url}" -o -z "${softcenter_installing_md5}" -o -z "${softcenter_installing_version}" -o -z "${softcenter_installing_tar_url}" -o -z "${softcenter_installing_todo}" -o -z "${softcenter_installing_title}" ]; then
 		echo_date "-------------------------------------------------------------------"

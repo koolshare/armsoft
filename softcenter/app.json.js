@@ -44,6 +44,20 @@
         }, 
         {
             "author": "sadog", 
+            "build_date": "2022-01-30_22:27:43", 
+            "changelog": "", 
+            "description": "koolcenter/softcenter 一键来回切换！", 
+            "home_url": "Module_center.asp", 
+            "link": "", 
+            "md5": "e435f0ef45276fd51a84b6c6ce84ebef", 
+            "name": "center", 
+            "tags": "辅助 工具", 
+            "tar_url": "center/center.tar.gz", 
+            "title": "软件中心一键切换", 
+            "version": "1.5"
+        }, 
+        {
+            "author": "sadog", 
             "build_date": "2021-11-24_11:03:45", 
             "changelog": "", 
             "description": "CloudFlare DDNS", 
@@ -340,7 +354,7 @@
         }
     ], 
     "home_url": "https://raw.githubusercontent.com/koolshare/koolshare.github.io/master", 
-    "md5": "73ef72bc85513937d098c46e40c5577f", 
+    "md5": "15e1d57d1a4b99bd2ff3e285b9d8359d", 
     "tar_url": "softcenter/softcenter.tar.gz", 
-    "version": "1.2.2"
+    "version": "1.2.4"
 }

@@ -2,9 +2,9 @@
 #
 ########################################################################
 #
-# Copyright (C) 2010/2021 kooldev
+# Copyright (C) 2011/2022 kooldev
 #
-# 此脚为 koolshare merlin armv7l 384/386 平台软件中心插件离线安装脚本。
+# 此脚本为 koolshare merlin armv7l 384/386 平台软件中心插件离线安装脚本。
 # 软件中心地址: https://github.com/koolshare/armsoft
 #
 ########################################################################
@@ -67,6 +67,7 @@ get_ui_type(){
 	[ "${MODEL}" == "GT-AC5300" ] && local ROG_GTAC5300=1
 	[ "${MODEL}" == "GT-AX11000" ] && local ROG_GTAX11000=1
 	[ "${MODEL}" == "GT-AXE11000" ] && local ROG_GTAXE11000=1
+	[ "${MODEL}" == "GT-AX6000" ] && local ROG_GTAX6000=1
 	local KS_TAG=$(nvram get extendno|grep koolshare)
 	local EXT_NU=$(nvram get extendno)
 	local EXT_NU=$(echo ${EXT_NU%_*} | grep -Eo "^[0-9]{1,10}$")
@@ -93,8 +94,8 @@ get_ui_type(){
 		ROG_GTAX11000=0
 	fi
 	
-	if [ "${ROG_GTAC5300}" == "1" -o "${ROG_RTAC86U}" == "1" -o "${ROG_GTAC2900}" == "1" -o "${ROG_GTAX11000}" == "1" -o "${ROG_GTAXE11000}" == "1" ];then
-		# GT-AC5300、RT-AC86U部分版本、GT-AC2900部分版本、GT-AX11000部分版本、GT-AXE11000全部版本，骚红皮肤
+	if [ "${ROG_GTAC5300}" == "1" -o "${ROG_RTAC86U}" == "1" -o "${ROG_GTAC2900}" == "1" -o "${ROG_GTAX11000}" == "1" -o "${ROG_GTAXE11000}" == "1" -o "${ROG_GTAX6000}" == "1" ];then
+		# GT-AC5300、RT-AC86U部分版本、GT-AC2900部分版本、GT-AX11000部分版本、GT-AXE11000全部版本， GT-AX6000 骚红皮肤
 		UI_TYPE="ROG"
 	fi
 	

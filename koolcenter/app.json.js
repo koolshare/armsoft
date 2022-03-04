@@ -44,17 +44,17 @@
         }, 
         {
             "author": "sadog", 
-            "build_date": "2021-11-23_21:26:16", 
+            "build_date": "2022-01-30_22:27:43", 
             "changelog": "", 
             "description": "koolcenter/softcenter 一键来回切换！", 
             "home_url": "Module_center.asp", 
             "link": "", 
-            "md5": "0fd3f816bb4519a885336a0883d8d68a", 
+            "md5": "e435f0ef45276fd51a84b6c6ce84ebef", 
             "name": "center", 
             "tags": "辅助 工具", 
             "tar_url": "center/center.tar.gz", 
             "title": "软件中心一键切换", 
-            "version": "1.4"
+            "version": "1.5"
         }, 
         {
             "author": "sadog", 
@@ -384,7 +384,7 @@
         }
     ], 
     "home_url": "https://raw.githubusercontent.com/koolshare/koolshare.github.io/master", 
-    "md5": "de2a0887b5a5fbe0d0e3e8f8c4ed25eb", 
+    "md5": "e1953f08e7330dc98204baf028eab294", 
     "tar_url": "koolcenter/softcenter.tar.gz", 
-    "version": "1.9.1.2"
+    "version": "1.9.1.4"
 }

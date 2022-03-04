@@ -2,7 +2,7 @@
 
 # build script for armsoft project
 
-VERSION=1.2.3
+VERSION=1.2.4
 
 echo $VERSION > ./softcenter/.soft_ver
 
