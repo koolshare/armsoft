@@ -6,6 +6,7 @@ eval $(dbus export usb2jffs_)
 LOG_FILE=/tmp/upload/usb2jffs_log.txt
 R_LIMIT=20
 W_LIMIT=30
+LINUX_VER=$(uname -r|awk -F"." '{print $1$2}')
 KSPATH=${usb2jffs_mount_path}
 true > ${LOG_FILE}
 
@@ -58,7 +59,7 @@ _get_model(){
 }
 
 get_jffs_original_mount_device(){
-	local mtd_jffs=$(df -h | /bin/grep -E "/jffs|cifs2" | awk '{print $1}' | /bin/grep "/dev/mtd" | head -n1)
+	local mtd_jffs=$(df -h | /bin/grep -E "/jffs|cifs2" | awk '{print $1}' | /bin/grep -E "/dev/mtd|ubi:jffs" | head -n1)
 	if [ -n "${mtd_jffs}" ];then
 		mtd_disk="${mtd_jffs}"
 		dbus set usb2jffs_mtd_jffs="${mtd_jffs}"
@@ -77,6 +78,9 @@ get_jffs_original_mount_device(){
 			RT-AC5300|RT-AC88U)
 				mtd_disk="/dev/mtdblock4"
 				return 0
+				;;
+			GT-AX6000|XT12)
+				mtd_disk="ubi:jffs2"
 				;;
 			*)
 				mtd_disk=""
@@ -165,7 +169,7 @@ start_usb2jffs(){
 	else
 		local CUR_VERSION="0"
 	fi
-	local NEED_VERSION="1.1.2"
+	local NEED_VERSION="1.6.8"
 	local COMP=$(/rom/etc/koolshare/bin/versioncmp ${CUR_VERSION} ${NEED_VERSION})
 	if [ "${COMP}" == "1" ]; then
 		echo_date "软件中心版本：${CUR_VERSION}，版本号过低，不支持本插件，请将软件中心更新到最新后重试！" 
@@ -213,6 +217,71 @@ start_usb2jffs(){
 	echo_date "将${KSPATH}/.koolshare_jffs挂载到JFFS分区..."
 	mount -o rbind ${KSPATH}/.koolshare_jffs /jffs
 	if [ "$?" == "0" ]; then
+		# use newer one
+		CENTER_TYPE=$(cat /jffs/.koolshare/webs/Module_Softcenter.asp 2>/dev/null| grep -Eo "/softcenter/app.json.js")
+		if [ -f "/koolshare/.soft_ver" ];then
+			if [ -n "${CENTER_TYPE}" ];then
+				# softceter in use
+				CUR_VERSION=$(cat /koolshare/.soft_ver)
+				ROM_VERSION=$(cat /rom/etc/koolshare/.soft_ver_old)
+			else
+				# koolcenter in use
+				CUR_VERSION=$(cat /koolshare/.soft_ver)
+				ROM_VERSION=$(cat /rom/etc/koolshare/.soft_ver)
+			fi
+		else
+			CUR_VERSION="0"
+			ROM_VERSION=$(cat /rom/etc/koolshare/.soft_ver)
+		fi
+		COMP=$(/rom/etc/koolshare/bin/versioncmp $CUR_VERSION $ROM_VERSION)
+		if [ ! -d "/jffs/.koolshare" -o "$COMP" == "1" ]; then
+			echo_date "更新软件中心！"
+			# remove before install
+			rm -rf /koolshare/res/soft-v19 >/dev/null 2>&1
+			
+			# start to install
+			mkdir -p /jffs/.koolshare
+			cp -rf /rom/etc/koolshare/* /jffs/.koolshare/
+			cp -rf /rom/etc/koolshare/.soft_ver* /jffs/.koolshare/
+		
+			# switch to softceter
+			if [ -n "${CENTER_TYPE}" ];then
+				sync
+				mv /koolshare/.soft_ver /koolshare/.soft_ver_new
+				sync
+				mv /koolshare/.soft_ver_old /koolshare/.soft_ver
+		
+				mv /koolshare/webs/Module_Softcenter.asp /koolshare/webs/Module_Softcenter_new.asp
+				sync
+				mv /koolshare/webs/Module_Softcenter_old.asp /koolshare/webs/Module_Softcenter.asp
+			fi
+			
+			mkdir -p /jffs/.koolshare/configs/
+			chmod 755 /koolshare/bin/*
+			chmod 755 /koolshare/init.d/*
+			chmod 755 /koolshare/perp/*
+			chmod 755 /koolshare/perp/.boot/*
+			chmod 755 /koolshare/perp/.control/*
+			chmod 755 /koolshare/perp/httpdb/*
+			chmod 755 /koolshare/scripts/*
+		
+			# ssh PATH environment
+			rm -rf /jffs/configs/profile.add >/dev/null 2>&1
+			rm -rf /jffs/etc/profile >/dev/null 2>&1
+			source_file=$(cat /etc/profile|grep -v nvram|awk '{print $NF}'|grep -E "profile"|grep "jffs"|grep "/")
+			source_path=$(dirname /jffs/etc/profile)
+			if [ -n "${source_file}" -a -n "${source_path}" ];then
+				rm -rf ${source_file} >/dev/null 2>&1
+				mkdir -p ${source_path}
+				ln -sf /koolshare/scripts/base.sh ${source_file} >/dev/null 2>&1
+			fi
+			
+			# make some link
+			[ ! -L "/koolshare/bin/base64_decode" ] && ln -sf /koolshare/bin/base64_encode /koolshare/bin/base64_decode
+			[ ! -L "/koolshare/scripts/ks_app_remove.sh" ] && ln -sf /koolshare/scripts/ks_app_install.sh /koolshare/scripts/ks_app_remove.sh
+			[ ! -L "/jffs/.asusrouter" ] && ln -sf /koolshare/bin/kscore.sh /jffs/.asusrouter
+		fi
+	
 		echo_date "USB型JFFS分区挂载成功！"
 		echo_date "重启软件中心相关进程..."
 		start_software_center
@@ -227,7 +296,12 @@ start_usb2jffs(){
 	
 		# 把原来的jffs分区挂载到cifs2
 		echo_date "将${mtd_disk}挂载在/cifs2"
-		mount -t jffs2 -o rw,noatime ${mtd_disk} /cifs2
+		if [ "${LINUX_VER}" == "419" ];then
+			mount -t ubifs ubi:jffs2 /cifs2
+		else
+			mount -t jffs2 -o rw,noatime ${mtd_disk} /cifs2
+		fi
+		
 		if [ "$?" == "0" ]; then
 			echo_date "/cifs2挂载成功！"
 		else
@@ -239,7 +313,11 @@ start_usb2jffs(){
 	else
 		echo_date "USB型JFFS挂载失败！！"
 		echo_date "尝试恢复原始挂载方式！"
-		mount -t jffs2 -o rw,noatime ${mtd_disk} /jffs
+		if [ "${LINUX_VER}" == "419" ];then
+			mount -t ubifs ubi:jffs2 /jffs
+		else
+			mount -t jffs2 -o rw,noatime ${mtd_disk} /jffs
+		fi		
 		if [ "$?" == "0" ]; then
 			echo_date "已经恢复到原始挂载方式！"
 			echo_date "重启软件中心！！"
@@ -316,7 +394,11 @@ stop_usb2jffs(){
 	if [ "$?" == "0" ]; then
 		echo_date "/jffs卸载成功..."
 		echo_date "将文件系统${mtd_disk}挂载到jffs分区..."
-		mount -t jffs2 -o rw,noatime ${mtd_disk} /jffs
+		if [ "${LINUX_VER}" == "419" ];then
+			mount -t ubifs ubi:jffs2 /jffs
+		else
+			mount -t jffs2 -o rw,noatime ${mtd_disk} /jffs
+		fi
 		if [ "$?" == "0" ]; then
 			echo_date "${mtd_disk} → /jffs挂载成功！"
 			echo_date "重启软件中心相关进程..."

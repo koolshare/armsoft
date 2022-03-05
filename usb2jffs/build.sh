@@ -3,7 +3,7 @@
 # build script for armsoft project
 
 MODULE="usb2jffs"
-VERSION="1.9.1"
+VERSION="2.0.0"
 TITLE="USB2JFFS"
 DESCRIPTION="轻松用U盘挂载jffs"
 HOME_URL="Module_usb2jffs.asp"
