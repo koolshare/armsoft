@@ -3,7 +3,7 @@
 # build script for armsoft project
 
 MODULE="pushplus"
-VERSION="0.3"
+VERSION="0.5"
 TITLE="pushplus全能推送"
 DESCRIPTION="通过pushplus将路由器状态推送到微信上"
 HOME_URL="Module_pushplus.asp"
