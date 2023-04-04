@@ -5,8 +5,13 @@ alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 # ====================================函数定义====================================
 # 获得外网地址
 arIpAdress() {
-    local inter=$(curl -s whatismyip.akamai.com)
-    #local inter=$(nvram get wan0_realip_ip)
+    if [ $ddnspod_config_type == "A"]; then
+    	local inter=$(curl -s whatismyip.akamai.com)
+    	#local inter=$(nvram get wan0_realip_ip)
+	else
+	local inter=$(ip -o -6 addr list | grep -E '\s(global)' | awk '{print $4}' | cut -d/ -f1 | sed -e'1d')
+	#local inter=$(ip addr show dev ppp0 | sed -e's/^.*inet6 \([^ ]*\)\/.*$/\1/;t;d' | sed -e'2d')
+    fi
     echo $inter
 }
 
@@ -38,8 +43,13 @@ arDdnsUpdate() {
     recordID=$(arApiPost "Record.List" "domain_id=${domainID}&sub_domain=${2}")
     recordID=$(echo $recordID | sed 's/.*\[{"id":"\([0-9]*\)".*/\1/')
     # 更新记录IP
-    myIP=$($inter)
-    recordRS=$(arApiPost "Record.Ddns" "domain_id=${domainID}&record_id=${recordID}&sub_domain=${2}&value=${myIP}&record_line=默认")
+    if [ $ddnspod_config_type == "A" ]; then
+	myIP=$($inter)
+	recordRS=$(arApiPost "Record.Ddns" "domain_id=${domainID}&record_id=${recordID}&sub_domain=${2}&value=${myIP}&record_line=默认")
+    else
+	myIP=$(ip -o -6 addr list | grep -E '\s(global)' | awk '{print $4}' | cut -d/ -f1 | sed -e'1d')
+	recordRS=$(arApiPost "Record.Modify" "domain_id=${domainID}&record_id=${recordID}&sub_domain=${2}&record_type=AAAA&value=${myIP}&ttl=600&record_line_id=0")
+    fi
     recordCD=$(echo $recordRS | sed 's/.*{"code":"\([0-9]*\)".*/\1/')
     # 输出记录IP
     if [ "$recordCD" == "1" ]; then
@@ -62,7 +72,6 @@ arDdnsCheck() {
 	if [ "$lastIP" != "$hostIP" ]; then
 		dbus set ddnspod_run_status="更新中。。。"
 		postRS=$(arDdnsUpdate $1 $2)
-		echo "postRS: ${postRS}"
 		if [ $? -ne 1 ]; then
 			dbus set ddnspod_run_status="wan ip：${hostIP} 更新失败，原因：${postRS}"
 		    return 1
