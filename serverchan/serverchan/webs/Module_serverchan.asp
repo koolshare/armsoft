@@ -570,7 +570,7 @@ function version_show() {
                                     <div class="formfontdesc" id="cmdDesc">
                                         * 「<a href="https://sct.ftqq.com" target=_blank><i>Server酱</i></a>」，英文名「ServerChan」，是一款「程序员」和「服务器」之间的通信软件。说人话？就是从服务器推报警和日志到手机的工具。<br><br>
                                         开通并使用上它，只需要一分钟：<br>
-                                        <i>1. 登录：</i>用微信<a href="https://sct.ftqq.com" target="_blank"><i>登入网站</i></a>，就能获得一个<a href="https://sct.ftqq.com/sendkey" target="_blank"><i>SCKEY</i></a>（在「<a href="https://sct.ftqq.com/sendkey" target="_blank"><i>发送消息</i></a>」页面）<br>
+                                        <i>1. 登录：</i>用微信<a href="https://sct.ftqq.com" target="_blank"><i>登入网站</i></a>，就能获得一个<a href="https://sct.ftqq.com/sendkey" target="_blank"><i>SendKey</i></a>（在「<a href="https://sct.ftqq.com/sendkey" target="_blank"><i>Key&API</i></a>」页面）<br>
                                         <i>2. 设置消息通道：</i>默认开通服务号通道，其他通道可点击「<a href="https://sct.ftqq.com/forward" target="_blank"><i>通道配置</i></a>」<br>
                                         <i>3. 发消息：</i>将获得到的<a href="https://sct.ftqq.com/sendkey" target="_blank"><i>SendKey</i></a>填入插件中并勾选相应选项提交即可。<br>
                                     </div>
