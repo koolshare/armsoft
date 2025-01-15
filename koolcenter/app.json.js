@@ -340,17 +340,17 @@
         }, 
         {
             "author": "sadog", 
-            "build_date": "2021-08-05_20:49:35", 
+            "build_date": "2022-03-05_23:04:45", 
             "changelog": "", 
             "description": "轻松用U盘挂载jffs", 
             "home_url": "Module_usb2jffs.asp", 
             "link": "", 
-            "md5": "ac269740971149f27ca6b4fc0c30f931", 
+            "md5": "148d20bb25a60741f653babb5fd9c280", 
             "name": "usb2jffs", 
-            "tags": "工具 USB", 
+            "tags": "USB", 
             "tar_url": "usb2jffs/usb2jffs.tar.gz", 
             "title": "USB2JFFS", 
-            "version": "1.9.1"
+            "version": "2.0.0"
         }, 
         {
             "author": "sadog", 
@@ -384,7 +384,7 @@
         }
     ], 
     "home_url": "https://raw.githubusercontent.com/koolshare/koolshare.github.io/master", 
-    "md5": "ab42e3dee44123d69613a180704a0be1", 
+    "md5": "228b5a01c050945a92134610b14ffad5", 
     "tar_url": "koolcenter/softcenter.tar.gz", 
-    "version": "1.9.1.4"
+    "version": "1.9.36"
 }

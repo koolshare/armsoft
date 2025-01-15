@@ -2,16 +2,16 @@
 #
 ########################################################################
 #
-# Copyright (C) 2011/2022 kooldev
+# Copyright (C) 2011/2024 kooldev
 #
 # 此脚本为arm384/arm386平台软件中心安装脚本。
 # 软件中心地址: https://github.com/koolshare/armsoft
 #
 ########################################################################
-
+NEW_PATH=$(echo $PATH|tr ':' '\n'|sed '/opt/d;/mmc/d'|awk '!a[$0]++'|tr '\n' ':'|sed '$ s/:$//')
+export PATH=${NEW_PATH}
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 MODEL=
-UI_TYPE=ASUSWRT
 FW_TYPE_CODE=
 FW_TYPE_NAME=
 DIR=$(cd $(dirname $0); pwd)
@@ -48,48 +48,55 @@ get_fw_type() {
 	fi
 }	
 
-get_ui_type(){
-	# default value
-	[ "${MODEL}" == "RT-AC86U" ] && local ROG_RTAC86U=0
-	[ "${MODEL}" == "GT-AC2900" ] && local ROG_GTAC2900=1
-	[ "${MODEL}" == "GT-AC5300" ] && local ROG_GTAC5300=1
-	[ "${MODEL}" == "GT-AX11000" ] && local ROG_GTAX11000=1
-	[ "${MODEL}" == "GT-AXE11000" ] && local ROG_GTAXE11000=1
-	[ "${MODEL}" == "GT-AX6000" ] && local ROG_GTAX6000=1
-	local KS_TAG=$(nvram get extendno|grep koolshare)
-	local EXT_NU=$(nvram get extendno)
-	local EXT_NU=$(echo ${EXT_NU%_*} | grep -Eo "^[0-9]{1,10}$")
-	local BUILDNO=$(nvram get buildno)
-	[ -z "${EXT_NU}" ] && EXT_NU="0"
-	# RT-AC86U
-	if [ -n "${KS_TAG}" -a "${MODEL}" == "RT-AC86U" -a "${EXT_NU}" -lt "81918" -a "${BUILDNO}" != "386" ];then
-		# RT-AC86U的官改固件，在384_81918之前的固件都是ROG皮肤，384_81918及其以后的固件（包括386）为ASUSWRT皮肤
-		ROG_RTAC86U=1
+set_skin(){
+	# new nethod: use nvram value to set skin
+	local UI_TYPE=ASUSWRT
+	local SC_SKIN=$(nvram get sc_skin)
+	local TS_FLAG=$(grep -o "2ED9C3" /www/css/difference.css 2>/dev/null|head -n1)
+	local ROG_FLAG=$(cat /www/form_style.css|grep -A1 ".tab_NW:hover{"|grep "background"|sed 's/,//g'|grep -o "2071044")
+	local TUF_FLAG=$(cat /www/form_style.css|grep -A1 ".tab_NW:hover{"|grep "background"|sed 's/,//g'|grep -o "D0982C")
+	local WRT_FLAG=$(cat /www/form_style.css|grep -A1 ".tab_NW:hover{"|grep "background"|sed 's/,//g'|grep -o "4F5B5F")
+
+	if [ -n "${TS_FLAG}" ];then
+		UI_TYPE="TS"
+	else
+		if [ -n "${TUF_FLAG}" ];then
+			UI_TYPE="TUF"
+		fi
+		if [ -n "${ROG_FLAG}" ];then
+			UI_TYPE="ROG"
+		fi
+		if [ -n "${WRT_FLAG}" ];then
+			UI_TYPE="ASUSWRT"
+		fi
 	fi
-	# GT-AC2900
-	if [ "${MODEL}" == "GT-AC2900" ] && [ "${FW_TYPE_CODE}" == "3" -o "${FW_TYPE_CODE}" == "4" ];then
-		# GT-AC2900从386.1开始已经支持梅林固件，其UI是ASUSWRT
-		ROG_GTAC2900=0
+	if [ -z "${SC_SKIN}" -o "${SC_SKIN}" != "${UI_TYPE}" ];then
+		nvram set sc_skin="${UI_TYPE}"
+		nvram commit
 	fi
-	# GT-AX11000
-	if [ "${MODEL}" == "GT-AX11000" -o "${MODEL}" == "GT-AX11000_BO4" ] && [ "${FW_TYPE_CODE}" == "3" -o "${FW_TYPE_CODE}" == "4" ];then
-		# GT-AX11000从386.2开始已经支持梅林固件，其UI是ASUSWRT
-		ROG_GTAX11000=0
-	fi
-	# GT-AXE11000
-	if [ "${MODEL}" == "GT-AXE11000" ] && [ "${FW_TYPE_CODE}" == "3" -o "${FW_TYPE_CODE}" == "4" ];then
-		# GT-AXE11000从386.5开始已经支持梅林固件，其UI是ASUSWRT
-		ROG_GTAXE11000=0
-	fi
-	# ROG UI
-	if [ "${ROG_GTAC5300}" == "1" -o "${ROG_RTAC86U}" == "1" -o "${ROG_GTAC2900}" == "1" -o "${ROG_GTAX11000}" == "1" -o "${ROG_GTAXE11000}" == "1" -o "${ROG_GTAX6000}" == "1" ];then
-		# GT-AC5300、RT-AC86U部分版本、GT-AC2900部分版本、GT-AX11000部分版本、GT-AXE11000官改版本， GT-AX6000 骚红皮肤
-		UI_TYPE="ROG"
-	fi
-	# TUF UI
-	if [ "${MODEL%-*}" == "TUF" ];then
-		# 官改固件，橙色皮肤
-		UI_TYPE="TUF"
+
+	# compatibile
+	if [ -f "/koolshare/res/softcenter_asus.css" -a -f "/koolshare/res/softcenter_rog.css" -a -f "/koolshare/res/softcenter_tuf.css" -a -f "/koolshare/res/softcenter_ts.css" ];then
+		local MD5_CSS=$(md5sum /koolshare/res/softcenter.css 2>/dev/null|awk '{print $1}')
+		local MD5_WRT=$(md5sum /koolshare/res/softcenter_asus.css 2>/dev/null|awk '{print $1}')
+		local MD5_ROG=$(md5sum /koolshare/res/softcenter_rog.css 2>/dev/null|awk '{print $1}')
+		local MD5_TUF=$(md5sum /koolshare/res/softcenter_tuf.css 2>/dev/null|awk '{print $1}')
+		local MD5_TS=$(md5sum /koolshare/res/softcenter_ts.css 2>/dev/null|awk '{print $1}')
+		if [ "${UI_TYPE}" == "ASUSWRT" -a "${MD5_CSS}" != "${MD5_WRT}" ];then
+			cp -rf /koolshare/res/softcenter_asus.css /koolshare/res/softcenter.css
+		fi
+
+		if [ "${UI_TYPE}" == "ROG" -a "${MD5_CSS}" != "${MD5_ROG}" ];then
+			cp -rf /koolshare/res/softcenter_rog.css /koolshare/res/softcenter.css
+		fi
+
+		if [ "${UI_TYPE}" == "TUF" -a "${MD5_CSS}" != "${MD5_TUF}" ];then
+			cp -rf /koolshare/res/softcenter_tuf.css /koolshare/res/softcenter.css
+		fi
+
+		if [ "${UI_TYPE}" == "TS" -a "${MD5_CSS}" != "${MD5_TS}" ];then
+			cp -rf /koolshare/res/softcenter_ts.css /koolshare/res/softcenter.css
+		fi
 	fi
 }
 
@@ -131,6 +138,117 @@ get_usb2jffs_status(){
 	return 0
 }
 
+cmcp(){
+	# compare then copy
+	local _source=$1
+	local _target=$2
+	local _origin=$3
+	local _action=$4
+	local _FILES=$(find ${_source}/* -type f 2>/dev/null)
+	for _FILE in ${_FILES}
+	do
+		local _FILENAME=$(basename ${_FILE})
+		local _FILEPATH=$(dirname ${_FILE})
+		local _DESTPATH=$(echo ${_FILEPATH} | sed "s/\/tmp\/${module}/\/${KSHOME}\/\.koolshare/g")
+		local _ORIGPATH=$(echo ${_FILEPATH} | sed "s/\/tmp\/${module}/\/rom\/etc\/koolshare/g")
+		local _FILE_JFF="${_DESTPATH}/${_FILENAME}"
+		local _FILE_TMP="${_FILEPATH}/${_FILENAME}"
+		local _FILE_ROM="${_ORIGPATH}/${_FILENAME}"
+		mkdir -p ${_DESTPATH}
+		
+		if [ -f "${_FILE_JFF}" ];then
+			readlink -f ${_FILE_JFF} >/dev/null 2>&1
+			if [ "$?" == "0" ];then
+				# it's a link, we need to compare to its origin file then copy
+				local _FILE_ORI=$(readlink -f ${_FILE_JFF})
+				local _FILE_ORI_MD5=$(md5sum ${_FILE_ORI} | awk '{print $1}')
+				local _FILE_TMP_MD5=$(md5sum ${_FILE_TMP} | awk '{print $1}')
+				if [ "${_FILE_ORI_MD5}" != "${_FILE_TMP_MD5}" ];then
+					# different md5, remove link and copy new file from source to target folder
+					echo_date "copy | ${_FILE_TMP} ➡️ ${_FILE_JFF}"
+					rm -rf ${_FILE_JFF} >/dev/null 2>&1
+					cp -rf ${_FILE_TMP} ${_FILE_JFF}
+					chmod +x ${_FILE_JFF} >/dev/null 2>&1
+				else
+					# same md5, do nothing, keep the link
+					echo_date "jump | ${_FILE_JFF} link not change!"
+					echo 1 >/dev/null 2>&1
+				fi
+			elif [ "$?" == "1" ];then
+				# it's a file, we need to compare then copy
+				local _FILE_JFF_MD5=$(md5sum ${_FILE_JFF} | awk '{print $1}')
+				local _FILE_TMP_MD5=$(md5sum ${_FILE_TMP} | awk '{print $1}')
+				local _FILE_ROM_MD5=$(md5sum ${_FILE_ROM} | awk '{print $1}')
+				if [ "${_FILE_JFF_MD5}" != "${_FILE_TMP_MD5}" ];then
+					if [ "${_FILE_TMP_MD5}" == "${_FILE_ROM_MD5}" ];then
+						# same md5, file maybe change by user? or otehr malware, correct it with link
+						if [ ${_action} == "link" ];then
+							echo_date "link | ${_FILE_ROM} ➡️ ${_FILE_JFF}"
+							rm -rf ${_FILE_JFF} >/dev/null 2>&1
+							ln -sf ${_FILE_ROM} ${_FILE_JFF}
+						else
+							echo_date "copy | ${_FILE_ROM} ➡️ ${_FILE_JFF}"
+							rm -rf ${_FILE_JFF} >/dev/null 2>&1
+							cp -rf ${_FILE_ROM} ${_FILE_JFF}
+							chmod +x ${_FILE_JFF} >/dev/null 2>&1
+						fi
+					else
+						# different md5, file in target is newer, copry it to target
+						echo_date "copy | ${_FILE_TMP} ➡️ ${_FILE_JFF}"
+						cp -rf ${_FILE_TMP} ${_FILE_JFF}
+						chmod +x ${_FILE_JFF} >/dev/null 2>&1
+					fi
+				else
+					if [ "${_FILE_JFF_MD5}" == "${_FILE_ROM_MD5}" ];then
+						if [ ${_action} == "link" ];then
+							# same md5, remove file, make link
+							echo_date "link | ${_FILE_ROM} ➡️ ${_FILE_JFF}"
+							rm -rf ${_FILE_JFF} >/dev/null 2>&1
+							ln -sf ${_FILE_ROM} ${_FILE_JFF}
+						else
+							# same md5, do nothing, keep the file
+							echo_date "jump | ${_FILE_JFF} file not change!"
+							echo 1 >/dev/null 2>&1
+						fi
+					else
+						# keep it as file, because source file is newer than file in rom
+						echo_date "jump | ${_FILE_JFF} file not change!"
+						echo 1 >/dev/null 2>&1
+					fi
+				fi
+			fi
+		else
+			if [ -f "${_FILE_ROM}" ];then
+				# maybe lost in target, compare to source
+				local _FILE_ROM_MD5=$(md5sum ${_FILE_ROM} | awk '{print $1}')
+				local _FILE_TMP_MD5=$(md5sum ${_FILE_TMP} | awk '{print $1}')			
+				if [ "${_FILE_ROM_MD5}" != "${_FILE_TMP_MD5}" ];then
+					# different md5, copy new file from source to target folder
+					echo_date "copy | ${_FILE_TMP} ➡️ ${_FILE_JFF}"
+					cp -rf ${_FILE_TMP} ${_FILE_JFF}
+					chmod +x ${_FILE_JFF} >/dev/null 2>&1
+				else
+					if [ ${_action} == "link" ];then
+						# same md5, make a link
+						echo_date "link | ${_FILE_ROM} ➡️ ${_FILE_JFF}"
+						ln -sf ${_FILE_ROM} ${_FILE_JFF}
+					else
+						# same md5, copy file
+						echo_date "copy | ${_FILE_TMP} ➡️ ${_FILE_JFF}"
+						cp -rf ${_FILE_TMP} ${_FILE_JFF}
+					fi
+				fi
+			else
+				# only in /tmp folder, not in koolshare folder, copy file
+				echo_date "copy | ${_FILE_TMP} ➡️ ${_FILE_JFF}"
+				cp -rf ${_FILE_TMP} ${_FILE_JFF}
+				chmod +x ${_FILE_JFF} >/dev/null 2>&1		
+			fi
+		fi
+	done
+	sync
+}
+
 center_install() {
 	local KSHOME=$1
 
@@ -139,6 +257,13 @@ center_install() {
 		return 1
 	fi
 
+	# remove some value discard exist
+	nvram unset rc_service
+
+	# set important value
+	nvram set 3rd-party=merlin
+	nvram commit
+
 	local CENTER_TYPE_1=$(cat /tmp/${module}/webs/Module_Softcenter.asp | grep -Eo "/softcenter/app.json.js")
 	if [ -z "${CENTER_TYPE_1}" ];then
 		echo_date "准备安装软件中心：koolcenter ..."
@@ -146,21 +271,6 @@ center_install() {
 		echo_date "准备安装软件中心：softcenter ..."
 	fi
 
-	# if [ -z "${CENTER_TYPE_1}" ];then
-	# 	# 安装koolcenter的话，检查softcenter版本号是否符合
-	# 	local NEED_VERSION="1.7.6"
-	# 	if [ -f "/koolshare/.soft_ver" ];then
-	# 		local CUR_VERSION=$(cat /koolshare/.soft_ver)
-	# 	else
-	# 		local CUR_VERSION="0"
-	# 	fi
-	# 	local COMP=$(/rom/etc/koolshare/bin/versioncmp ${CUR_VERSION} ${NEED_VERSION})
-	# 	if [ "${COMP}" == "1" ]; then
-	# 		echo_date "softcenter软件中心版本：${CUR_VERSION} 过低，不支持koolcenter升级，请将软件中心更新到最新后重试！" 
-	# 		exit 1
-	# 	fi
-	# fi	
-	
 	# make some folders
 	echo_date "创建软件中心相关的文件夹..."
 	mkdir -p /${KSHOME}/configs/dnsmasq.d
@@ -170,6 +280,7 @@ center_install() {
 	mkdir -p /${KSHOME}/.koolshare/init.d/
 	mkdir -p /${KSHOME}/.koolshare/scripts/
 	mkdir -p /${KSHOME}/.koolshare/configs/
+	mkdir -p /${KSHOME}/.koolshare/perp/
 	mkdir -p /${KSHOME}/.koolshare/webs/
 	mkdir -p /${KSHOME}/.koolshare/res/
 	mkdir -p /tmp/upload
@@ -179,6 +290,27 @@ center_install() {
 	[ -L "/${KSHOME}/configs/profile" ] && rm -rf /${KSHOME}/configs/profile
 	[ -L "/${KSHOME}/.koolshare/webs/files" ] && rm -rf /${KSHOME}/.koolshare/webs/files
 	[ -d "/tmp/files" ] && rm -rf /tmp/files
+
+	# remove possible broken symbol link
+	find -L /koolshare/ -type l | xargs rm -rf
+
+	# remove more files by legacy bug package
+	rm -rf /${KSHOME}/.koolshare/bin/bin-hnd >/dev/null 2>&1
+	rm -rf /${KSHOME}/.koolshare/bin/bin-mtk >/dev/null 2>&1
+
+	# remove files no longer needed by softcenter
+	# rm -rf /${KSHOME}/.koolshare/res/Browser.js
+
+	# remove files form jffs
+	if [ "${MODEL}" == "RT-AX56U_V2" -o "${MODEL}" == "RT-AX57" ];then
+		rm -rf /jffs/syslog.log
+		rm -rf /jffs/syslog.log-1
+		rm -rf /jffs/wglist
+		rm -rf /jffs/.sys/diag_db/*
+	fi
+	rm -rf /jffs/uu.tar.gz*
+	echo 1 > /proc/sys/vm/drop_caches
+	sync
 
 	# do not install some file for some model
 	JFFS_TOTAL=$(df|grep -Ew "/${KSHOME}" | awk '{print $2}')
@@ -222,51 +354,32 @@ center_install() {
 	cp -rf /tmp/${module}/webs/* /${KSHOME}/.koolshare/webs/
 	cp -rf /tmp/${module}/res/* /${KSHOME}/.koolshare/res/
 
-	# ----ui------
-	get_ui_type
-	if [ -z "${CENTER_TYPE_1}" ];then
-		# wirte skin code for softcenter
-		echo_date "为koolcenter软件中心安装${UI_TYPE}风格的皮肤..."
-		nvram set sc_skin="${UI_TYPE}"
-	else
-		# compatiable wit softcenter
-		echo_date "获取当前固件UI类型，UI_TYPE: ${UI_TYPE}"
-		if [ "${UI_TYPE}" == "ROG" ]; then
-			echo_date "为软件中心安装ROG风格的皮肤..."
-			cp -rf /tmp/${module}/ROG/res/* /${KSHOME}/.koolshare/res/
-		elif [ "${UI_TYPE}" == "TUF" ]; then
-			echo_date "为软件中心安装TUF风格的皮肤..."
-			sed -i 's/3e030d/3e2902/g;s/91071f/92650F/g;s/680516/D0982C/g;s/cf0a2c/c58813/g;s/700618/74500b/g;s/530412/92650F/g' /tmp/${module}/ROG/res/*.css >/dev/null 2>&1
-			sed -i 's/3e030d/3e2902/g;s/91071f/92650F/g;s/680516/D0982C/g;s/cf0a2c/c58813/g;s/700618/74500b/g;s/530412/92650F/g' /tmp/${module}/webs/*.asp >/dev/null 2>&1
-			cp -rf /tmp/${module}/ROG/res/* /${KSHOME}/.koolshare/res/
-		elif [ "${UI_TYPE}" == "ASUSWRT" ]; then
-			echo_date "为软件中心安装ASUSWRT风格的皮肤..."
-			if [ -f "/${KSHOME}/.koolshare/webs/Module_Softsetting.asp" ];then
-				sed -i '/rogcss/d' /${KSHOME}/.koolshare/webs/Module_Softsetting.asp >/dev/null 2>&1
-			fi
-		fi
-	fi
-	# -------------
-	cp -rf /tmp/${module}/init.d/* /${KSHOME}/.koolshare/init.d/
-	cp -rf /tmp/${module}/bin/* /${KSHOME}/.koolshare/bin/
-	#for axhnd
-	if [ "${MODEL}" == "RT-AX88U" -o "${MODEL}" == "GT-AX11000" -o "${MODEL}" == "RT-AX86U" -o "${MODEL}" == "RT-AX68U" ];then
-		cp -rf /tmp/${module}/axbin/* /${KSHOME}/.koolshare/bin/
-	fi
-	cp -rf /tmp/${module}/perp /${KSHOME}/.koolshare/
-	cp -rf /tmp/${module}/scripts /${KSHOME}/.koolshare/
+	# set ui for softcenter & koolcenter
+	set_skin
+	
+	# start to install files
+	cmcp /tmp/${module}/bin /${KSHOME}/.koolshare/bin /rom/etc/koolshare/bin link
+	cmcp /tmp/${module}/init.d /${KSHOME}/.koolshare/init.d /rom/etc/koolshare/init.d file
+	cmcp /tmp/${module}/perp /${KSHOME}/.koolshare/perp /rom/etc/koolshare/perp file
+	cmcp /tmp/${module}/scripts /${KSHOME}/.koolshare/scripts /rom/etc/koolshare/scripts file
+	#cp -rf /tmp/${module}/init.d/* /${KSHOME}/.koolshare/init.d/
+	#cp -rf /tmp/${module}/perp /${KSHOME}/.koolshare/
+	#cp -rf /tmp/${module}/scripts /${KSHOME}/.koolshare/
 	cp -rf /tmp/${module}/.soft_ver /${KSHOME}/.koolshare/
+
 	echo_date "文件复制结束，开始创建相关的软连接..."
+	
 	# ssh PATH environment
 	rm -rf /jffs/configs/profile.add >/dev/null 2>&1
 	rm -rf /jffs/etc/profile >/dev/null 2>&1
-	source_file=$(cat /etc/profile|grep -v nvram|awk '{print $NF}'|grep -E "profile"|grep "jffs"|grep "/")
-	source_path=$(dirname /jffs/etc/profile)
-	if [ -n "${source_file}" -a -n "${source_path}" ];then
+	source_file=$(cat /etc/profile|awk '{print $NF}'|grep -E "profile"|grep "jffs"|grep "/"|head -n1)
+	source_path=$(dirname $source_file)
+	if [ -n "${source_file}" -a -n "${source_path}" -a -f "/jffs/.koolshare/scripts/base.sh" ];then
 		rm -rf ${source_file} >/dev/null 2>&1
 		mkdir -p ${source_path}
-		ln -sf /${KSHOME}/.koolshare/scripts/base.sh ${source_file} >/dev/null 2>&1
+		ln -sf /jffs/.koolshare/scripts/base.sh ${source_file} >/dev/null 2>&1
 	fi
+	
 	# make some link
 	[ ! -L "/${KSHOME}/.koolshare/bin/base64_decode" ] && ln -sf /${KSHOME}/.koolshare/bin/base64_encode /${KSHOME}/.koolshare/bin/base64_decode
 	[ ! -L "/${KSHOME}/.koolshare/scripts/ks_app_remove.sh" ] && ln -sf /${KSHOME}/.koolshare/scripts/ks_app_install.sh /${KSHOME}/.koolshare/scripts/ks_app_remove.sh
@@ -344,19 +457,14 @@ center_install() {
 	echo_date "开机启动项检查完毕！"
 
 	chmod 755 /${KSHOME}/scripts/* >/dev/null 2>&1
-	chmod 755 /${KSHOME}/.koolshare/bin/* >/dev/null 2>&1
+	#chmod 755 /${KSHOME}/.koolshare/bin/* >/dev/null 2>&1
 	chmod 755 /${KSHOME}/.koolshare/init.d/* >/dev/null 2>&1
-	chmod 755 /${KSHOME}/.koolshare/perp/* >/dev/null 2>&1
+	chmod 755 /${KSHOME}/.koolshare/scripts/* >/dev/null 2>&1
 	chmod 755 /${KSHOME}/.koolshare/perp/.boot/* >/dev/null 2>&1
 	chmod 755 /${KSHOME}/.koolshare/perp/.control/* >/dev/null 2>&1
-	chmod 755 /${KSHOME}/.koolshare/perp/httpdb/* >/dev/null 2>&1
-	chmod 755 /${KSHOME}/.koolshare/scripts/* >/dev/null 2>&1
 
 	# reset some default value
 	echo_date "设定一些默认值..."
-	if [ -z "${CENTER_TYPE_1}" ];then
-		nvram set sc_url="https://armsoft.ddnsto.com"
-	fi
 	if [ -n "$(pidof skipd)" -a -f "/usr/bin/dbus" ];then
 		/usr/bin/dbus set softcenter_installing_todo=""
 		/usr/bin/dbus set softcenter_installing_title=""
@@ -387,10 +495,6 @@ center_install() {
 			dbus set softcenter_version=${SOFTVER}
 		fi
 	fi
-
-	# remove some value discard exist
-	nvram unset rc_service
-	nvram commit
 	#============================================
 	# now try to reboot httpdb if httpdb not started
 	# /koolshare/bin/start-stop-daemon -S -q -x /koolshare/perp/perp.sh
@@ -424,6 +528,15 @@ set_url(){
 	fi
 	if [ "${LINUX_VER}" -eq "26" ];then
 		local SC_URL=https://armsoft.ddnsto.com
+	fi
+	if [ "${LINUX_VER}" -eq "54" -a "$(nvram get odmpid)" == "TX-AX6000" ];then
+		local SC_URL=https://mtksoft.ddnsto.com
+	fi
+	if [ "${LINUX_VER}" -eq "54" -a "$(nvram get odmpid)" == "TUF-AX4200Q" ];then
+		local SC_URL=https://mtksoft.ddnsto.com
+	fi
+	if [ "${LINUX_VER}" -eq "54" -a "$(nvram get odmpid)" == "RT-AX57_Go" ];then
+		local SC_URL=https://mtksoft.ddnsto.com
 	fi
 	local SC_URL_NVRAM=$(nvram get sc_url)
 	if [ -z "${SC_URL_NVRAM}" -o "${SC_URL_NVRAM}" != "${SC_URL}" ];then

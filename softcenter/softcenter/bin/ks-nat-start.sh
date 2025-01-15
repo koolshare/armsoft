@@ -1,5 +1,7 @@
 #!/bin/sh
 
+source /koolshare/scripts/base.sh
+
 # called by script /jffs/scripts/nat-start
 # call scripts in /koolshare/init.d/N*, eg: N98SoftEther.sh start_nat
 
@@ -10,7 +12,7 @@ ACTION=$1
 ks_nat=$(nvram get ks_nat)
 [ "$ks_nat" == "1" ] && echo exit $(date) >> /tmp/ks_nat_log.txt && exit
 
-for i in $(find /koolshare/init.d/ -name 'N*' | sort -n) ;
+for i in $(find /koolshare/init.d/ -name 'N*' | sort -k1.20 -n) ;
 do
 	case "$i" in
 		*.sh )

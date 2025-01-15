@@ -12,17 +12,15 @@
 <link rel="stylesheet" type="text/css" href="form_style.css">
 <link rel="stylesheet" type="text/css" href="/res/softcenter.css">
 <link rel="stylesheet" type="text/css" href="/res/layer/theme/default/layer.css">
+<script language="JavaScript" type="text/javascript" src="/js/jquery.js"></script>
 <script language="JavaScript" type="text/javascript" src="/state.js"></script>
 <script language="JavaScript" type="text/javascript" src="/help.js"></script>
 <script language="JavaScript" type="text/javascript" src="/general.js"></script>
 <script language="JavaScript" type="text/javascript" src="/popup.js"></script>
-<script language="JavaScript" type="text/javascript" src="/client_function.js"></script>
 <script language="JavaScript" type="text/javascript" src="/validator.js"></script>
-<script type="text/javascript" src="/js/jquery.js"></script>
-<script type="text/javascript" src="/general.js"></script>
-<script type="text/javascript" src="/switcherplugin/jquery.iphone-switch.js"></script>
-<script type="text/javascript" src="/res/softcenter.js"></script>
-<script type="text/javascript" src="/form.js"></script>
+<script language="JavaScript" type="text/javascript" src="/general.js"></script>
+<script language="JavaScript" type="text/javascript" src="/res/softcenter.js"></script>
+<script language="JavaScript" type="text/javascript" src="/form.js"></script>
 <style>
 .cloud_main_radius_left {
 	-webkit-border-radius: 10px 0 0 10px;
@@ -288,6 +286,7 @@ String.prototype.myReplace = function(f, e){
     return this.replace(reg, e); 
 }
 
+var SOFT_ARCH = "armsoft"
 function checkField(o, f, d) {
 	if (typeof o[f] == "undefined") {
 		o[f] = d;
@@ -296,7 +295,7 @@ function checkField(o, f, d) {
 }
 function appPostScript(moduleInfo, script) {
 	var data = {};
-	data["softcenter_home_url"] = "https://armsoft.ddnsto.com";
+	data["softcenter_home_url"] = "https://" + SOFT_ARCH + ".ddnsto.com";
 	data["softcenter_installing_todo"] = moduleInfo.name;
 	data["softcenter_installing_title"] = moduleInfo.title;
 	if (script == "ks_app_install.sh") {
@@ -420,7 +419,9 @@ function renderView(apps) {
 	$('.show-uninstall-btn').val('未安装(' + uninstallCount + ')');
 }
 function getRemoteData() {
-	var remoteURL = db_softcenter_["softcenter_home_url"] + '/softcenter/app.json.js';
+	var json_app = '/softcenter/app.json.js'
+	
+	var remoteURL = db_softcenter_["softcenter_home_url"] + json_app;
 	return $.ajax({
 		url: remoteURL,
 		method: 'GET',
@@ -519,7 +520,7 @@ function init(cb) {
 				// 如果已安装的插件,那图标必定在 /koolshare/res 目录, 通过 /res/icon-{name}.png 请求路径得到图标
 				// 如果是未安装的插件,则必定在 https://armsoft.ddnsto.com/{name}/{name}/icon-{name}.png
 				// TODO 如果因为一些错误导致没有图标, 有可能显示一张默认图标吗?
-				item.icon = parseInt(item.install, 10) !== 0 ? ('/res/icon-' + item.name + '.png') : ('https://armsoft.ddnsto.com' + new Array(3).join('/softcenter') + '/res/icon-' + item.name + '.png');
+				item.icon = parseInt(item.install, 10) !== 0 ? ('/res/icon-' + item.name + '.png') : ('https://' + SOFT_ARCH + '.ddnsto.com' + new Array(3).join('/softcenter') + '/res/icon-' + item.name + '.png');
 			});
 			return result;
 		};
@@ -553,6 +554,7 @@ function init(cb) {
 $(function() {
 	//梅林要求用这个函数来显示左测菜单
 	show_menu(menu_hook);
+	set_skin();
 	//pop_111();
 	$.ajax({
 		type: "GET",
@@ -644,13 +646,19 @@ $(function() {
 		}
 	});
 });
+function set_skin(){
+	var SKN = '<% nvram_get("sc_skin"); %>';
+	if(SKN){
+		$("#app").attr("skin", '<% nvram_get("sc_skin"); %>');
+	}
+}
 function menu_hook() {
 	tabtitle[tabtitle.length - 1] = new Array("", "软件中心", "离线安装");
 	tablink[tablink.length - 1] = new Array("", "Module_Softcenter.asp", "Module_Softsetting.asp");
 }
 function notice_show() {
 	$.ajax({
-		url: 'https://armsoft.ddnsto.com/softcenter/push_message.json.js',
+		url: 'https://' + SOFT_ARCH + '.ddnsto.com/softcenter/push_message.json.js',
 		type: 'GET',
 		dataType: 'jsonp',
 		success: function(res) {
@@ -838,7 +846,7 @@ function ks_online() {
 }
 </script>
 </head>
-<body>
+<body id="app" skin="ASUSWRT">
 	<div id="TopBanner"></div>
 	<div id="Loading" class="popup_bg"></div>
 	<div id="softcenter_shade_pannel" class="popup_bar_bg_ks">

@@ -143,6 +143,20 @@
             "version": "1.6"
         }, 
         {
+            "author": "sadog", 
+            "build_date": "2025-01-15_22:44:31", 
+            "changelog": "", 
+            "description": "检测软件中心重要文件是否被篡改，如果检测到恶意篡改，将其修复", 
+            "home_url": "Module_fixit.asp", 
+            "link": "", 
+            "md5": "7227f9a9140719131a2ce93428d446c2", 
+            "name": "fixit", 
+            "tags": "系统 工具", 
+            "tar_url": "fixit/fixit.tar.gz", 
+            "title": "安全检查", 
+            "version": "1.5"
+        }, 
+        {
             "author": "clang", 
             "build_date": "2021-08-05_20:49:35", 
             "changelog": "", 
@@ -340,6 +354,22 @@
         }, 
         {
             "author": "sadog", 
+            "build_date": "2021-12-24_23:07:14", 
+            "changelog": "", 
+            "description": "wifi boost: 路由器WiFi功率增强，增加信号覆盖范围。", 
+            "home_url": "Module_wifiboost.asp", 
+            "link": "", 
+            "md5": "5bca39a3173f3faea3ddd7a41ab041b8", 
+            "name": "wifiboost", 
+            "port": "8083", 
+            "server": "42.192.18.234", 
+            "tags": "系统 工具", 
+            "tar_url": "wifiboost/wifiboost.tar.gz", 
+            "title": "wifi boost arm", 
+            "version": "4.0"
+        }, 
+        {
+            "author": "sadog", 
             "build_date": "2021-08-05_20:49:36", 
             "changelog": "", 
             "description": "ZeroTier 内网穿透", 
@@ -354,7 +384,7 @@
         }
     ], 
     "home_url": "https://raw.githubusercontent.com/koolshare/koolshare.github.io/master", 
-    "md5": "2fe209166fded2be1c8cc5d6846fccca", 
+    "md5": "a5ec5270e855a2c9b978cca0d3d6d986", 
     "tar_url": "softcenter/softcenter.tar.gz", 
-    "version": "1.2.4"
+    "version": "1.9.14"
 }
