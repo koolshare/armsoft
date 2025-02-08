@@ -54,7 +54,6 @@ arDdnsUpdate() {
 }
 
 arDdnsCheck() {
-	postRS
 	hostIP=$(arIpAdress)
 	lastIP=$(arNslookup "${2}.${1}")
 	echo "hostIP: ${hostIP}"
@@ -62,10 +61,10 @@ arDdnsCheck() {
 	if [ "$lastIP" != "$hostIP" ]; then
 		dbus set ddnspod_run_status="更新中。。。"
 		postRS=$(arDdnsUpdate $1 $2)
-		echo "postRS: ${postRS}"
 		if [ $? -ne 1 ]; then
+			echo "postRS: ${postRS}"
 			dbus set ddnspod_run_status="wan ip：${hostIP} 更新失败，原因：${postRS}"
-		    return 1
+			return 1
 		fi
 	else
 		dbus set ddnspod_run_status="`echo_date` wan ip：${hostIP} 未改变，无需更新"
@@ -74,7 +73,7 @@ arDdnsCheck() {
 }
 
 parseDomain() {
-	mainDomain=${ddnspod_config_domain#*.}
+	mainDomain=$(echo $ddnspod_config_domain | awk '{n=split($0, a, "."); printf("%s.%s", a[n-1], a[n])}')
 	local tmp=${ddnspod_config_domain%$mainDomain}
 	subDomain=${tmp%.}
 }
