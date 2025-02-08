@@ -3,18 +3,29 @@ source /koolshare/scripts/base.sh
 eval `dbus export ddnspod`
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 # ====================================函数定义====================================
-# 获得外网地址
-arIpAdress() {
-    local inter=$(curl -s whatismyip.akamai.com)
+# 获得ipv4外网地址
+arIpv4Adress() {
+    local interv4=$(curl -s v4.ipip.net)
     #local inter=$(nvram get wan0_realip_ip)
-    echo $inter
+    echo $interv4
+}
+# 获得ipv6外网地址
+arIpv6Adress() {
+    local interv6=$(curl -s v6.ipip.net)
+    echo $interv6
 }
 
-# 查询域名地址
+# 查询ipv4域名地址
 # 参数: 待查询域名
-arNslookup() {
+arIpv4Nslookup() {
     local inter="http://119.29.29.29/d?dn="
-    wget --quiet --output-document=- $inter$1
+    wget --quiet --output-document=- "$inter$1"
+}
+# 查询ipv6域名地址
+# 参数: 待查询域名
+arIpv6Nslookup() {
+    local inter="http://119.29.29.29/d?type=aaaa&dn="
+    wget --quiet --output-document=- "$inter$1"
 }
 
 # 读取接口数据
@@ -23,58 +34,133 @@ arApiPost() {
     local agent="AnripDdns/5.07(mail@anrip.com)"
     local inter="https://dnsapi.cn/${1:?'Info.Version'}"
     local param="login_token=$ddnspod_config_id,$ddnspod_config_token&format=json&${2}"
-    wget --quiet --no-check-certificate --output-document=- --user-agent=$agent --post-data $param $inter
+    curl -ks -A $agent -d "$param" "$inter"
 }
 
-# 更新记录信息
+# 更新a记录信息
 # 参数: 主域名 子域名
-arDdnsUpdate() {
-    local domainID recordID recordRS recordCD myIP errMsg
+arIpv4DdnsUpdate() {
+    local domainID recordID recordRS recordCD myIPV4 errMsg
     # 获得域名ID
     domainID=$(arApiPost "Domain.Info" "domain=${1}")
-    domainID=$(echo $domainID | sed 's/.*"id":"\([0-9]*\)".*/\1/')
+	domainID=$(echo $domainID | sed 's/.*"id":"\([0-9]*\)".*/\1/')
 	
     # 获得记录ID
     recordID=$(arApiPost "Record.List" "domain_id=${domainID}&sub_domain=${2}")
-    recordID=$(echo $recordID | sed 's/.*\[{"id":"\([0-9]*\)".*/\1/')
+    recordID=$(echo $recordID | sed 's/.*{"id":"\([0-9]*\)".*"type":"A".*/\1/')
     # 更新记录IP
-    myIP=$($inter)
-    recordRS=$(arApiPost "Record.Ddns" "domain_id=${domainID}&record_id=${recordID}&sub_domain=${2}&value=${myIP}&record_line=默认")
+    myIPV4=$($(arIpv4Adress))
+	# recored_line的参数为"默认"的utf8编码
+    recordRS=$(arApiPost "Record.Ddns" "domain_id=${domainID}&record_id=${recordID}&sub_domain=${2}&value=${myIPV4}&record_line=%E9%BB%98%E8%AE%A4")
     recordCD=$(echo $recordRS | sed 's/.*{"code":"\([0-9]*\)".*/\1/')
     # 输出记录IP
     if [ "$recordCD" == "1" ]; then
-        echo $recordRS | sed 's/.*,"value":"\([0-9\.]*\)".*/\1/'
-        dbus set ddnspod_run_status="`echo_date` 更新成功，wan ip：${hostIP}"
-        return 1
+        dbus set ddnspod_run_status_v4="`echo_date` 更新成功，wan ipv4：${hostIPV4}"
+        echo 1
     fi
     # 输出错误信息
-    errMsg=$(echo $recordRS | sed 's/.*,"message":"\([^"]*\)".*/\1/')
-    dbus set ddnspod_run_status="失败，错误代码：$errMsg"
-    echo $errMsg
+    if [ "$recordCD" != "1" ]; then
+    	errMsg=$(echo $recordRS | sed 's/.*,"message":"\([^"]*\)".*/\1/')
+    	dbus set ddnspod_run_status_v4="失败，错误代码：$errMsg"
+    	echo $errMsg
+    fi
 }
 
-arDdnsCheck() {
-	postRS
-	hostIP=$(arIpAdress)
-	lastIP=$(arNslookup "${2}.${1}")
-	echo "hostIP: ${hostIP}"
-	echo "lastIP: ${lastIP}"
-	if [ "$lastIP" != "$hostIP" ]; then
-		dbus set ddnspod_run_status="更新中。。。"
-		postRS=$(arDdnsUpdate $1 $2)
+# 更新aaaa记录信息
+# 参数: 主域名 子域名
+arIpv6DdnsUpdate() {
+    local domainID recordID recordRS recordCD myIPV6 errMsg
+    # 获得域名ID
+    domainID=$(arApiPost "Domain.Info" "domain=${1}")
+	domainID=$(echo $domainID | sed 's/.*"id":"\([0-9]*\)".*/\1/')
+	
+    # 获得记录ID
+    recordID=$(arApiPost "Record.List" "domain_id=${domainID}&sub_domain=${2}")
+    recordID=$(echo $recordID | sed 's/.*{"id":"\([0-9]*\)".*"type":"AAAA".*/\1/')
+    # 更新记录IP
+    myIPV6=$(echo $(arIpv6Adress))
+	# recored_line的参数为"默认"的utf8编码
+    recordRS=$(arApiPost "Record.Modify" "domain_id=${domainID}&record_id=${recordID}&sub_domain=${2}&value=${myIPV6}&record_type=AAAA&record_line=%E9%BB%98%E8%AE%A4")
+    recordCD=$(echo $recordRS | sed 's/.*{"code":"\([0-9]*\)".*/\1/')
+    # 输出记录IP
+    if [ "$recordCD" == "1" ]; then
+        dbus set ddnspod_run_status_v6=`echo_date` "更新成功，wan ipv6：${hostIPV6}"
+        echo 1
+    fi
+    # 输出错误信息
+    if [ "$recordCD" != "1" ]; then
+    	errMsg=$(echo $recordRS | sed 's/.*,"message":"\([^"]*\)".*/\1/')
+    	dbus set ddnspod_run_status_v6="失败，错误代码：$errMsg"
+    	echo $errMsg
+    fi
+
+}
+
+# 检查a记录信息
+# 参数: 主域名 子域名
+arIpv4DdnsCheck() {
+	local postRS
+	hostIPV4=$(arIpv4Adress)
+	lastIPV4=$(arIpv4Nslookup "${2}.${1}")
+	echo "hostIPV4: ${hostIPV4}"
+	echo "lastIPV4: ${lastIPV4}"
+	###
+	if [ "$lastIPV4" != "$hostIPV4" ]; then
+		dbus set ddnspod_run_status_4="更新中。。。"
+		postRS=$(arIpv4DdnsUpdate $1 $2)
 		echo "postRS: ${postRS}"
-		if [ $? -ne 1 ]; then
-			dbus set ddnspod_run_status="wan ip：${hostIP} 更新失败，原因：${postRS}"
+		if [ $postRS -ne 1 ]; then
+			dbus set ddnspod_run_status_v4="wan ipv4：${hostIPV4} 更新失败，原因：${postRS}"
 		    return 1
 		fi
 	else
-		dbus set ddnspod_run_status="`echo_date` wan ip：${hostIP} 未改变，无需更新"
+		dbus set ddnspod_run_status_v4="`echo_date` wan ipv4：${hostIPV4} 未改变，无需更新"
 	fi
 	return 0
 }
 
+# 检查aaaa记录信息
+# 参数: 主域名 子域名
+arIpv6DdnsCheck() {
+	local postRS
+	hostIPV6=$(arIpv6Adress)
+	lastIPV6=$(arIpv6Nslookup "${2}.${1}")
+	echo "hostIPV6: ${hostIPV6}"
+	echo "lastIPV6: ${lastIPV6}"
+	if [ "$lastIPV6" != "$hostIPV6" ]; then
+		dbus set ddnspod_run_status_v6="更新中。。。"
+		postRS=$(arIpv6DdnsUpdate $1 $2)
+		echo "postRS: ${postRS}"
+		if [ $postRS -ne 1 ]; then
+			dbus set ddnspod_run_status_v6="wan ipv6：${hostIPV6} 更新失败，原因：${postRS}"
+		    return 1
+		fi
+	else
+		dbus set ddnspod_run_status_v6="`echo_date` wan ipv6：${hostIPV6} 未改变，无需更新"
+	fi
+	return 0
+}
+
+# 检查是否需要更新记录
+# 参数: 主域名 子域名
+arDdnsCheck(){
+	if [ "$ddnspod_config_ipv4_enable" == "1" ]; then
+		arIpv4DdnsCheck $1 $2
+	else
+		dbus set ddnspod_run_status_v4="未启用ipv4更新"
+
+	fi
+
+	if [ "$ddnspod_config_ipv6_enable" == "1" ]; then
+		arIpv6DdnsCheck $1 $2
+	else
+		dbus set ddnspod_run_status_v6="未启用ipv6更新"
+	fi
+}
+
+# 解析域名成主域名和子域名
 parseDomain() {
-	mainDomain=${ddnspod_config_domain#*.}
+	mainDomain=`echo ${ddnspod_config_domain} | awk -F. '{print $(NF-1)"."$NF}'`
 	local tmp=${ddnspod_config_domain%$mainDomain}
 	subDomain=${tmp%.}
 }
