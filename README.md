@@ -1,4 +1,4 @@
-#  armsoft
+https://github.com/koolshare/armsoft/blob/master/README.md#  armsoft
 
 > armsoft是基于梅林384的软件中心，其与梅林380软件中心的插件不兼容！armsoft仅适用于koolshare 梅林384平台，且linux内核为2.6.36.4的armv7l架构的路由器！
 >
@@ -12,7 +12,6 @@
    2. 网件`R6300V2` `R6400` `R6900` `R7000` `R8000` `R8500` `R8000`
    3. linksys EA系列：`EA6200` `EA6400` `EA6500v2` `EA6700` `EA6900`
    4. 华为：`ws880`
-   5. 斐讯`K3`
    
 2. 这些机器必须使用koolshare 梅林**384**固件！即使第1项条件满足，但是如果koolshare开发组没有推出该机型的梅林**384**改版固件，那么本软件中心也无法支持，比如斐讯`K3`等。
 
