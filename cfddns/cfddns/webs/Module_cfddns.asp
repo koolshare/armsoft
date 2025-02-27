@@ -89,7 +89,7 @@ var dbus = {};
 var _responseLen;
 var noChange = 0;
 var x = 5;
-var params_inp = ['cfddns_email', 'cfddns_akey', 'cfddns_zid', 'cfddns_name', 'cfddns_domain', 'cfddns_ttl', 'cfddns_method'];
+var params_inp = ['cfddns_email', 'cfddns_akey', 'cfddns_zid', 'cfddns_name', 'cfddns_domain', 'cfddns_ttl', 'cfddns_method', 'cfddns_update_interval'];
 var params_chk = ['cfddns_enable', 'cfddns_proxied'];
 //var params_chk = ['cfddns_enable', 'cfddns_proxied', 'cfddns_ipv6'];
 
@@ -156,6 +156,10 @@ function get_status1(){
 }
 
 function save(){
+	if($("#cfddns_update_interval").val()>59 || $("#cfddns_update_interval").val()<5){
+		alert("定时周期必须介于5与59之间");
+		return;
+	}
 	var dbus_new = {}
 	$("#show_btn2").trigger("click");
 	// collect data from input and checkbox
@@ -409,6 +413,12 @@ function reload_Soft_Center(){
 													<th title="设置解析TTL，免费版的范围是120-86400,设置1为自动,默认为1">生存时间(TTL) [?]</th>
 													<td>
 														<input type="text" maxlength="64" id="cfddns_ttl" name="cfddns_ttl" class="input_ss_table" style="width:130px;" autocomplete="off" autocorrect="off" autocapitalize="off" value="1" />
+													</td>
+												</tr>
+												<tr>
+													<th title="每多少分钟进行一次更新，最低5分钟，最多59分钟">定时周期(5~59分钟)</th>
+													<td>
+														<input type="number" min="5" max="59" id="cfddns_update_interval" name="cfddns_update_interval" class="input_ss_table" style="width:130px;" autocomplete="off" autocorrect="off" autocapitalize="off" value="5" />
 													</td>
 												</tr>
 												<tr>
