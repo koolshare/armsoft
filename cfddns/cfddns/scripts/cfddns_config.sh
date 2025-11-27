@@ -128,14 +128,38 @@ check_update(){
 	echo_date "======================================"
 }
 
+# 计划运行自动更新
+set_interval_update(){
+	username=`nvram show|grep http_username|awk -F '=' '{print $2}'`
+	filename=/tmp/var/spool/cron/crontabs/$username
+	if [ ! -f $filename ]
+	then
+		echo_date 计划文件不存在，将创建计划文件
+		touch $filename
+	else
+		echo_date 计划文件已存在
+		sed -i '/S99cfddns.sh/d' $filename
+	fi
+	[ "$cfddns_update_interval" = "" ] && cfddns_update_interval="30"
+	echo -e "\n*/$cfddns_update_interval * * * *  sh /koolshare/init.d/S99cfddns.sh update">>$filename
+	sed -i '/^[  ]*$/d' $filename
+	echo_date 计划文件更新成功
+	service restart_crontab > NUL
+	echo_date 已启动计划
+}
+
 # add_cfddns_cru(){
 # 	sed -i '/cfddns/d' /var/spool/cron/crontabs/* >/dev/null 2>&1
 # 	cru a cfddns "0 */$cfddns_refresh_time * * * /koolshare/scripts/cfddns_config.sh update"
 # }
 # 
-# stop_cfddns(){
-# 	sed -i '/cfddns/d' /var/spool/cron/crontabs/* >/dev/null 2>&1
-# }
+
+stop_cfddns(){
+	# sed -i '/cfddns/d' /var/spool/cron/crontabs/* >/dev/null 2>&1
+	username=`nvram show|grep http_username|awk -F '=' '{print $2}'`
+	filename=/tmp/var/spool/cron/crontabs/$username
+	sed -i '/S99cfddns.sh/d' $filename
+}
 
 # ====================================used by init or cru====================================
 case $1 in
@@ -152,24 +176,27 @@ start)
 		echo_date "======================================" >> $LOG_FILE
 		echo_date "检测到网络拨号..." >> $LOG_FILE
 		check_update >> $LOG_FILE
+		set_interval_update >> $LOG_FILE
 	else
 		logger "[软件中心]: CloudFlare DDNS未设置开机启动，跳过！"
 	fi
 	;;
 update)
+	echo_date 触发更新 >> $LOG_FILE
 	check_update >> $LOG_FILE
 	;;
 esac
 # ====================================submit by web====================================
 case $2 in
 1)
-	#此处为web提交动设计
+	#此处为web提交设计
 	echo "" > $LOG_FILE
 	http_response "$1"
 	if [ "$cfddns_enable" == "1" ];then
 		[ ! -L "/koolshare/init.d/S99cfddns.sh" ] && ln -sf /koolshare/scripts/cfddns_config.sh /koolshare/init.d/S99cfddns.sh
 		echo_date "======================================" >> $LOG_FILE
 		check_update >> $LOG_FILE
+		set_interval_update >> $LOG_FILE
 	else
 		echo_date "关闭CloudFlare DDNS!" >> $LOG_FILE
 		stop_cfddns
