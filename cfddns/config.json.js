@@ -1,6 +1,6 @@
 {
-"version":"1.1",
-"md5":"ef14adb89c43338a50e4c970b5345050",
+"version":"1.3",
+"md5":"65759a0ee5f6dd25a978e603138b846f",
 "home_url":"Module_cfddns.asp",
 "title":"CloudFlare DDNS",
 "description":"CloudFlare DDNS",
@@ -8,5 +8,5 @@
 "author":"sadog",
 "link":"",
 "changelog":"",
-"build_date":"2021-11-24_11:03:45"
+"build_date":"2026-10-13_14:13:01"
 }
