@@ -159,6 +159,8 @@ install_now(){
 	dbus set softcenter_module_${module}_name="${module}"
 	dbus set softcenter_module_${module}_title="${TITLE}"
 	dbus set softcenter_module_${module}_description="${DESCR}"
+	# 默认定时更新间隔(分钟)，仅在未设置时写入，避免升级覆盖用户配置
+	[ -z "$(dbus get ${module}_refresh)" ] && dbus set ${module}_refresh="10"
 	
 	# finish
 	echo_date "${TITLE}插件安装完毕！"
