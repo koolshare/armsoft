@@ -89,7 +89,7 @@ var dbus = {};
 var _responseLen;
 var noChange = 0;
 var x = 5;
-var params_inp = ['cfddns_email', 'cfddns_akey', 'cfddns_zid', 'cfddns_name', 'cfddns_domain', 'cfddns_ttl', 'cfddns_method'];
+var params_inp = ['cfddns_email', 'cfddns_akey', 'cfddns_zid', 'cfddns_name', 'cfddns_domain', 'cfddns_ttl', 'cfddns_method', 'cfddns_refresh'];
 var params_chk = ['cfddns_enable', 'cfddns_proxied'];
 //var params_chk = ['cfddns_enable', 'cfddns_proxied', 'cfddns_ipv6'];
 
@@ -103,6 +103,10 @@ function conf2obj(){
 		if(dbus[params_inp[i]]){
 			E(params_inp[i]).value = dbus[params_inp[i]];
 		}
+	}
+	// 下拉框无匹配值时回落到默认 10 分钟
+	if(!dbus["cfddns_refresh"]){
+		E("cfddns_refresh").value = "10";
 	}
 	for (var i = 0; i < params_chk.length; i++) {
 		if(dbus[params_chk[i]]){
@@ -412,6 +416,26 @@ function reload_Soft_Center(){
 													</td>
 												</tr>
 												<tr>
+													<th title="定时检测公网IP变化的间隔，IP变化时自动更新CloudFlare解析记录">定时更新间隔 [?]</th>
+													<td>
+														<select id="cfddns_refresh" name="cfddns_refresh" class="input_option" style="width:130px;">
+															<option value="5">每 5 分钟</option>
+															<option value="10">每 10 分钟</option>
+															<option value="15">每 15 分钟</option>
+															<option value="20">每 20 分钟</option>
+															<option value="30">每 30 分钟</option>
+															<option value="60">每 1 小时</option>
+															<option value="120">每 2 小时</option>
+															<option value="180">每 3 小时</option>
+															<option value="240">每 4 小时</option>
+															<option value="360">每 6 小时</option>
+															<option value="480">每 8 小时</option>
+															<option value="720">每 12 小时</option>
+															<option value="1440">每天一次</option>
+														</select>
+													</td>
+												</tr>
+												<tr>
 													<th title="开启后所有流量经Cloudflare在到路由器">Cloudflare代理(proxied)[?]</th>
 													<td>
 														<input type="checkbox" id="cfddns_proxied" name="cfddns_proxied" >
@@ -443,6 +467,8 @@ function reload_Soft_Center(){
 													<ul>
 														<li>注意：本插件仅适用于koolshare RT-AC86U、RT-AC5300、RT-AX88U等hnd/axhnd平台固件！</li>
 														<li>使用此插件时，需要在cloudflare上先添加A记录，然后再把添加的A记录域名填入到上方选项里，域名要保持一致。</li>
+													<li>本插件已支持自动创建：若域名下没有对应的A记录，提交后会自动创建一条，无需事先手动添加。</li>
+													<li>插件开启后会按「定时更新间隔」自动检测公网IP，仅在IP变化时才会调用CloudFlare接口更新解析，IP未变化则跳过。</li>
 														<li>使用IPV6时，需要在cloudflare上先添加AAAA记录。</li>
 														<li>上面的检测只代表服务器设置了IP地址，一般需要一段时间来生效，这跟服务器有关。</li>
 														<li>开启Cloudflare代理后，域名解析的IP地址为Cloudflare的IP，所有流量需经Cloudflare服务器再到你设备的IP，只适用于网页。</li>

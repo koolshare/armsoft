@@ -3,7 +3,7 @@
 # build script for armsoft project
 
 MODULE="cfddns"
-VERSION="1.1"
+VERSION="1.3"
 TITLE="CloudFlare DDNS"
 DESCRIPTION="CloudFlare DDNS"
 HOME_URL="Module_cfddns.asp"
